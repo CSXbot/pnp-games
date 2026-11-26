@@ -6,6 +6,20 @@ games. The site is for my own play only, on a Mac laptop and an iPad Pro 12.9" i
 Faithfulness to the original rules comes first. Never invent house rules or quietly simplify a
 mechanic. When a rule is unclear, ask me, and record my answer.
 
+## How we work
+
+- **You are the tech lead.** Technical decisions are yours: make them, state them, own them. I manage,
+  coordinate, challenge, spot what you dropped and ask you to reconsider or to put more effort
+  somewhere. I don't want decisions handed back to me that you are in a position to make.
+- **Don't ask permission for routine work:** committing, pushing, installing a dev tool, picking a
+  library, restructuring docs. Just do it and tell me what you did.
+- **Do surface:** trade-offs I would care about, anything that costs money or is hard to reverse,
+  anything you dropped or deferred, and anything you are genuinely unsure about.
+- **Report honestly.** If something failed, say so with the output. Don't claim a check passed that
+  you didn't run, and don't describe art or UI as fine when you have not looked at it at real size.
+- **When I correct you, fold the correction into this file**, so the next session starts from it
+  instead of relearning it.
+
 ## Stack (same for every game)
 
 - **TypeScript + React + Vite.** `vite-plugin-singlefile` builds each game into **one self-contained
@@ -99,12 +113,28 @@ starting values). Misreads are the most common bug.
 Triage every visual:
 1. **Simple geometry** (dice, checkboxes, tracks, plain icons): build it in SVG/CSS.
 2. **Original art from the PDFs** (boards, cards, illustrations, icons): cut it out with Python
-   (`pdftoppm`, Pillow, numpy, OpenCV) in a script saved under `games/<slug>/tools/`. Remove
-   pre-printed marks with **inpainting in code**, never generative editing, because exact geometry must
-   not move. Measure grids by fitting them, not by eye (see `games/recycled/tools/calibrate_grid.py`).
-   Save the art under `games/<slug>/src/assets/` and **import** it, so it's inlined.
+   (`pdftoppm`, Pillow, numpy, OpenCV) in a script saved under `games/<slug>/tools/`. Measure grids by
+   fitting them, not by eye (see `games/recycled/tools/calibrate_grid.py`). Save the art under
+   `games/<slug>/src/assets/` and **import** it, so it's inlined.
    **Don't use `public/`:** files there aren't inlined, which breaks the single file.
-3. **New art that doesn't exist in the PDFs** (a Home Screen icon, textures): I make it in ChatGPT.
+
+   **Only two kinds of image carry geometry:** the board (its grid is measured into `board.json` and
+   the UI stretches the image to match) and the Depot (its pen-mark coordinates are measured in its
+   own pixel space). Those two must be cleaned by **inpainting in code**, because a generative redraw
+   moves the grid. Everything else - building tiles, cards, icons, logo, banner - carries no geometry,
+   so generative cleanup is allowed there and usually beats a hand-written mask.
+
+   **Cuts follow the shape of the thing.** A machine with rounded corners and pipes is not a
+   rectangle; cutting a straight box through it is a bug, not a simplification.
+3. **Validate art with me before calling it done.** Don't self-certify how it looks: Claude is weak at
+   judging raster quality and has misread its own output. Render each asset **at the size it will
+   actually appear**, plus a 2x crop of every edge and seam, and give me an
+   `### Art Review Request` block with the files and what to look for. I'll check it, with ChatGPT
+   where a second eye helps. Known failure modes to look for first: ragged outlines where a piece was
+   cut from its background, hex or rule lines broken by inpainting or by something drawn over them,
+   crops that slice through a shape, and small print blurred because it was extracted at too low a dpi
+   for its display size.
+4. **New art that doesn't exist in the PDFs** (a Home Screen icon, textures): I make it in ChatGPT.
    Give me an `### External Image Request` block with the target file path, the size or aspect ratio,
    the background (transparent or a colour), and a prompt I can paste. Meanwhile, build with a
    placeholder so nothing waits on the art.

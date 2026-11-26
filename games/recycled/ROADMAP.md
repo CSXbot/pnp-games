@@ -59,24 +59,37 @@ A save is small — measured 4.4 KB at day 10, 9.5 KB at day 30, 13 KB at day 44
 constraint. Build it in `packages/kit`: every game on the shelf wants it. Keep a manual
 Export/Import (file or clipboard) as a parachute, since it's the only route that works offline.
 
-### 3. Re-cut the board art
+### 3. Re-cut the art
 
-The hex interiors are faithful, but the extraction leaves visible damage at the **edges**: a dark grey
-fringe down the left side and along the bottom-left, a ragged outline where the board was cut from the
-Mars background, an orange smudge bottom-right, and a couple of patch seams mid-right where pre-drawn
-buildings were inpainted away. Small marker-ink remnants also survive in a few spots, hidden under
-building tiles.
+Four defects, confirmed from zoomed screenshots at play size (2026-11-26). The rust ground under a
+building tile is **not** one of them: that ground is part of the building art.
 
-Fix it by **cutting better in code** — tighter outline mask, clean alpha at the border, better
-inpainting — never by generative redraw: `board.json` records a grid (`spacing 195.851`,
-`rowSpacing 165.877`) measured from the printed hexes, and `HexMap` stretches the image to match, so a
-redraw shifts the grid. Re-run `tools/calibrate_grid.py` if the crop moves.
+1. **The board's outer edge is ragged** - a dark, torn fringe where the board was cut out of the Mars
+   background.
+2. **Hex outlines break** where pre-drawn buildings were inpainted away, and where building tiles are
+   drawn over them. **Check the cheap fix first:** if `HexMap` draws the hex border *after* the tile,
+   the lines stay continuous and no re-extraction is needed for this one.
+3. **The Depot is a lazy rectangular cut** through a machine that is not rectangular. It slices the
+   shape and drags in neighbouring sheet content at the top left. The cut has to follow the machine's
+   outline, pipes and rounded corners included.
+4. **The launch manual is blurry**, small print smeared: it is a small region of `depot.webp`
+   (2345x1335 for the whole strip) shown large. Extract it at a higher dpi, sized to whatever the
+   finished layout actually displays.
 
-Do it **after the layout**, which fixes the size the board is finally drawn at and therefore which
-artifacts actually matter.
+**The board and the Depot carry geometry** (`board.json`'s grid, and the Depot's measured pen-mark
+coordinates), so they are cleaned by inpainting in code; a generative redraw would move the grid.
+Re-run `tools/calibrate_grid.py` if a crop moves. Tiles, cards, icons and the logo carry no geometry,
+so generative cleanup is allowed there.
 
-**Prerequisites:** `pdftoppm` is installed (poppler, 2026-11-26). The Python side is **not**: Pillow,
-numpy and opencv-python-headless all need installing before `tools/extract_art.py` can run.
+**Do it after the layout**, which fixes the sizes these assets are displayed at - defect 4 is a
+resolution problem, and the iPad layout makes the Depot panel bigger.
+
+**Finish with an `### Art Review Request`**: every asset rendered at its real display size plus 2x
+crops of every edge and seam, for the owner to check with ChatGPT. Don't self-certify the result;
+this set was signed off once already and these four defects survived.
+
+**Prerequisites:** `pdftoppm` is installed (poppler, 2026-11-26). Pillow, numpy and
+opencv-python-headless are **not**, and `tools/extract_art.py` needs all three.
 
 ### 4. Manual dice mode
 
