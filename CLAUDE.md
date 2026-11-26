@@ -17,6 +17,8 @@ mechanic. When a rule is unclear, ask me, and record my answer.
   anything you dropped or deferred, and anything you are genuinely unsure about.
 - **Report honestly.** If something failed, say so with the output. Don't claim a check passed that
   you didn't run, and don't describe art or UI as fine when you have not looked at it at real size.
+- **Handing me a secret:** ask for a short command I can *type*. Copying a long command out of the
+  chat overwrites the clipboard the token was sitting in - that cost us two attempts once.
 - **Tell me what you're waiting on me for, every time.** End a piece of work by naming what is
   outstanding on my side - a file, an answer, a click, a device test - and keep going on whatever
   isn't blocked. I forget things; assume I have, and remind me rather than waiting silently. If
@@ -151,6 +153,41 @@ waits on it.
 real device.
 **You:** anything that needs your account rather than an API token - billing, a plan upgrade, an
 account-level switch in a dashboard. I tell you exactly what to click.
+
+**6. Retro, before the next game.** Stop and improve the process while it is fresh:
+
+- What cost more than it should have, and which stage it leaked out of.
+- What I got wrong **twice**. That is a line in this file, not something to remember harder.
+- Move finished work out of the game's `ROADMAP.md` into its `CLAUDE.md`.
+- Correct this file where it proved wrong - the stages, the sequencing rules, the art triage. A
+  workflow that never changes is a workflow nobody is reading.
+
+**You:** tell me what annoyed you that I didn't notice.
+
+Don't save it all for the end. Stop and update this file whenever you correct me twice on the same
+thing, a stage costs a multiple of what I predicted, or a tool keeps fighting us.
+
+### When it isn't working
+
+**The template is a default, not a constraint.** It was derived from one game. A game that doesn't
+fit it is information, not a failure - and bending the game to fit is the one thing that is never
+allowed, because faithfulness to the original comes first.
+
+Say it out loud early, with the cost so far and the estimated cost to continue, and propose one of:
+deviate for this game, change the shelf's default, switch tools, or don't convert this game at all.
+The cheapest moment to notice a game doesn't fit is stage 1. The most expensive is stage 4.
+
+Signals worth stopping on:
+
+- A rule that can't be expressed in the data model. The model is wrong, not the rule.
+- The same class of bug returning after two fixes.
+- Art that won't come out of the PDF cleanly however the mask is drawn - a sign the wrong tool is
+  being used, as with generative cleanup for anything that carries no geometry.
+- Tests that have become the obstacle rather than the safety net.
+- A third attempt at the same approach. There is rarely a good fourth.
+
+This applies to my own work first: I'd rather report "this approach is wrong, here's what I'd do
+instead" after two hours than hand over something that technically works.
 
 ### Sequencing rules learned the hard way
 
