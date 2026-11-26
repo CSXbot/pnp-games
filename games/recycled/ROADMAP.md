@@ -12,9 +12,9 @@ The layout itself is **done** (2026-11-26): both arrangements fit their window w
 `pnp.tabletReady` is `true` so `npm run check:screens` now enforces it, and the 51 tests still pass.
 How it works is described in `CLAUDE.md`. What is left:
 
-- **(you) An `apple-touch-icon`.** New art that isn't in the PDFs, so it needs an
-  `### External Image Request` to the owner. `index.html` has the PWA meta tags already; without the
-  icon the Home Screen shows a screenshot thumbnail.
+- ~~An `apple-touch-icon`.~~ **Done 2026-11-26:** generated, checked at 60 px, shipped at
+  `/apple-touch-icon.png` with a matching `/favicon.png`. Master and prompt in `shelf/icons/`.
+  **(you)** say if you'd rather have one of the two rejected designs in `.screens/icons/`.
 - **(you) Try it on the real iPad.** Nothing here has touched a physical device: check that the Depot's pen
   marks and the manual's tick boxes are big enough for a finger, that tap-to-inspect reads well, and
   that the standalone Home Screen app gets the full 1024 px of height.

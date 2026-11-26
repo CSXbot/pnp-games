@@ -232,10 +232,13 @@ Triage every visual:
    cut from its background, hex or rule lines broken by inpainting or by something drawn over them,
    crops that slice through a shape, and small print blurred because it was extracted at too low a dpi
    for its display size.
-4. **New art that doesn't exist in the PDFs** (a Home Screen icon, textures): I make it in ChatGPT.
-   Give me an `### External Image Request` block with the target file path, the size or aspect ratio,
-   the background (transparent or a colour), and a prompt I can paste. Meanwhile, build with a
-   placeholder so nothing waits on the art.
+4. **New art that doesn't exist in the PDFs** (a Home Screen icon, textures): generate it with
+   `node scripts/gen-image.mjs --prompt "..." --out <file>` (OpenAI key in `~/.openai-token`), at
+   `--quality low` unless there's a reason not to. Render it at the size it will actually be seen -
+   an icon at 60 px, not 1024 - and look before shipping. Keep the master and the prompt next to the
+   output, as `shelf/icons/README.md` does, so it can be regenerated. Show me the candidates; taste
+   is mine, mechanics are yours. If the key is missing, fall back to an `### External Image Request`
+   block I can paste into ChatGPT myself, and build against a placeholder so nothing waits.
 
 The original art wins when it's available. Otherwise use a clean paper look (off-white `#f8f6f0`,
 dark ink `#1f2421`).

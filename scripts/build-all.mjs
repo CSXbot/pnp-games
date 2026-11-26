@@ -48,6 +48,16 @@ for (const { ws, out } of targets) {
   copyFileSync(index, path.join(dist, out));
 }
 
+// Icons are the one thing not inlined: iOS fetches apple-touch-icon by URL when a page is added
+// to the Home Screen, so it has to exist as a file.
+const icons = path.join(root, 'shelf', 'icons');
+if (existsSync(icons)) {
+  for (const f of readdirSync(icons).filter((f) => f.endsWith('.png') && !f.startsWith('source'))) {
+    copyFileSync(path.join(icons, f), path.join(dist, f));
+    console.log(`\n=== icon -> dist/${f}`);
+  }
+}
+
 console.log('\n=== dist');
 for (const { out } of targets) {
   const kb = Math.round(statSync(path.join(dist, out)).size / 1024);

@@ -45,7 +45,7 @@ function games() {
     .sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.json': 'application/json', '.webp': 'image/webp', '.css': 'text/css', '.js': 'text/javascript' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.css': 'text/css', '.js': 'text/javascript' };
 
 function serve(dir) {
   const server = createServer((req, res) => {
