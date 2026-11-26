@@ -17,6 +17,10 @@ mechanic. When a rule is unclear, ask me, and record my answer.
   anything you dropped or deferred, and anything you are genuinely unsure about.
 - **Report honestly.** If something failed, say so with the output. Don't claim a check passed that
   you didn't run, and don't describe art or UI as fine when you have not looked at it at real size.
+- **Tell me what you're waiting on me for, every time.** End a piece of work by naming what is
+  outstanding on my side - a file, an answer, a click, a device test - and keep going on whatever
+  isn't blocked. I forget things; assume I have, and remind me rather than waiting silently. If
+  something has been outstanding a while, say so again.
 - **When I correct you, fold the correction into this file**, so the next session starts from it
   instead of relearning it.
 
@@ -94,10 +98,17 @@ wrangler.jsonc      Workers config: ./dist as static assets, no Worker script
 Every game goes through these stages in order. The expensive mistakes on Recycled all came from
 starting a stage before the one before it was settled.
 
+**This is a map for both of us, not a checklist I run alone.** Each stage says what I do and what I
+need from you. When something of yours is missing I ask for it by name - which file, which answer,
+which switch in a dashboard - rather than guessing or going quiet, and I keep working on whatever
+isn't blocked while I wait.
+
 **0. Intake.** The PDFs land in `sources/<slug>/`, gitignored, never committed. Inventory what
 arrived - base game, expansions, extra maps - and write the list down before reading any of it
 closely. PnP PDFs are usually image-only with no text layer, so render pages at 150-300 dpi and look
 at them.
+**You:** put the files there - every sheet, every rulebook page, and any expansion. If something
+looks missing (a Sheet 2, a page 4, a map referred to by another file) I name the file I need.
 
 **1. Spec, no code.** Write `games/<slug>/SPEC.md` covering:
 1. Components and setup, including the exact starting state of the sheet.
@@ -111,11 +122,15 @@ at them.
 Then stop and wait for my answers or "Approved". **Rules are the exception to "decide it yourself":**
 how an ambiguous rule should read is mine to settle, because faithfulness to the original comes
 first. Record each answer in `RULES-NOTES.md` and each ruling in the game's `CLAUDE.md`.
+**You:** answer the numbered questions. This is the one stage that genuinely blocks - guessing a rule
+here is how a game ends up quietly wrong.
 
 **2. Engine and data.** Content as tables in `src/data/`, rules as pure functions in `src/engine/`,
 tests alongside: exact-wording cases for every effect, plus simulated games asserting every log line
 against the real change in state. Check every number against the sheets at full resolution. Misreads
 are the most common bug, cheap to fix now and expensive later.
+**You:** nothing, unless a number on a sheet is unreadable even at full resolution - then I show you
+the crop and ask rather than picking the likelier digit.
 
 **3. UI, responsive from the start.** The screen never changes state directly; it sends commands to
 `act(state, cmd)`. Highlight only legal targets, from the same function the engine uses, so
@@ -123,12 +138,19 @@ highlighting can't drift from the rules, and show the exact reason anything is u
 **both arrangements together** (see **Layout**) rather than fitting a laptop layout to a tablet
 afterwards - Recycled needed a second pass only because it was built before the iPad was a target.
 Flip `pnp.tabletReady: true` only once `npm run check:screens` passes with it enforced.
+**You:** try it on the real device once it fits. I can measure that nothing scrolls; I can't feel
+whether a tick box is big enough for a finger.
 
 **4. Art.** Triage per **Art**, cut from the PDFs in `games/<slug>/tools/`, inline everything, and
 finish with an `### Art Review Request`. Art is never done on your say-so.
+**You:** look at that review, with ChatGPT where a second eye helps, and make any art that isn't in
+the PDFs from the `### External Image Request` I give you. I build against a placeholder so nothing
+waits on it.
 
 **5. Shelf and ship.** Register the game on the shelf, push, confirm the deploy, and play it on the
 real device.
+**You:** anything that needs your account rather than an API token - billing, a plan upgrade, an
+account-level switch in a dashboard. I tell you exactly what to click.
 
 ### Sequencing rules learned the hard way
 
@@ -144,7 +166,8 @@ real device.
 - **The save schema is a contract.** Every load goes through `migrateSave()`; stored ids are never
   renamed, only added.
 - **`CLAUDE.md` describes how things are; `ROADMAP.md` holds only what is open.** Finished work moves
-  from one to the other. A roadmap that accumulates history stops being a roadmap.
+  from one to the other. A roadmap that accumulates history stops being a roadmap. Anything that
+  needs me rather than you is marked **(you)** there, so the queue is readable at a glance.
 
 ## Art
 

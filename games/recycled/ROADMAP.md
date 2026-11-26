@@ -1,7 +1,8 @@
 # Recycled: roadmap
 
 What's left, in the order it should be done. Finished work is described in `CLAUDE.md` (how it
-works) rather than kept here as history.
+works) rather than kept here as history. Items marked **(you)** are waiting on the owner, not on
+Claude.
 
 ## Next, in order
 
@@ -11,10 +12,10 @@ The layout itself is **done** (2026-11-26): both arrangements fit their window w
 `pnp.tabletReady` is `true` so `npm run check:screens` now enforces it, and the 51 tests still pass.
 How it works is described in `CLAUDE.md`. What is left:
 
-- **An `apple-touch-icon`.** New art that isn't in the PDFs, so it needs an
+- **(you) An `apple-touch-icon`.** New art that isn't in the PDFs, so it needs an
   `### External Image Request` to the owner. `index.html` has the PWA meta tags already; without the
   icon the Home Screen shows a screenshot thumbnail.
-- **Try it on the real iPad.** Nothing here has touched a physical device: check that the Depot's pen
+- **(you) Try it on the real iPad.** Nothing here has touched a physical device: check that the Depot's pen
   marks and the manual's tick boxes are big enough for a finger, that tap-to-inspect reads well, and
   that the standalone Home Screen app gets the full 1024 px of height.
 - **The Depot tab is tight.** It fits, but the Depot art is the one panel that would gain most from
@@ -62,8 +63,8 @@ so generative cleanup is allowed there.
 **Do it after the layout**, which fixes the sizes these assets are displayed at - defect 4 is a
 resolution problem, and the iPad layout makes the Depot panel bigger.
 
-**Finish with an `### Art Review Request`**: every asset rendered at its real display size plus 2x
-crops of every edge and seam, for the owner to check with ChatGPT. Don't self-certify the result;
+**Finish with an `### Art Review Request`** **(you)**: every asset rendered at its real display size
+plus 2x crops of every edge and seam, for the owner to check with ChatGPT. Don't self-certify the result;
 this set was signed off once already and these four defects survived.
 
 **Prerequisites:** `pdftoppm` is installed (poppler, 2026-11-26). Pillow, numpy and
@@ -104,7 +105,7 @@ defaults to `'planet1'` today.
 
 ## Known issues
 
-- **Balance hasn't been checked against real play.** The test players usually lose, mostly on Sanity or
+- **(you) Balance hasn't been checked against real play.** The test players usually lose, mostly on Sanity or
   Oxygen; without a head start the strategy bot lost all 200 of its games. It's unknown whether the
   game is that hard or the bot is weak. If it feels too punishing in play, re-check the consumption
   table, the unused-dice penalty and the double-1s handling against the rulebook before changing
