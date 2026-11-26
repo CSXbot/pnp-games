@@ -1,0 +1,12 @@
+{
+  // Cloudflare Workers with static assets: no Worker script at all, just the built shelf.
+  // `npm run build` fills ./dist, then `npx wrangler deploy` uploads it.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pnp-games",
+  "compatibility_date": "2026-11-26",
+  "assets": {
+    "directory": "./dist",
+    // /games/recycled/ and /games/recycled/index.html both serve the game.
+    "html_handling": "auto-trailing-slash"
+  }
+}
