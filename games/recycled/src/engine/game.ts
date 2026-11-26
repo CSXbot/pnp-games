@@ -151,7 +151,7 @@ export function mapOf(s: { mapId: string }): MapDef {
 /**
  * Bring a saved game up to what this code expects. Returns null if it is not a Recycled save.
  * Add a step here whenever GameState gains a field or a fixed-size array grows, so old saves
- * keep loading (see HANDOVER.md §3).
+ * keep loading (see CLAUDE.md, "State schema and save compatibility").
  */
 export function migrateSave(raw: unknown): GameState | null {
   if (!raw || typeof raw !== 'object') return null;

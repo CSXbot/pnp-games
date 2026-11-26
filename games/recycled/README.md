@@ -16,7 +16,9 @@ The game does all the bookkeeping: dice, legal moves, building storage, accident
 5 days, tech bonuses, and win/lose checks. You make the decisions. Undo works within a turn, but not
 across a dice roll or the end of a turn.
 
-How this version reads unclear rules is listed in [RULES-NOTES.md](RULES-NOTES.md).
+How this version reads unclear rules is listed in [RULES-NOTES.md](RULES-NOTES.md). The rules as
+implemented are in [SPEC.md](SPEC.md), what's still open is in [ROADMAP.md](ROADMAP.md), and
+[CLAUDE.md](CLAUDE.md) is the working brief for Claude Code.
 
 ## Develop
 

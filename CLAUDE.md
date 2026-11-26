@@ -27,7 +27,9 @@ package.json        npm workspaces: ["shelf", "games/*", "packages/*"]
 .nvmrc              22
 shelf/              launcher page (Vite, single file) -> dist/index.html
 games/<slug>/       one game per folder: src/, test/ (or tests/), tools/, vite.config.ts,
-                    HANDOVER.md (state of the game, decisions), RULES-NOTES.md (rule interpretations)
+                    CLAUDE.md (status, agreements, save schema, architecture),
+                    SPEC.md (the rules as implemented), ROADMAP.md (what is left, decisions),
+                    RULES-NOTES.md (rule interpretations), README.md (how to run it)
 packages/           shared code, once two games need it
 scripts/            build-all script that assembles dist/
 sources/            my PnP PDFs and scans; gitignored, never commit anything from here
@@ -63,6 +65,10 @@ wrangler.jsonc      Workers config: ./dist as static assets, no Worker script
   hostname, so every URL the Worker ever answers on is covered. One policy, `Only tuzikov@gmail.com`,
   allows that one email; login is by one-time PIN (or Cloudflare account login, same address) and a
   session lasts 1 month (`730h`). Team domain: `tuzikov.cloudflareaccess.com`.
+- That policy is **reusable** (account-level), so edit it at `/accounts/<id>/access/policies/<id>`.
+  The application endpoint refuses with `can not update reusable policies through this endpoint`.
+- **Verified on 2026-11-26:** from a fresh browser session `https://games.csx.tools` asks for login,
+  the one-time PIN to that inbox gets in, and the shelf and Recycled load with their art.
 
 ## Converting a new game (two phases)
 
@@ -144,5 +150,6 @@ dark ink `#1f2421`).
 2. `npm run build` emits single files into `dist/`.
 3. `npm run check:screens` passes at both sizes.
 4. You've looked at screenshots of both layouts yourself.
-5. `HANDOVER.md` and `RULES-NOTES.md` for the game are up to date.
+5. The game's `CLAUDE.md`, `SPEC.md`, `ROADMAP.md` and `RULES-NOTES.md` are up to date. Finished work
+   is described in `CLAUDE.md`; `ROADMAP.md` holds only what is still open.
 6. You've told me what's left or uncertain.
