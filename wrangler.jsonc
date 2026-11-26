@@ -9,9 +9,24 @@
   "workers_dev": false,
   "preview_urls": false,
   "routes": [{ "pattern": "games.csx.tools", "custom_domain": true }],
+  // Static assets are served before the Worker runs, so this only sees /api/* and misses.
+  "main": "packages/worker/src/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     // /games/recycled/ and /games/recycled/index.html both serve the game.
     "html_handling": "auto-trailing-slash"
-  }
+  },
+  "vars": {
+    // Who the save API will accept. Matches the Access application in front of this Worker.
+    "ACCESS_TEAM_DOMAIN": "tuzikov.cloudflareaccess.com",
+    "ACCESS_AUD": "83fb69f8bb0ebd1f5e53543345bcb231849b3007f0d853c1b9f1697b7969bdef"
+  },
+  "d1_databases": [
+    {
+      "binding": "SAVES",
+      "database_name": "pnp-saves",
+      "database_id": "77fb10ea-0cc9-42a7-89b7-21784aceda64"
+    }
+  ]
 }
