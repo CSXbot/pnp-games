@@ -53,9 +53,16 @@ wrangler.jsonc      Workers config: ./dist as static assets, no Worker script
 - `html_handling: "auto-trailing-slash"` means `/games/<slug>/` is the real URL; a request for
   `/games/<slug>/index.html` is redirected to it. Keep the shelf's links pointing at `index.html`
   anyway, so the same `dist/` also works when opened as plain files.
-- **Deploying publishes.** Commit when you like, but **deploy and push only when I say so.**
-- The site sits behind Cloudflare Access, because the games contain the publishers' art. Never
-  link to it or share it anywhere.
+- **Deploying publishes.** Commit when you like, but **deploy and push only when I say so.** Pushing
+  to `main` triggers a Workers build (`npm ci && npm test && npm run build`, then
+  `npx wrangler deploy`), so a push deploys too.
+- **The only way in is `https://games.csx.tools`,** a custom domain on the `pnp-games` Worker.
+  `workers_dev` and `preview_urls` are `false` in `wrangler.jsonc`: no `*.workers.dev` URL, no preview
+  URLs. Keep them off — the games contain the publishers' art. Never link to the site anywhere.
+- **Cloudflare Access** guards it, and the Access application's destination is the *Worker*, not a
+  hostname, so every URL the Worker ever answers on is covered. One policy, `Only tuzikov@gmail.com`,
+  allows that one email; login is by one-time PIN (or Cloudflare account login, same address) and a
+  session lasts 1 month (`730h`). Team domain: `tuzikov.cloudflareaccess.com`.
 
 ## Converting a new game (two phases)
 

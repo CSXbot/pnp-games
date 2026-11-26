@@ -4,6 +4,11 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "pnp-games",
   "compatibility_date": "2026-11-26",
+  // The site is reached only at games.csx.tools, behind Cloudflare Access. workers.dev stays off,
+  // so a deploy can't quietly open a second, unprotected way in.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "games.csx.tools", "custom_domain": true }],
   "assets": {
     "directory": "./dist",
     // /games/recycled/ and /games/recycled/index.html both serve the game.

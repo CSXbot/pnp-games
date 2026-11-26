@@ -766,20 +766,31 @@ Don't make two versions. Make **one responsive layout with two arrangements**, c
 - **Test both** with Playwright at 1512×945 and 1366×1024 (`checkScreen` already covers the content),
   plus a "no vertical scroll" check, and try it once on the real iPad.
 
-### Hosting and copyright
+### Hosting and copyright (set up on 2026-11-26)
 
-- **What gets published:** the built file contains the publisher's art as base64.
-- **Visibility:** a `*.workers.dev` site is **public** to anyone with the URL, even if the GitHub repo
-  is private and the URL isn't listed anywhere.
-- **The owner's terms:** they bought the game and want it for personal use only.
-- **Recommended:** put the site behind **Cloudflare Access** (Zero Trust, free for a few users, email
-  login). At minimum, keep the URL unguessable and never share it.
-- **Source PDFs:** keep them out of git (the template's gitignored `sources/` folder is right).
+- **What gets published:** the built file contains the publisher's art as base64, so the site must
+  never be readable by anyone else. The owner bought the game and plays it personally.
+- **Where it lives:** `https://games.csx.tools`, a custom domain on the `pnp-games` Worker in the
+  `Tuzikov@gmail.com's Account` Cloudflare account. **That is the only address.** `workers_dev` and
+  `preview_urls` are `false` in `wrangler.jsonc`, and the `*.workers.dev` route is switched off, so
+  there is no second, unguarded way in. Leave it that way.
+- **Cloudflare Access** (Zero Trust, free plan) guards it. The important detail: the Access
+  application's destination is the **Worker** (`{"type":"worker"}`), not a hostname, so every URL the
+  Worker answers on is protected, including any future custom domain.
+  - Application: `pnp-games - Cloudflare Workers`, session **730h** (1 month).
+  - Policy: `Only tuzikov@gmail.com` - allow, `include: [{"email": {"email": "tuzikov@gmail.com"}}]`.
+    It is a **reusable** (account-level) policy, so edit it at
+    `/accounts/<id>/access/policies/<id>`, not through the application endpoint.
+  - Login methods: **One-time PIN** (a code to that inbox) and Cloudflare account login, which is the
+    same address. Team domain: `tuzikov.cloudflareaccess.com`.
+  - The dashboard's "Protect with Cloudflare Access" switch created this app with a
+    `cloudflare_account_member` policy and a 24h session; both were tightened to the above.
+- **Source PDFs:** keep them out of git (the gitignored `sources/` folder is right).
 
 ### Saves move with the origin
 
 - **Where saves live:** `localStorage` belongs to one origin. Saves made by double-clicking
-  `recycled.html` on the Mac (`file://`) **won't show up** on `workers.dev`, and a Home Screen web app on
+  `recycled.html` on the Mac (`file://`) **won't show up** on `games.csx.tools`, and a Home Screen web app on
   iPad has its own storage, separate from Safari.
 - **Key name:** all games on the shelf share one origin, so keys must stay unique per game. The key is
   now `pnp:recycled:state` (§3), the shelf-wide `pnp:<slug>:state` convention. A save made before the
@@ -808,9 +819,9 @@ Don't make two versions. Make **one responsive layout with two arrangements**, c
 ### Suggested first tasks in Claude Code (in order)
 
 1. ~~Set up the `pnp-games` workspace layout and move this game into `games/recycled/`.~~ **Done:**
-   `npm ci`, `npm test` (51 tests), `npm run build` and `npm run check:screens` are green locally. Still
-   to do: run the first real `npx wrangler deploy` (the dry run passes) and confirm the site.
-2. Put Cloudflare Access in front of the site.
+   `npm ci`, `npm test` (51 tests), `npm run build` and `npm run check:screens` are green locally, and
+   the Workers build deploys on every push to `main`.
+2. ~~Put Cloudflare Access in front of the site.~~ **Done:** see "Hosting and copyright" above.
 3. Laptop and iPad layouts, PWA meta tags, tap-first input, plus Playwright checks at both sizes.
 4. Export/Import save.
 5. Manual dice mode.
