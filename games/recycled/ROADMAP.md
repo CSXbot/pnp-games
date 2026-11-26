@@ -5,42 +5,20 @@ works) rather than kept here as history.
 
 ## Next, in order
 
-### 1. Laptop and iPad layouts
+### 1. Finish the iPad fit
 
-The main UI task, and the reason the game can't be played on the iPad yet.
+The layout itself is **done** (2026-11-26): both arrangements fit their window with no page scroll,
+`pnp.tabletReady` is `true` so `npm run check:screens` now enforces it, and the 51 tests still pass.
+How it works is described in `CLAUDE.md`. What is left:
 
-**Measured** by `npm run check:screens` on the built file: **+448 px of vertical scroll at
-1366×1024** (below the `max-width: 1420px` breakpoint the layout drops to two columns and the Depot
-and log fall below the fold) and **+109 px at 1440×900**, where the three columns are right but the
-content is taller than the window. The game is marked `pnp.tabletReady: false` in `package.json`, so
-the screen check reports both as warnings instead of failing.
-
-One responsive layout with two arrangements, chosen by CSS. Don't make two versions:
-
-- **Wide (≥ 1440 px, laptop):** today's three columns (map | dice + actions + accidents | Depot + log),
-  but the page must fit `100dvh` — panels scroll inside themselves, the page doesn't.
-- **Tablet landscape (about 1024–1439 px, iPad Pro 1366×1024):** map on the left at full height. On the
-  right, dice and actions on top, and a tab strip below them with *Depot*, *Accidents* and *Log*.
-  Everything inside `100dvh`, no page scroll. The tab strip also gives the Depot a full-width panel,
-  closer to the proportions it has on the printed sheet.
-- **Touch** (`@media (pointer: coarse)`): targets ≥ 44 px, `touch-action: manipulation`, nothing that
-  only works on hover. Today the inspector is hover-driven and tapping pins a hex; make tap the main
-  way to inspect. The Depot's pen marks and the manual's tick boxes are small at that size.
-- **In-app dialog** instead of `confirm()` for New game.
-- **PWA meta tags** in `index.html` (`apple-mobile-web-app-capable`, `mobile-web-app-capable`,
-  `apple-mobile-web-app-status-bar-style`, viewport with `viewport-fit=cover`) plus an
-  `apple-touch-icon`. In Safari the browser chrome eats roughly 100 px of the iPad's 1024; added to the
-  Home Screen it runs standalone and gets the full height. Use `dvh`, not `vh`.
-- **"Back to shelf" link** in the top bar (`../../index.html`, where the shelf sits in `dist/`), shown
-  only when the game is hosted rather than opened as a file.
-- **Keyboard shortcuts** (R, 1/2, U, Esc) don't exist on iPad, so nothing may depend on them.
-
-The icon is **new art that isn't in the PDFs**, so it's an `### External Image Request` for the owner
-to run through ChatGPT; build against a placeholder so nothing waits on it.
-
-**Done when:** `check:screens` passes with `pnp.tabletReady: true` at both sizes, the 51 Vitest tests
-still pass (`checkScreen` asserts a lot of DOM, so this is CSS and structure work, not a rewrite), and
-the owner has tried it on the real iPad.
+- **An `apple-touch-icon`.** New art that isn't in the PDFs, so it needs an
+  `### External Image Request` to the owner. `index.html` has the PWA meta tags already; without the
+  icon the Home Screen shows a screenshot thumbnail.
+- **Try it on the real iPad.** Nothing here has touched a physical device: check that the Depot's pen
+  marks and the manual's tick boxes are big enough for a finger, that tap-to-inspect reads well, and
+  that the standalone Home Screen app gets the full 1024 px of height.
+- **The Depot tab is tight.** It fits, but the Depot art is the one panel that would gain most from
+  more room; consider giving it the full width of the right column, or its own full-screen view.
 
 ### 2. Saves that follow you between devices
 

@@ -67,6 +67,35 @@ They're still open to change if the owner reads a rule differently:
   your last unit of Food, Oxygen, Sanity or Radiation, which saves your life. They never replace Power.
 - **Full Laboratory:** one free tech, from the same 5 bonus boxes.
 
+## Layout
+
+One build, two arrangements, chosen by CSS alone. No device detection, no second version.
+
+```
+>= 1440px (laptop)              1024-1439px (iPad Pro landscape)
+map | dice + actions | depot    map | dice + actions
+                       accidents       [Depot][Accidents][Log]  <- tab strip
+                       log
+```
+
+- `.app` is `100dvh` and never scrolls; `.col-play` and `.col-ref` scroll inside themselves. Use
+  `dvh`, not `vh`, because Safari's toolbars move.
+- **The three reference panels are always in the DOM.** The tab strip only hides the inactive ones,
+  through `.col-ref[data-tab=...]` in a media query. That is deliberate: the UI tests render `<App/>`
+  in jsdom without any CSS, so every panel has to stay queryable. Never switch tabs by unmounting.
+- **The map sizes itself from the board's own aspect ratio** (SVG `viewBox` + `preserveAspectRatio`),
+  so a planet whose sheet is shaped differently needs no CSS change.
+- **The stock bar wraps**, so an expansion resource has somewhere to go.
+- **Tabs come from the `TABS` array** in `App.tsx`; a fourth panel is a data entry.
+- `@media (pointer: coarse)` gives 44px targets and `touch-action: manipulation`. Copy that differs
+  between mouse and touch is written twice and switched with `.when-fine` / `.when-coarse`, because
+  CSS can't rewrite text.
+- **New game is an in-app dialog** (`NewGameDialog.tsx`), not `confirm()`, which doesn't work well on
+  touch. It already holds the planet picker and the expansion switches: both sections render only
+  when there is more than one planet or at least one expansion in `EXPANSIONS`, so today it is a
+  plain confirmation and grows into a picker as data arrives.
+- The **back to shelf** link shows only when the page is served (`location.protocol !== 'file:'`).
+
 ## State schema and save compatibility (`localStorage`)
 
 - **Key:** `pnp:recycled:state`, exported as `SAVE_KEY` from `src/ui/save.ts`. `App.tsx` and the tests

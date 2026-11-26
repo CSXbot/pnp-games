@@ -28,7 +28,16 @@ import { ART, cardArt } from './art';
 import { ResIcon } from './Icons';
 import { AccidentTable, ActionMenu, BuildPicker, DicePanel, type Pending } from './TurnPanel';
 import { Help } from './Help';
+import { NewGameDialog } from './NewGameDialog';
 import { LEGACY_SAVE_KEY, SAVE_KEY } from './save';
+
+/** The panels that share one tabbed area on tablet width and stack on a laptop. */
+const TABS = [
+  { id: 'depot', label: 'Depot' },
+  { id: 'accidents', label: 'Accidents' },
+  { id: 'log', label: 'Log' },
+] as const;
+type TabId = (typeof TABS)[number]['id'];
 
 function load(): GameState | null {
   try {
@@ -60,6 +69,8 @@ export function App() {
   const [pinned, setPinned] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [help, setHelp] = useState(() => !load());
+  const [tab, setTab] = useState<TabId>('depot');
+  const [newGameOpen, setNewGameOpen] = useState(false);
 
   useEffect(() => save(state), [state]);
   useEffect(() => {
@@ -156,12 +167,12 @@ export function App() {
     setPinned((p) => (p === hex ? null : hex));
   };
 
-  const newGameConfirm = () => {
-    if (state.phase !== 'won' && state.phase !== 'lost' && state.day > 0 && !confirm('Abandon this shift and start a new game?')) return;
-    setState(newGame(state.mapId));
+  const startNewGame = (mapId: string) => {
+    setState(newGame(mapId));
     setHistory([]);
     setPending(null);
     setDieSel(null);
+    setNewGameOpen(false);
   };
 
   useEffect(() => {
@@ -171,6 +182,7 @@ export function App() {
         setPending(null);
         setPicker(false);
         setHelp(false);
+        setNewGameOpen(false);
       } else if (e.key === 'r' && state.phase === 'roll' && !state.techPending) {
         commit({ t: 'roll' });
       } else if (e.key === 'u') {
@@ -183,6 +195,8 @@ export function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [state, commit, undo]);
 
+  // The shelf only exists when the game is served from it, not when the file is opened directly.
+  const hosted = typeof location !== 'undefined' && location.protocol !== 'file:';
   const next = nextConsumption(state);
   const over = state.phase === 'won' || state.phase === 'lost';
   const inspect = hover ?? pinned;
@@ -212,20 +226,25 @@ export function App() {
           )}
         </div>
         <div className="top-actions">
+          {hosted && (
+            <a className="btn btn-shelf" href="../../index.html" title="Back to the shelf">
+              ← Shelf
+            </a>
+          )}
           <button className="btn" onClick={undo} disabled={!history.length} title="Undo your last action this turn (U)">
             Undo
           </button>
           <button className="btn" onClick={() => setHelp(true)}>
             How to play
           </button>
-          <button className="btn" onClick={newGameConfirm}>
+          <button className="btn" onClick={() => setNewGameOpen(true)}>
             New game
           </button>
         </div>
       </header>
 
       <main className="layout">
-        <div className="col-map">
+        <div className="col col-map">
           <StockBar state={state} />
           <div className="map-wrap">
             <HexMap state={state} targets={targets} onHexClick={onHexClick} onHover={setHover} hover={hover} />
@@ -247,7 +266,7 @@ export function App() {
           <Inspector state={state} hex={inspect} />
         </div>
 
-        <div className="col-side">
+        <div className="col col-play">
           <DicePanel
             state={state}
             die={die}
@@ -261,15 +280,33 @@ export function App() {
             onSplit={() => commit({ t: 'split' })}
             onEndTurn={() => commit({ t: 'endActions' })}
           />
-          <div className="side-grid">
-            <ActionMenu state={state} die={die} pending={pending} onPick={pickAction} onOpenBuild={() => setPicker(true)} />
-            <AccidentTable state={state} />
-          </div>
+          <ActionMenu state={state} die={die} pending={pending} onPick={pickAction} onOpenBuild={() => setPicker(true)} />
         </div>
 
-        <div className="col-depot">
-          <DepotArt state={state} onLaunch={() => commit({ t: 'launch' })} />
-          <Log state={state} />
+        {/* One area, three panels: stacked on a laptop, one at a time behind tabs on a tablet. */}
+        <div className="col col-ref" data-tab={tab}>
+          <nav className="tabs" role="tablist" aria-label="Panels">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                role="tab"
+                aria-selected={tab === t.id}
+                className={`tab${tab === t.id ? ' selected' : ''}`}
+                onClick={() => setTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </nav>
+          <div className="tabpanel" data-panel="depot">
+            <DepotArt state={state} onLaunch={() => commit({ t: 'launch' })} />
+          </div>
+          <div className="tabpanel" data-panel="accidents">
+            <AccidentTable state={state} />
+          </div>
+          <div className="tabpanel" data-panel="log">
+            <Log state={state} />
+          </div>
         </div>
       </main>
 
@@ -321,7 +358,7 @@ export function App() {
               Days survived: {state.day} · Buildings: {state.buildings.length} · Batteries: {state.batteries}
             </p>
             <div className="btn-row">
-              <button className="btn btn-primary btn-big" onClick={newGameConfirm}>
+              <button className="btn btn-primary btn-big" onClick={() => setNewGameOpen(true)}>
                 New game
               </button>
             </div>
@@ -330,13 +367,27 @@ export function App() {
       )}
 
       {help && <Help onClose={() => setHelp(false)} />}
+
+      {newGameOpen && (
+        <NewGameDialog
+          mapId={state.mapId}
+          inProgress={!over && state.day > 0}
+          onCancel={() => setNewGameOpen(false)}
+          onStart={startNewGame}
+        />
+      )}
     </div>
   );
 }
 
 function Inspector({ state, hex }: { state: GameState; hex: string | null }) {
   if (!hex) {
-    return <div className="inspector muted">Hover a hex to see what's there. Click to pin it.</div>;
+    return (
+      <div className="inspector muted">
+        <span className="when-fine">Hover a hex to see what's there. Click to pin it.</span>
+        <span className="when-coarse">Tap a hex to see what's there.</span>
+      </div>
+    );
   }
   const h = hexesOf(state).get(hex)!;
   const b = buildingAt(state, hex);
