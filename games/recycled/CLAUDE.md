@@ -50,22 +50,22 @@ These came up explicitly with the owner. Don't change them without asking.
 |---|---|---|
 | 1 | **Double 1s:** the two 1s merge into **one 2 AP die (can't be split)**, and **the third die is the second action die**. **No accident** that turn. | The first version dropped the third die. The owner: "It never says to discard the dice. So just merge 1+1, and keep the third one for the second action." |
 | 2 | **The shuttle needs 6 Batteries**, not 7. | The owner pointed at the launch manual, which shows 6 boxes. |
-| 3 | **Automatrons do not stand in for Batteries** at launch. | This was only needed under the wrong 7-battery reading. Removed with fix 2. |
+| 3 | **Automatrons stand in for missing Food, Oxygen and Batteries at launch**, one unit each, and nothing is spent because the game ends. Transceivers are modules, not resources, so they are not covered. | 2026-11-26, overturning the earlier "not for Batteries". The owner: "It says 'every time', this should include launch" and "Yes, Batteries is a resource." A launch therefore no longer strictly needs a Workshop. |
 | 4 | **Research Site holds 6 Sanity**, not 9. | I miscounted the reference panel: each "8" glyph is two circles. |
 | 5 | **Produce/Recycle give at most 3 and Salvage at most 2 per action**, combined dice included (the `[x2/x3]` marks on the action board). | The first version let combined dice keep adding. |
 | 6 | **The owner asked for "check all rules"** and every message on screen to be correct. | This led to the full re-check against the sheets and to the message-honesty tests (see Tests, below). |
 | 7 | **Transceivers need 3 hexes *between* them** (hex distance ≥ 4, `TRANSCEIVER_MIN_DISTANCE`). | The owner chose this reading of "at least 3 hexes away" over distance ≥ 3. |
 | 8 | **A new Cryo Tank or Recycler next to two possible partners asks which one to join.** | Before, it silently joined the first one found. |
+| 9 | **A Full Research Site gives +1 Sanity to the Depot**, plus 1 more Sanity per other Full Research Site - not Radiation. | 2026-11-26. A second read of Sheet 2 at 600 dpi: every icon in that line is the Sanity eye. The engine, the card text, the spec and a test had all agreed on the wrong resource since the first build. |
+| 10 | **Automatrons are offered, not taken.** When a loss would cost Food, Oxygen, Sanity or Radiation and the player holds Automatrons, ask which units to cover. Today's automatic behaviour is the default answer. | 2026-11-26. The card says "can be used every time instead of any other resources, except Power" - that is a choice, and the game was making it silently. **Not yet implemented:** see `ROADMAP.md`. |
+| 11 | **Setting up with dice:** one die does as many setup steps as it pays for (a 3 builds a whole Separator, a 6 does both Recycler steps); two dice combined always do exactly one. | Rulebook p3, confirmed 2026-11-26. The Separator half is by analogy and the owner chose to keep it. |
+| 12 | **Unused dice** cost 1 Sanity each, a combined pair 2, a locked 1s die 1; ending the turn stays allowed while a die could still be used. | Sheet 2, confirmed 2026-11-26. |
+| 13 | **A Full Laboratory** gives one more tech from the same five Depot boxes. | Confirmed 2026-11-26: four T marks plus the Laboratory make five triggers for five boxes. |
 
-Readings chosen during development and listed in `RULES-NOTES.md`, which the owner hasn't disputed.
-They're still open to change if the owner reads a rule differently:
-
-- **Combined dice and setup steps:** combined dice buy only **one** setup step.
-- **Unused dice:** each unused die costs 1 Sanity. An unused combined pair costs 2, and an unused
-  locked 1s-die costs 1.
-- **Automatrons:** they cover a Materials shortfall when you construct, and they're spent in place of
-  your last unit of Food, Oxygen, Sanity or Radiation, which saves your life. They never replace Power.
-- **Full Laboratory:** one free tech, from the same 5 bonus boxes.
+All four readings that used to sit here as "chosen during development, undisputed" were put to the
+owner on 2026-11-26 and are now rulings 10-13 above. **Silence is not approval:** the remaining
+entries in `RULES-NOTES.md` are still this version's reading rather than the owner's word, and
+should be asked about rather than assumed when one of them matters.
 
 ## Layout
 

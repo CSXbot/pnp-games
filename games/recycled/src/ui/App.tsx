@@ -29,7 +29,7 @@ import { ResIcon } from './Icons';
 import { AccidentTable, ActionMenu, BuildPicker, DicePanel, type Pending } from './TurnPanel';
 import { Help } from './Help';
 import { NewGameDialog } from './NewGameDialog';
-import { LEGACY_SAVE_KEY, SAVE_KEY } from './save';
+import { BROKEN_KEY, LEGACY_SAVE_KEY, SAVE_KEY } from './save';
 import {
   ago,
   cloudEnabled,
@@ -54,15 +54,27 @@ const TABS = [
 type TabId = (typeof TABS)[number]['id'];
 
 function load(): GameState | null {
+  let raw: string | null = null;
   try {
     // The old key is read only while the new one is empty, so a game in progress survives
     // the move into pnp-games. The next save writes SAVE_KEY.
-    const raw = localStorage.getItem(SAVE_KEY) ?? localStorage.getItem(LEGACY_SAVE_KEY);
+    raw = localStorage.getItem(SAVE_KEY) ?? localStorage.getItem(LEGACY_SAVE_KEY);
     if (!raw) return null;
-    return migrateSave(JSON.parse(raw));
+    const migrated = migrateSave(JSON.parse(raw));
+    if (migrated) return migrated;
   } catch {
-    return null;
+    /* unparsable, or a migration that threw */
   }
+  // A save we can't read is still the player's game. The fresh game that replaces it is written
+  // over SAVE_KEY a moment later, so keep the original where a fix can still recover it.
+  if (raw) {
+    try {
+      if (!localStorage.getItem(BROKEN_KEY)) localStorage.setItem(BROKEN_KEY, raw);
+    } catch {
+      /* storage unavailable */
+    }
+  }
+  return null;
 }
 
 function save(s: GameState) {
@@ -108,6 +120,10 @@ export function App() {
         if (migrated) {
           setState(migrated);
           setHistory([]);
+        } else {
+          // We couldn't read their copy. Stay held rather than pushing this browser's fresh game
+          // over a shift that a later fix might still rescue.
+          return;
         }
       } else if (verdict === 'ask' && remote) {
         setConflict(remote); // stays held until the player answers

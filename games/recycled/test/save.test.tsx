@@ -6,7 +6,7 @@ import { cleanup, render } from '@testing-library/react';
 import { afterEach, expect, it } from 'vitest';
 import { newGame, type GameState } from '../src/engine/game';
 import { App } from '../src/ui/App';
-import { LEGACY_SAVE_KEY, SAVE_KEY } from '../src/ui/save';
+import { BROKEN_KEY, LEGACY_SAVE_KEY, SAVE_KEY } from '../src/ui/save';
 
 const stored = (key: string): GameState | null => {
   const raw = localStorage.getItem(key);
@@ -46,4 +46,22 @@ it('starts a new game when neither key is set', () => {
   render(<App />);
 
   expect(stored(SAVE_KEY)).toMatchObject({ day: 0, phase: 'roll' });
+});
+
+it('keeps a save it cannot read instead of silently replacing it', () => {
+  const wrecked = JSON.stringify({ version: 99, day: 40, buildings: [] });
+  localStorage.setItem(SAVE_KEY, wrecked);
+  render(<App />);
+
+  // A fresh game takes over the slot, as it must - the player needs something to play.
+  expect(stored(SAVE_KEY)).toMatchObject({ version: 1, day: 0 });
+  // But the unreadable one is still there to be rescued.
+  expect(localStorage.getItem(BROKEN_KEY)).toBe(wrecked);
+});
+
+it('does not shadow an earlier rescue with a later failure', () => {
+  localStorage.setItem(BROKEN_KEY, 'the first casualty');
+  localStorage.setItem(SAVE_KEY, '{ not json');
+  render(<App />);
+  expect(localStorage.getItem(BROKEN_KEY)).toBe('the first casualty');
 });

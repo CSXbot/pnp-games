@@ -80,9 +80,9 @@ describe('actions', () => {
   it('Research Site holds 6 Sanity', () => {
     const s = withDice(newGame('planet1', 1), 6);
     const a = act(s, { t: 'action', die: 0, action: 'produce', params: { hex: at(4, 6) } });
-    // 4 of 6 drawn -> only 2 more fit, then it is Full (+1 Radiation)
-    expect(total(a, 'sanity')).toBe(8);
-    expect(total(a, 'radiation')).toBe(5);
+    // 4 of 6 drawn -> only 2 more fit (6 Sanity), then it is Full: +1 Sanity to the Depot.
+    expect(total(a, 'sanity')).toBe(9);
+    expect(total(a, 'radiation')).toBe(4); // unchanged: the card's icons are all Sanity
   });
 
   it('needs 6 Batteries to launch', () => {
@@ -425,7 +425,7 @@ describe('rare situations: exact wording', () => {
     s = checkedAct(withDice(s, 4), { t: 'action', die: 0, action: 'produce', params: { hex: at(4, 6) } });
     expect(last(s, 2)).toEqual([
       'Produced at Research Site: +2 Sanity.',
-      'Research Site is Full: +1 Radiation protection, +1 Sanity (other Full Research Sites).',
+      'Research Site is Full: +1 Sanity, +1 Sanity (other Full Research Sites).',
     ]);
   });
 

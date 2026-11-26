@@ -21,7 +21,33 @@ How it works is described in `CLAUDE.md`. What is left:
 - **The Depot tab is tight.** It fits, but the Depot art is the one panel that would gain most from
   more room; consider giving it the full width of the right column, or its own full-screen view.
 
-### 2. Finish cross-device saves
+### 2. Automatrons: offer them, don't spend them silently
+
+Owner rulings 10 and 3, made 2026-11-26, not yet implemented. The Laboratory card says an Automatron
+"can be used every time instead of any other resources, except Power" - a choice the game currently
+makes for the player, in two places only.
+
+1. **Ask on every loss.** When a loss would take Food, Oxygen, Sanity or Radiation and the player
+   holds at least one Automatron, ask which units to cover. That covers accidents, the 5th-day
+   consumption and the unused-dice penalty. Today's automatic behaviour (spend one only to save a
+   life) is the default answer, so a player who just clicks through gets what they get now.
+2. **Count them at launch**, for Food, Oxygen and Batteries - one Automatron per missing unit, with
+   the total shortfall capped by the Automatrons held. Nothing is spent, the game ends. Transceivers
+   are "modules" on the manual, not resources, so they aren't covered. **A launch therefore no
+   longer strictly needs a Workshop:** a full Laboratory's 6 Automatrons could cover all 6
+   Batteries. The manual's Battery boxes are ticked by crafting today; how a box covered by an
+   Automatron is drawn is a UI decision to make.
+3. **Show the payment before building.** If a build will take Automatrons for missing Materials, say
+   so on the build card before the player commits: "3 Materials + 2 Automatrons".
+4. **Make Automatrons prominent.** They're the last item of the stock bar, labelled "Automat.".
+
+**What this costs, from the code:** all three losses resolve inside one `endActions` command
+(`game.ts`), after the accident die is rolled, so that command has to pause part-way - the same
+shape as `techPending`. Undo must still not reach back past the accident roll. Any new state field
+needs a default in `migrateSave`. `test/bot.ts`, `checkedAct` and `checkScreen` all have to answer
+the prompt.
+
+### 3. Finish cross-device saves
 
 **Built on 2026-11-26** and working end to end against a local Worker: a shift played in one browser
 reaches another, and a browser with its own game in progress is asked rather than overwritten. How
@@ -36,7 +62,7 @@ it works is in `CLAUDE.md`. What is left:
 - The Worker's D1 row is never pruned. Harmless at one row per game, worth revisiting if the shelf
   ever holds many games.
 
-### 3. Re-cut the art
+### 4. Re-cut the art
 
 Four defects, confirmed from zoomed screenshots at play size (2026-11-26). The rust ground under a
 building tile is **not** one of them: that ground is part of the building art.
@@ -73,13 +99,13 @@ this set was signed off once already and these four defects survived.
 **Prerequisites:** `pdftoppm` is installed (poppler, 2026-11-26). Pillow, numpy and
 opencv-python-headless are **not**, and `tools/extract_art.py` needs all three.
 
-### 4. Manual dice mode
+### 5. Manual dice mode
 
 So the owner can roll real dice and type the values in. The engine rolls through `d6(s)` with a seeded
 RNG; add a `manualDice` flag to state and commands that supply dice values (`roll` with `dice`,
 `endActions` with the second accident die). Keep the RNG path for normal play and the tests.
 
-### 5. Expansions
+### 6. Expansions
 
 The PDFs arrived on 2026-11-26 and are in `sources/recycled/` (gitignored). Nothing has been read or
 implemented, and no rules from them have been discussed:
@@ -105,6 +131,25 @@ How to take one on:
 
 Also needed once there's more than one planet: **a map picker** in the New game flow. `newGame()`
 defaults to `'planet1'` today.
+
+### 7. Act on the rest of the cold-read review
+
+A second Claude session reviewed the shelf's `CLAUDE.md` and this game on 2026-11-26
+(`claude_exchange/2026-11-26 pnp-games handoff - rulings and process review.md`). The rule misread,
+the vacuous fit check and the save-overwrite risk are fixed. Still open, roughly in value order:
+
+- **A data review to match the art review.** One second read of Sheet 2 found a wrong resource that
+  a test was pinning in place; four earlier rulings were the same kind of error. Numbers get no
+  second reader today. Proposal: a crop beside each transcribed value, reviewed the way art is.
+- **Trim the shelf `CLAUDE.md`** (it suggests ~75 lines, 288 to ~215) and give it a line budget, so
+  adding a line means merging or deleting one.
+- **Who is "you"** - the file changes speaker halfway through, so "Art is never done on your say-so"
+  reads backwards in one half.
+- **Kit extraction has no home in the stage map**, and game 2's stage 3 is where it will land.
+- **The D1 schema is applied by hand**, outside the deploy chain, and the client fails silently - so
+  sync can stop working without a sign.
+- Smaller: test dir convention (`test/` vs `tests/`), "pure functions" vs `act`'s clone-then-mutate,
+  `.btn-small` at 36px inside the 44px touch block, reasons that exist only as a `title` attribute.
 
 ## Known issues
 

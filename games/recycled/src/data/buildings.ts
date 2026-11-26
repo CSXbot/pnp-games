@@ -54,7 +54,7 @@ export const BUILDINGS: Record<BuildingType, BuildingDef> = {
     terrain: 'crater',
     produces: true,
     text:
-      'Allows producing Sanity. +1 instant local Sanity. Once Full: +1 Radiation protection to Depot and +1 Sanity for every other Full Research Site. Can only be built on craters.',
+      'Allows producing Sanity. +1 instant local Sanity. Once Full: +1 Sanity to Depot and +1 Sanity for every other Full Research Site. Can only be built on craters.',
   },
   nuclearPod: {
     type: 'nuclearPod',

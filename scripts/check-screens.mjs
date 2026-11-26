@@ -104,7 +104,11 @@ mkdirSync(shots, { recursive: true });
 
 for (const page of pages) {
   for (const size of SIZES) {
-    const context = await browser.newContext({ viewport: { width: size.width, height: size.height } });
+    const context = await browser.newContext({
+      viewport: { width: size.width, height: size.height },
+      // The tablet size is a touch device, so the coarse-pointer rules must be in play.
+      hasTouch: size.name === 'ipad',
+    });
     const tab = await context.newPage();
     const problems = [];
     tab.on('console', (m) => m.type() === 'error' && problems.push(`console: ${m.text()}`));
@@ -121,10 +125,44 @@ for (const page of pages) {
       await tab.waitForTimeout(200);
     }
 
+    // What "fits" has to mean here, because the app shell is `height: 100dvh; overflow: hidden`
+    // and so the document can never report a scroll:
+    //   - the page itself must not scroll (kept as a guard in case the shell changes);
+    //   - the board must be fully visible - it is the one thing you cannot usefully scroll;
+    //   - any column whose content is taller than itself must be scrollable, so the content is
+    //     reachable rather than clipped;
+    //   - how much taller than the window the content wants to be is reported, not failed: a side
+    //     panel scrolling inside itself is the designed escape valve.
     const box = await tab.evaluate(() => {
+      const cols = [...document.querySelectorAll('.col')].map((c) => ({
+        name: c.className.replace('col ', ''),
+        over: c.scrollHeight - c.clientHeight,
+        scrollable: ['auto', 'scroll'].includes(getComputedStyle(c).overflowY),
+      }));
+      const app = document.querySelector('.app');
+      const before = app ? { height: app.style.height, overflow: app.style.overflow } : null;
+      if (app) {
+        app.style.height = 'auto';
+        app.style.overflow = 'visible';
+      }
       const d = document.documentElement;
-      return { scrollH: d.scrollHeight, clientH: d.clientHeight, scrollW: d.scrollWidth, clientW: d.clientWidth };
+      const wanted = Math.max(0, d.scrollHeight - window.innerHeight);
+      if (app && before) {
+        app.style.height = before.height;
+        app.style.overflow = before.overflow;
+      }
+      return { scrollH: d.scrollHeight, clientH: d.clientHeight, scrollW: d.scrollWidth, clientW: d.clientWidth, cols, wanted };
     });
+
+    for (const c of box.cols) {
+      if (c.over > 0 && !c.scrollable) {
+        failures.push(`${page.slug} @ ${size.width}x${size.height}: ${c.name} clips ${c.over}px with no way to scroll to it`);
+      }
+      if (c.name === 'col-map' && c.over > 0) {
+        failures.push(`${page.slug} @ ${size.width}x${size.height}: the board doesn't fit (${c.over}px cut off)`);
+      }
+    }
+
     const overflowY = Math.max(0, box.scrollH - box.clientH);
     const overflowX = Math.max(0, box.scrollW - box.clientW);
 
@@ -141,7 +179,7 @@ for (const page of pages) {
       size: `${size.width}x${size.height}`,
       errors: problems.length,
       scroll: scrolls ? `+${overflowY}px down${overflowX ? `, +${overflowX}px across` : ''}` : 'fits',
-      note: scrolls && !page.tabletReady ? 'not tablet-ready yet' : '',
+      note: box.wanted ? `content wants +${box.wanted}px, panels absorb it` : '',
     });
   }
 }

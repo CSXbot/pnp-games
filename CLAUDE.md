@@ -69,7 +69,8 @@ wrangler.jsonc      Workers config: ./dist as static assets, no Worker script
 ## Deployment
 
 - **Cloudflare Workers with static assets** (not Pages). `wrangler.jsonc` at the repo root serves
-  `./dist` as assets, with no Worker script. The build and deploy are
+  `./dist` as assets, with a small Worker (`packages/worker/`) in front for `/api/*`; static files
+  are served before it runs. The build and deploy are
   `npm ci && npm test && npm run build`, then `npx wrangler deploy`. A failing test stops the deploy,
   because the chain stops. Add `--dry-run` to check the config without publishing.
 - `html_handling: "auto-trailing-slash"` means `/games/<slug>/` is the real URL; a request for
@@ -121,6 +122,11 @@ looks missing (a Sheet 2, a page 4, a map referred to by another file) I name th
 6. Asset triage (see **Art**).
 7. **Ambiguities:** a numbered list of questions for me.
 
+**State a rule question in three separate parts:** what the **original game** says (quote it, name
+the sheet or page), what the **web game does today** (a play example with numbers), and then the
+question. I know the PDFs and have not read the code, so a question that mixes the two is one I
+can't answer.
+
 Then stop and wait for my answers or "Approved". **Rules are the exception to "decide it yourself":**
 how an ambiguous rule should read is mine to settle, because faithfulness to the original comes
 first. Record each answer in `RULES-NOTES.md` and each ruling in the game's `CLAUDE.md`.
@@ -139,7 +145,8 @@ the crop and ask rather than picking the likelier digit.
 highlighting can't drift from the rules, and show the exact reason anything is unavailable. Build
 **both arrangements together** (see **Layout**) rather than fitting a laptop layout to a tablet
 afterwards - Recycled needed a second pass only because it was built before the iPad was a target.
-Flip `pnp.tabletReady: true` only once `npm run check:screens` passes with it enforced.
+Flip `pnp.tabletReady: true` when the layout is meant to hold, then make `check:screens` pass -
+the flag is what turns the fit check from a warning into a failure, so it goes on first, not last.
 **You:** try it on the real device once it fits. I can measure that nothing scrolls; I can't feel
 whether a tick box is big enough for a finger.
 

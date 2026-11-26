@@ -399,7 +399,7 @@ function draw(s: GameState, b: BuildingState, n: number): number {
       const others = s.buildings.filter(
         (x) => x.id !== b.id && x.type === 'researchSite' && isFull(x),
       ).length;
-      const parts = [gain(s, 'radiation', 1)];
+      const parts = [gain(s, 'sanity', 1)];
       if (others) parts.push(`${gain(s, 'sanity', others)} (other Full Research Sites)`);
       defer(s, `Research Site is Full: ${parts.join(', ')}.`, 'good');
     } else if (b.type === 'laboratory') {

@@ -61,8 +61,9 @@ darkened, so 2 Power.
 
 15. **A Cryo Tank stores the resource of the plant it's joined to.** If a new Cryo Tank or Recycler
     touches more than one building it could join, you choose which one.
-16. **A full Research Site gives +1 Radiation protection, and +1 Sanity for every other full Research
-    Site.** This happens once, when it becomes full.
+16. **A full Research Site gives +1 Sanity to the Depot, and +1 Sanity for every other full Research
+    Site.** This happens once, when it becomes full. Every icon in that line on the card is the
+    Sanity eye, checked at 600 dpi; the trefoil on the Workshop card is what Radiation looks like.
 17. **The Amplifier's "six Nuclear Pods" bonus (+3 Power) happens once.**
 18. **Transceivers need at least 3 hexes between them** (hex distance 4 or more). Owner's ruling for
     "at least 3 hexes away".

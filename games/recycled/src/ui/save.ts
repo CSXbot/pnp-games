@@ -13,3 +13,10 @@ export const SAVE_KEY = 'pnp:recycled:state';
  * place, because a `recycled.html` built before the move still reads it.
  */
 export const LEGACY_SAVE_KEY = 'recycled.save.v1';
+
+/**
+ * Where a save that could not be loaded is parked. A migration bug or a version bump would
+ * otherwise destroy a game in progress: the fresh game replacing it is written to `SAVE_KEY`
+ * immediately. Only the first failure is kept, so a later good save can't be shadowed by it.
+ */
+export const BROKEN_KEY = 'pnp:recycled:state.broken';

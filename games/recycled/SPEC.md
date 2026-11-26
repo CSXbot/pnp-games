@@ -68,7 +68,7 @@ BITBT / BBBIBB / BBBBBBB / CCBBIBTT / TTBBSBCBB / TBBBBBCT / TTBBBBB / CCBBBB / 
 | Food Plant | 5 | 4 | 1 | 6 Food | any free hex | +1 local Food. On completion: **+2 Food to Depot for each other complete Food Plant adjacent**. Produces. |
 | Oxygen Plant | 5 | 4 | 1 | 6 Oxygen | **ice** | +1 local Oxygen. Produces. |
 | Cryo Tank | 4 | 1 | 1 | 4 (Food **or** Oxygen) | adjacent to a complete Food/Oxygen Plant **not already joined** | Joined to that plant and stores the plant's resource. +2 local. Produces. |
-| Research Site | 6 | 2 | 0 | 6 Sanity | **crater** | +1 local Sanity. **Once Full: +1 Radiation to Depot, +1 Sanity per other Full Research Site** (once). Produces. |
+| Research Site | 6 | 2 | 0 | 6 Sanity | **crater** | +1 local Sanity. **Once Full: +1 Sanity to Depot, +1 Sanity per other Full Research Site** (once). Produces. |
 | Nuclear Pod | 5 | 3 | 0 | none | any | **+1 Power, or +2 if adjacent to an Amplifier** |
 | Amplifier | 6 | 4 | 0 | none | any | **+1 Power per adjacent Nuclear Pod** on completion. **+3 Power once** if it's ever adjacent to six Pods. |
 | Separator | 1 per step, 3 steps | 0 | 0 | 6 Materials | **trash** | Built with the "Set up Separator" action. Enables Salvage. |
