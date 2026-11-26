@@ -89,24 +89,62 @@ wrangler.jsonc      Workers config: ./dist as static assets, no Worker script
 - **Verified on 2026-11-26:** from a fresh browser session `https://games.csx.tools` asks for login,
   the one-time PIN to that inbox gets in, and the shelf and Recycled load with their art.
 
-## Converting a new game (two phases)
+## The life of a game
 
-**Phase 1: spec, no code.** Read the PDFs in `sources/<slug>/`. PnP PDFs are often image-only, so
-render the pages to images at 150–300 dpi and look at them; zoom into small print. Then write
-`games/<slug>/SPEC.md` covering:
+Every game goes through these stages in order. The expensive mistakes on Recycled all came from
+starting a stage before the one before it was settled.
+
+**0. Intake.** The PDFs land in `sources/<slug>/`, gitignored, never committed. Inventory what
+arrived - base game, expansions, extra maps - and write the list down before reading any of it
+closely. PnP PDFs are usually image-only with no text layer, so render pages at 150-300 dpi and look
+at them.
+
+**1. Spec, no code.** Write `games/<slug>/SPEC.md` covering:
 1. Components and setup, including the exact starting state of the sheet.
 2. Sheet anatomy: every grid, track, box, counter and bonus mark.
 3. The turn loop, step by step.
 4. Legality rules, and what happens when no move is legal.
 5. End of game, scoring formulas, or win/lose conditions.
-6. Asset triage (see below).
+6. Asset triage (see **Art**).
 7. **Ambiguities:** a numbered list of questions for me.
 
-Stop and wait for my answers or "Approved". Record my rulings in `RULES-NOTES.md`.
+Then stop and wait for my answers or "Approved". **Rules are the exception to "decide it yourself":**
+how an ambiguous rule should read is mine to settle, because faithfulness to the original comes
+first. Record each answer in `RULES-NOTES.md` and each ruling in the game's `CLAUDE.md`.
 
-**Phase 2: build and verify.** Engine and data first, with tests. Then the UI. Then register the game
-on the shelf. Check every number against the sheets at full resolution (costs, capacities, tables,
-starting values). Misreads are the most common bug.
+**2. Engine and data.** Content as tables in `src/data/`, rules as pure functions in `src/engine/`,
+tests alongside: exact-wording cases for every effect, plus simulated games asserting every log line
+against the real change in state. Check every number against the sheets at full resolution. Misreads
+are the most common bug, cheap to fix now and expensive later.
+
+**3. UI, responsive from the start.** The screen never changes state directly; it sends commands to
+`act(state, cmd)`. Highlight only legal targets, from the same function the engine uses, so
+highlighting can't drift from the rules, and show the exact reason anything is unavailable. Build
+**both arrangements together** (see **Layout**) rather than fitting a laptop layout to a tablet
+afterwards - Recycled needed a second pass only because it was built before the iPad was a target.
+Flip `pnp.tabletReady: true` only once `npm run check:screens` passes with it enforced.
+
+**4. Art.** Triage per **Art**, cut from the PDFs in `games/<slug>/tools/`, inline everything, and
+finish with an `### Art Review Request`. Art is never done on your say-so.
+
+**5. Shelf and ship.** Register the game on the shelf, push, confirm the deploy, and play it on the
+real device.
+
+### Sequencing rules learned the hard way
+
+- **Layout before art.** The layout fixes the size each asset is displayed at, and a resolution
+  defect only exists relative to a size. Art first means doing it twice.
+- **Infrastructure before content.** Access, routing and the deploy chain get settled while there is
+  nothing to lose.
+- **Shared code moves to `packages/kit` the second time it is needed, not the first.** Save sync,
+  manual dice, the top bar and the new-game dialog are shelf features wearing a game's clothes.
+- **Anything an expansion will vary must be data from day one:** board aspect ratio from
+  `BOARDS[mapId]`, a stock bar that wraps, tabs as an array, per-map Depot art. Cheap now,
+  structural surgery later.
+- **The save schema is a contract.** Every load goes through `migrateSave()`; stored ids are never
+  renamed, only added.
+- **`CLAUDE.md` describes how things are; `ROADMAP.md` holds only what is open.** Finished work moves
+  from one to the other. A roadmap that accumulates history stops being a roadmap.
 
 ## Art
 
