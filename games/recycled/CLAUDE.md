@@ -177,6 +177,32 @@ When changing the schema:
    `ACCIDENTS`, `CONSUMPTION`, `BUILDINGS` and so on are imported directly in `game.ts`, so that's a
    refactor to do first (see the architecture map below).
 
+## Saves that follow you between devices
+
+`localStorage` is the source of truth for playing; the cloud copy is a sync layer and may never
+block or break a turn. Every network path fails silently.
+
+- **Keys:** `pnp:recycled:state` is the `GameState`, unchanged. `pnp:recycled:meta` holds
+  `{ savedAt, device }` **beside** it, so the saved value stays a plain state and the UI tests that
+  parse it keep working. `pnp:device` is this browser's label, `pnp:cloud` forces sync on or off.
+- **Where:** `src/ui/cloudSave.ts` here, and the shelf's Worker in `packages/worker/` (one D1 row
+  per player per game). Deliberately *not* in `packages/kit` yet: the shelf rule is that shared code
+  moves there the second time it is needed, and there is one game.
+- **When it runs:** only when served over http(s) and only in a production build
+  (`import.meta.env.PROD`), so tests and `npm run dev` stay offline. Force it with
+  `localStorage['pnp:cloud'] = 'on'`.
+- **Pushes are debounced** three seconds and coalesced, because the app saves on every state change
+  - thousands a game - and flushed on `pagehide`/`visibilitychange`.
+- **Two rules that are easy to break:**
+  1. The load-time comparison uses the meta **as it was at mount** (`bootMeta`), because the save
+     effect stamps a fresh `savedAt` on mount and would otherwise make this browser always look
+     newest - which silently disables the whole feature.
+  2. Nothing is sent between load and the decision (`holdPush`/`releasePush`). Otherwise the save
+     written on mount is pushed three seconds later and overwrites a newer shift from another
+     device before the player has answered the prompt.
+- **`decide()` in `cloudSave.ts` is the whole policy** and is pure, so the awkward cases are
+  testable: push, adopt silently over an untouched game, or ask.
+
 ## Code architecture map
 
 **This is not a hand-written single HTML file.**

@@ -1242,3 +1242,8 @@ button.die {
   justify-content: flex-end;
   margin-top: 16px;
 }
+
+/* "Another device has a newer game" - narrow, and never auto-dismissed by clicking away. */
+.modal.conflict {
+  max-width: 520px;
+}

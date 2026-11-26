@@ -69,7 +69,9 @@ export async function handleApi(
     const row = await env.SAVES.prepare('SELECT state, saved_at, device FROM saves WHERE user_email = ? AND game = ?')
       .bind(identity.email, game)
       .first<SaveRow>();
-    if (!row) return json({ error: 'no save' }, 404);
+    // 204, not 404: "you have no save yet" is a normal answer, and a 404 would log a console
+    // error on every fresh load.
+    if (!row) return new Response(null, { status: 204, headers: { 'cache-control': 'no-store' } });
     return json({ state: JSON.parse(row.state), savedAt: row.saved_at, device: row.device });
   }
 

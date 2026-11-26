@@ -30,6 +30,20 @@ import { AccidentTable, ActionMenu, BuildPicker, DicePanel, type Pending } from 
 import { Help } from './Help';
 import { NewGameDialog } from './NewGameDialog';
 import { LEGACY_SAVE_KEY, SAVE_KEY } from './save';
+import {
+  ago,
+  cloudEnabled,
+  decide,
+  deviceLabel,
+  fetchRemote,
+  flushPush,
+  holdPush,
+  readMeta,
+  releasePush,
+  schedulePush,
+  writeMeta,
+  type RemoteSave,
+} from './cloudSave';
 
 /** The panels that share one tabbed area on tablet width and stack on a laptop. */
 const TABS = [
@@ -57,6 +71,9 @@ function save(s: GameState) {
   } catch {
     /* storage unavailable: play without saving */
   }
+  const meta = { savedAt: Date.now(), device: deviceLabel() };
+  writeMeta(meta);
+  if (cloudEnabled()) schedulePush(s, meta);
 }
 
 export function App() {
@@ -71,8 +88,45 @@ export function App() {
   const [help, setHelp] = useState(() => !load());
   const [tab, setTab] = useState<TabId>('depot');
   const [newGameOpen, setNewGameOpen] = useState(false);
+  const [conflict, setConflict] = useState<RemoteSave | null>(null);
+  // Read once, before the save effect below stamps a fresh time on mount: the comparison needs to
+  // know when this browser's shift was last saved, not when this page was opened.
+  const [bootMeta] = useState(() => readMeta());
 
   useEffect(() => save(state), [state]);
+  // One look at the cloud copy on load, then flush anything queued when the page goes away.
+  useEffect(() => {
+    if (!cloudEnabled()) return;
+    let cancelled = false;
+    holdPush();
+    void (async () => {
+      const remote = await fetchRemote();
+      if (cancelled) return;
+      const verdict = decide(state, bootMeta, remote);
+      if (verdict === 'adopt' && remote) {
+        const migrated = migrateSave(remote.state);
+        if (migrated) {
+          setState(migrated);
+          setHistory([]);
+        }
+      } else if (verdict === 'ask' && remote) {
+        setConflict(remote); // stays held until the player answers
+        return;
+      }
+      releasePush();
+    })();
+    const onLeave = () => flushPush();
+    window.addEventListener('pagehide', onLeave);
+    document.addEventListener('visibilitychange', onLeave);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('pagehide', onLeave);
+      document.removeEventListener('visibilitychange', onLeave);
+    };
+    // Deliberately once, on mount: later changes are pushed, not pulled.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 3500);
@@ -367,6 +421,52 @@ export function App() {
       )}
 
       {help && <Help onClose={() => setHelp(false)} />}
+
+      {conflict && (
+        <div className="modal-backdrop">
+          <div className="modal conflict" role="dialog" aria-label="Another device has a newer game">
+            <header>
+              <h2>Newer game elsewhere</h2>
+            </header>
+            <p>
+              <b>{conflict.device ?? 'Another device'}</b> saved a shift on day{' '}
+              {Math.min(conflict.state.day + 1, TOTAL_DAYS)}, {ago(conflict.savedAt)}.
+            </p>
+            <p>
+              This browser is on day {Math.min(state.day + 1, TOTAL_DAYS)}
+              {bootMeta ? `, last saved ${ago(bootMeta.savedAt)}` : ''}.
+            </p>
+            <p className="muted">Loading the other one replaces the shift open here.</p>
+            <div className="btn-row end">
+              <button
+                className="btn"
+                onClick={() => {
+                  setConflict(null);
+                  releasePush(); // ours wins, so it may now be sent
+                }}
+              >
+                Keep this one
+              </button>
+              <button
+                className="btn btn-go"
+                onClick={() => {
+                  const migrated = migrateSave(conflict.state);
+                  if (migrated) {
+                    setState(migrated);
+                    setHistory([]);
+                    setPending(null);
+                    setDieSel(null);
+                  }
+                  setConflict(null);
+                  releasePush();
+                }}
+              >
+                Load it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {newGameOpen && (
         <NewGameDialog

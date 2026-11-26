@@ -21,22 +21,20 @@ How it works is described in `CLAUDE.md`. What is left:
 - **The Depot tab is tight.** It fits, but the Depot art is the one panel that would gain most from
   more room; consider giving it the full width of the right column, or its own full-screen view.
 
-### 2. Saves that follow you between devices
+### 2. Finish cross-device saves
 
-Decided 2026-11-26, not started. `localStorage` stays the primary store, so the offline
-`recycled.html` and a dropped connection keep working; on top of it, sync to **D1** through a small
-Worker script (the site is assets-only today). No new login is needed: Access already puts the
-player's identity in the `Cf-Access-Jwt-Assertion` header, so the Worker keys saves by email.
+**Built on 2026-11-26** and working end to end against a local Worker: a shift played in one browser
+reaches another, and a browser with its own game in progress is asked rather than overwritten. How
+it works is in `CLAUDE.md`. What is left:
 
-Two things to get right:
-
-- **Debounce the writes.** `App.tsx` saves on every state change, which is 1,500–3,000 writes a game.
-  Sync at end of turn, or after a couple of idle seconds.
-- **Resolve conflicts** by `savedAt`, asking before replacing a newer game on the other device.
-
-A save is small — measured 4.4 KB at day 10, 9.5 KB at day 30, 13 KB at day 44 — so size is not a
-constraint. Build it in `packages/kit`: every game on the shelf wants it. Keep a manual
-Export/Import (file or clipboard) as a parachute, since it's the only route that works offline.
+- **(you) Confirm it on the real site.** Everything so far used `wrangler dev` with a `DEV_EMAIL`
+  stand-in, so the **real Access assertion path has never run**. Open the game on the Mac, play a
+  turn, then open it on the iPad and check the shift is there.
+- **Export / Import save.** The parachute: a file or clipboard copy, the only route that works from
+  a `file://` copy or with no network.
+- **Move it to `packages/kit`** when a second game needs it - not before.
+- The Worker's D1 row is never pruned. Harmless at one row per game, worth revisiting if the shelf
+  ever holds many games.
 
 ### 3. Re-cut the art
 

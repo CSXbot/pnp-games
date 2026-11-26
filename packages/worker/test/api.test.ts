@@ -57,9 +57,9 @@ it('says who you are', async () => {
   expect(await res.json()).toEqual({ email: 'owner@example.com' });
 });
 
-it('404s when there is no save yet', async () => {
+it('answers 204, not 404, when there is no save yet', async () => {
   const res = await handleApi(new Request(url('/api/save?game=recycled')), env());
-  expect(res.status).toBe(404);
+  expect(res.status).toBe(204);
 });
 
 it('round-trips a save', async () => {

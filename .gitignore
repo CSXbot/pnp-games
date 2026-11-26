@@ -6,3 +6,4 @@ sources/*
 !sources/.gitkeep
 .screens/
 .wrangler/
+*.swp

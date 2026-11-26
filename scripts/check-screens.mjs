@@ -56,6 +56,12 @@ function serve(dir) {
       return;
     }
     if (file.endsWith(path.sep)) file = path.join(file, 'index.html');
+    // dist/ has no API behind it. Answer the save endpoint the way the Worker answers an
+    // empty one, so a page that syncs doesn't look like a broken page.
+    if (url.pathname.startsWith('/api/')) {
+      res.writeHead(204).end();
+      return;
+    }
     // The browser asks for /favicon.ico on its own; a missing one is not a page error.
     if (url.pathname === '/favicon.ico' && !existsSync(file)) {
       res.writeHead(204).end();
