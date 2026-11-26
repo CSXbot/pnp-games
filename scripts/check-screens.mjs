@@ -19,7 +19,9 @@ import { chromium } from 'playwright-core';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
-const shots = path.join(root, '.screens');
+// Its own subfolder: this run wipes it, and anything else kept under .screens/ (art candidates,
+// comparisons) has to survive that.
+const shots = path.join(root, '.screens', 'shots');
 
 const SIZES = [
   { name: 'laptop', width: 1440, height: 900 },

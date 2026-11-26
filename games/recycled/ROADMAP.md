@@ -49,14 +49,19 @@ building tile is **not** one of them: that ground is part of the building art.
 3. **The Depot is a lazy rectangular cut** through a machine that is not rectangular. It slices the
    shape and drags in neighbouring sheet content at the top left. The cut has to follow the machine's
    outline, pipes and rounded corners included.
-4. **The launch manual is blurry**, small print smeared: it is a small region of `depot.webp`
-   (2345x1335 for the whole strip) shown large. Extract it at a higher dpi, sized to whatever the
-   finished layout actually displays.
+4. **The launch manual is blurry**, small print smeared. **Not fixable by re-extracting:** the
+   source PDF holds a single 300 ppi JPEG for the whole A4 page (2480x3508, compression ratio ~4%),
+   so the manual region is only a few hundred pixels and 600 dpi would just upscale it. The options
+   are, in order: **(you)** an uncompressed copy of the sheet if the publisher ships one (these files
+   are all named `-compressed`); show the manual smaller; or redraw just the manual's tick boxes and
+   headings in SVG over a blurred background, which is what the pen marks already do. A generative
+   sharpen is **not** an option here - the manual is text, and a model would invent wording.
 
 **The board and the Depot carry geometry** (`board.json`'s grid, and the Depot's measured pen-mark
-coordinates), so they are cleaned by inpainting in code; a generative redraw would move the grid.
-Re-run `tools/calibrate_grid.py` if a crop moves. Tiles, cards, icons and the logo carry no geometry,
-so generative cleanup is allowed there.
+coordinates). That does not put them off-limits to a model - it means **masked edits only**, with a
+pixel diff proving nothing outside the mask moved, and no model-generated text. Defects 1 and 3 are
+both edge work, so both are good candidates. Re-run `tools/calibrate_grid.py` if a crop moves.
+Tiles, cards, icons and the logo carry no geometry and can be regenerated freely.
 
 **Do it after the layout**, which fixes the sizes these assets are displayed at - defect 4 is a
 resolution problem, and the iPad layout makes the Depot panel bigger.

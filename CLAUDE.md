@@ -218,9 +218,27 @@ Triage every visual:
 
    **Only two kinds of image carry geometry:** the board (its grid is measured into `board.json` and
    the UI stretches the image to match) and the Depot (its pen-mark coordinates are measured in its
-   own pixel space). Those two must be cleaned by **inpainting in code**, because a generative redraw
-   moves the grid. Everything else - building tiles, cards, icons, logo, banner - carries no geometry,
-   so generative cleanup is allowed there and usually beats a hand-written mask.
+   own pixel space). Everything else - building tiles, cards, icons, logo, banner - carries no
+   geometry, so generative cleanup is allowed there freely and usually beats a hand-written mask.
+
+   For the two that do carry geometry, the rule is **not** "never touch them with a model". It is:
+
+   - **Never regenerate the whole image.** A redraw shifts the grid, and every tile, storage circle
+     and pen mark then sits in the wrong place.
+   - **Masked edits are fine**, and often the best tool: send the real image plus a mask covering
+     only the part being fixed - a ragged outer edge, a cut that sliced through a machine - so the
+     measured pixels are never in play.
+   - **Prove it, don't assume it.** After any edit, diff the result against the original *outside*
+     the mask. If a pixel moved there, reject it. An edit you can't verify is a redraw.
+   - **Never let a model regenerate text.** The Depot's manual and the printed labels are real text,
+     and a model will replace them with plausible invented wording. Invented rules on a game
+     component are far worse than blurry ones.
+
+   **Resolution has a ceiling, and it is the PDF.** These sheets hold one 300 ppi JPEG per A4 page
+   (2480x3508, heavily compressed). Re-extracting at 600 dpi upscales; it recovers nothing. If an
+   element is too soft at the size the layout shows it, the fix is a better source file from the
+   publisher, showing it smaller, or redrawing that one element in SVG - not a bigger number in
+   `extract_art.py`.
 
    **Cuts follow the shape of the thing.** A machine with rounded corners and pipes is not a
    rectangle; cutting a straight box through it is a bug, not a simplification.
