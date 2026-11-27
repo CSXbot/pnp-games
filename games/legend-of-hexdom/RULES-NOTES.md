@@ -131,9 +131,9 @@ closed." So:
 - **Anything the player does closes the window:** Explore, Adventure, a Boss, taking a Gift, or
   choosing to use another skill. Example: a Warrior travels, Explores for 2 hearts, and can no longer
   use Magic Blood that round.
-- **A skill that fires by itself does not close it** (the consultant's stated assumption, put to the
-  Game Director): Overcoming, set off by Magic Blood's own heart, leaves the run open, as p107 pairs
-  the two.
+- **A skill that fires by itself does not close it** - confirmed by the Game Director directly: "I
+  think it makes sense. Not from the wording point of view, just common sense." Overcoming, set off by
+  Magic Blood's own heart, leaves the run open; p107 pairs the two.
 
 **"Before travelling" is a different rule** - the Game Director, directly, 2026-11-27: ""Before
 traveling" read it as "the next action have to be traveling". If traveling is not possible, neither
