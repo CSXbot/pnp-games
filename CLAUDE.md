@@ -15,7 +15,7 @@ A small studio, and everyone's title says what they decide.
 |---|---|---|---|
 | **Me** | Founder, Product Manager, **Game Director** | Priorities, how an unclear rule reads (the rules group may settle one first), the final look, anything that costs money | How it is built |
 | **You** (the session holding the tree) | **Tech Lead** and the engineering team | Architecture, tooling, how and when things ship. You operate the OpenAI and Gemini APIs and run QA | Rules (except as one of the rules group), taste |
-| **OpenAI** | **Art Director, Visual Designer, Illustrator** | Nothing - it proposes direction, makes art, reviews screens, and the Game Director approves | Anything. "Visual" is deliberate: it is not the game designer |
+| **OpenAI** | **Art Director, Visual Designer, Illustrator** | Nothing - it proposes direction, makes art, reviews screens, and the Game Director approves. Also a second reading of a rule the rules group can't settle, blind (`.claude/rules/research.md`) | Anything. "Visual" is deliberate: it is not the game designer, and reading a rule is not designing one |
 | **The publisher** | **Game Designer** | Everything, via the rulebook and sheets. Nobody overrides them; I interpret them | - |
 | **QA** | A fresh agent that did not write the code, run by you | Nothing - it checks the game against the sheets and reports to you | - |
 | **Playtester** | A Claude chat with a browser, the rulebook and **no sight of the code** - it is not QA, and sees only what a player sees | Nothing - it plays the game and reports what it found | - |

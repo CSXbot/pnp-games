@@ -31,6 +31,14 @@ Legend of Hexdom the same day:
 - **Verify every quote on the page itself** before it reaches the Game Director, and write down
   where: `research/verification.md`. Deep Research's links are Google redirects, and one of its post
   IDs was a 404.
+- **When the group is still split, ask the Art Director for one more reading** before the question
+  goes to the Game Director (their decision, 2026-11-27: "That's what humans do"). Its value is being
+  a different model: give it the Researcher's blind pack - the whole rulebook PDF, the sheets, the
+  cards and the neutral question - not the art notebook, no proposals, and no hint of who holds which
+  reading. Its answer is one more reading with reasons, not a vote: an argument that persuades the
+  group settles it; if the group is still split, the question goes up with every reading attached.
+  On Hexdom's question A all three of the group leaned "optional" and the Game Director ruled
+  "mandatory": more opinions find arguments, they don't predict the Game Director.
 - **Write absolute paths.** Relative output from a run started at the repo root landed there.
 - Briefs, readings, raw reports and verification all live in `games/<slug>/research/`, because the
   Researcher has no memory between jobs.
