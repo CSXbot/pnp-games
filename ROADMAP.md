@@ -74,8 +74,22 @@ didn't say where consultants are listed. **Still open, all of them older than th
 
 ## Housekeeping
 
+- **Keep `claude -p` probes out of the working tree.** On 2026-11-27 a `claude -p` session spawned
+  from this one to measure start-up context committed `.claude/settings.json` and deleted a
+  roadmap item by itself, and the push deployed. Harmless content, but it was not asked for and
+  not reviewed: a print-mode session inherits this repo's "commit and push freely" instruction and
+  acts on whatever it finds uncommitted. Run probes with `--allowedTools` limited to reads, or from
+  a scratch directory, or with a clean tree.
 - **A shelf icon of its own.** The cosmonaut helmet is Recycled's identity and currently serves both
   pages. When a second game lands, the shelf wants its own and each game links its own.
 - **`packages/kit`.** Save sync, the new-game dialog, the top bar and display settings are all shelf
   features living in one game. They move the second time a game needs them, not the first - but the
   stage map has no step for that extraction, and game 2's stage 3 is where it will land.
+
+**Done 2026-11-27: the claude.ai connectors are off for this repo** (`.claude/settings.json`,
+`disableClaudeAiConnectors: true`), on the Game Director's word. Nothing here uses one - Cloudflare
+goes through `npx wrangler` and a token, OpenAI through `scripts/art.mjs` - so it is free either
+way. The saving was measured by the consultant at 238 tools and ~290,000 tokens of start-up context
+against 22 and ~15,700. **I could not reproduce that**: warm prompt cache dominated both halves of
+my A/B and the tool count came back the same with the setting on and off. The number is theirs, not
+mine, and `19fcc2f`'s commit message states it as established fact when it isn't.

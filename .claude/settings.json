@@ -1,4 +1,4 @@
 {
-  "_comment": "Nothing in this repo uses a claude.ai connector: Cloudflare goes through `npx wrangler` and a token, OpenAI through scripts/art.mjs. Leaving them on cost every session here 238 tool definitions and ~290,000 tokens of start-up context before any work began - about $2.40 for a single headless turn, against $0.13 and 22 tools with them off. Measured 2026-11-27; the Game Director's call the same day. Delete this file to get them back, or toggle per server with /mcp.",
+  "_comment": "Nothing in this repo uses a claude.ai connector: Cloudflare goes through `npx wrangler` and a token, OpenAI through scripts/art.mjs. Off is therefore free. The consultant measured a large start-up saving from this (238 tools and ~290,000 tokens against 22 and ~15,700); I could not reproduce it here - warm prompt cache dominated both of my runs - so treat the size of the saving as unverified. The Game Director asked for it on 2026-11-27. Delete this file to get the connectors back, or toggle per server with /mcp.",
   "disableClaudeAiConnectors": true
 }
