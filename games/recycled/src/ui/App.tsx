@@ -28,6 +28,7 @@ import { ART, cardArt } from './art';
 import { ResIcon } from './Icons';
 import { AccidentTable, ActionMenu, BuildPicker, DicePanel, type Pending } from './TurnPanel';
 import { Help } from './Help';
+import { readDisplay } from './display';
 import { NewGameDialog } from './NewGameDialog';
 import { BROKEN_KEY, LEGACY_SAVE_KEY, SAVE_KEY } from './save';
 import {
@@ -104,6 +105,7 @@ export function App() {
   // Read once, before the save effect below stamps a fresh time on mount: the comparison needs to
   // know when this browser's shift was last saved, not when this page was opened.
   const [bootMeta] = useState(() => readMeta());
+  const [display] = useState(() => readDisplay());
 
   useEffect(() => save(state), [state]);
   // One look at the cloud copy on load, then flush anything queued when the page goes away.
@@ -317,7 +319,7 @@ export function App() {
         <div className="col col-map">
           <StockBar state={state} />
           <div className="map-wrap">
-            <HexMap state={state} targets={targets} onHexClick={onHexClick} onHover={setHover} hover={hover} />
+            <HexMap state={state} targets={targets} onHexClick={onHexClick} onHover={setHover} hover={hover} display={display} />
             {pending && (
               <div className="map-prompt" role="status">
                 {pending.joining

@@ -14,6 +14,15 @@ const file = (name: string) => files[`../assets/art/${name}.webp`];
 
 export const ART = { banner, logo };
 
+/**
+ * Cut-outs: the publisher's illustration with the paper removed, so pen marks sit on the hex
+ * rather than on an opaque rectangle. One per building eventually; `tileArt` is the fallback
+ * until they all exist.
+ */
+const cutouts = import.meta.glob('../assets/cutouts/*.png', { eager: true, import: 'default' }) as Record<string, string>;
+export const cutoutArt = (t: BuildingType): string | undefined =>
+  Object.entries(cutouts).find(([k]) => k.endsWith(`/${t}.png`))?.[1];
+
 export const tileArt = (t: BuildingType) => file(`tile-${t}`);
 export const cardArt = (t: BuildingType) => file(`card-${t}`);
 export const iconArt = (r: Res | 'ap') => file(`icon-${r}`);

@@ -1247,3 +1247,17 @@ button.die {
 .modal.conflict {
   max-width: 520px;
 }
+
+/* ------------------------------------------------------------------ pen marks
+   The sheet's own language: a legend symbol over the illustration, open rings for units
+   gained, filled rings for units spent, one contour around a joined pair. */
+.ink {
+  fill: #171310;
+  fill-rule: evenodd;
+}
+.link-contour {
+  fill: none;
+  stroke: #171310;
+  stroke-width: 3.2;
+  stroke-linejoin: round;
+}

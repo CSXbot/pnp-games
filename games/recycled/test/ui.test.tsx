@@ -178,9 +178,15 @@ function checkScreen(s: GameState, where: string) {
   for (const b of s.buildings) {
     const el = $(`[data-building="${b.id}"]`)!;
     if (b.complete) {
-      expect($$('.slot-used', el).length, msg(`${b.type} used`)).toBe(b.used);
-      expect($$('.slot-full', el).length, msg(`${b.type} stock`)).toBe(b.drawn - b.used);
-      expect($$('.slot-empty', el).length, msg(`${b.type} empty`)).toBe(capacity(b) - b.drawn);
+      // Default display: stock is drawn as the sheet draws it. An open ring per unit held, a
+      // filled one per unit spent, and nothing at all where no circle was ever drawn - so the
+      // blank positions are checked as capacity minus what is painted, not as elements.
+      const open = $$('[data-ink-stock="available"]', el).length;
+      const spent = $$('[data-ink-stock="spent"]', el).length;
+      expect(open, msg(`${b.type} open rings`)).toBe(b.drawn - b.used);
+      expect(spent, msg(`${b.type} spent rings`)).toBe(b.used);
+      expect(capacity(b) - (open + spent), msg(`${b.type} blank positions`)).toBe(capacity(b) - b.drawn);
+      expect($$('[data-ink-stock]', el).length, msg(`${b.type} no stray stock marks`)).toBe(b.drawn);
     } else {
       expect(text($('.b-steps', el)), msg('setup steps')).toBe(`SETUP ${b.step}/${BUILDINGS[b.type].setupSteps}`);
     }

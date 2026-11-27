@@ -1,5 +1,10 @@
 import { useMemo } from 'react';
 import { BUILDINGS } from '../data/buildings';
+import marks from './ink/assets/marks.json';
+import startingAnchors from './ink/assets/planet1-starting-anchors.json';
+import { buildingInkProps, markFor } from './ink/ink.mjs';
+import { sharedContour } from './ink/shared-contour.mjs';
+import { type Display } from './display';
 import type { BuildingType } from '../data/types';
 import {
   byId,
@@ -11,7 +16,7 @@ import {
   type GameState,
 } from '../engine/game';
 import { hexCorners, hexToPixel } from '../engine/hex';
-import { BOARDS, tileArt } from './art';
+import { BOARDS, tileArt, cutoutArt } from './art';
 import { ResIcon } from './Icons';
 
 const SIZE = 40;
@@ -37,12 +42,14 @@ export function HexMap({
   onHexClick,
   onHover,
   hover,
+  display,
 }: {
   state: GameState;
   targets: Set<string> | null;
   onHexClick: (hex: string) => void;
   onHover: (hex: string | null) => void;
   hover: string | null;
+  display: Display;
 }) {
   const hexes = useMemo(() => [...hexesOf(state).values()], [state.mapId]);
   const art = BOARDS[state.mapId];
@@ -125,7 +132,14 @@ export function HexMap({
         );
       })}
       {state.buildings.map((b) => (
-        <Building key={b.id} b={b} target={!!targets?.has(b.hex)} dim={!!targets && !targets.has(b.hex)} />
+        <Building
+          key={b.id}
+          b={b}
+          target={!!targets?.has(b.hex)}
+          dim={!!targets && !targets.has(b.hex)}
+          mapId={state.mapId}
+          display={display}
+        />
       ))}
       {/* Shared contour between joined buildings */}
       {links.map((b) => {
@@ -134,6 +148,11 @@ export function HexMap({
         const lerp = (t: number) => ({ x: a.x + (c.x - a.x) * t, y: a.y + (c.y - a.y) * t });
         const p1 = lerp(0.36);
         const p2 = lerp(0.64);
+        if (display.buildings === 'pen') {
+          // One outline around both hexes, as the sheet draws a joined pair.
+          const d = sharedContour(hexCorners(a.x, a.y, SIZE), hexCorners(c.x, c.y, SIZE));
+          return <path key={b.id} className="link-contour" d={d} />;
+        }
         return <line key={b.id} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} className="link" />;
       })}
       {/* Click/hover layer on top of buildings */}
@@ -203,7 +222,61 @@ function Terrain({ terrain, x, y }: { terrain: string; x: number; y: number }) {
   }
 }
 
-function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: boolean }) {
+type MarkAtlas = Record<string, { d: string; slots?: number[][] }>;
+type Anchors = Record<string, { type: string; preprinted: number; anchors: number[][] }>;
+
+/**
+ * Pen marks in the kit's 150x160 cell space, scaled onto the game's hex. Ring positions for the six
+ * printed starting cells were measured off the sheet; everywhere else they come from the legend.
+ */
+function Ink({ b, mapId, symbol, stock }: { b: BuildingState; mapId: string; symbol: boolean; stock: boolean }) {
+  const atlas = marks as MarkAtlas;
+  const printed = mapId === 'planet1' ? (startingAnchors as Anchors)[b.hex] : undefined;
+  const anchors = printed?.type === b.type ? printed.anchors : atlas[b.type]?.slots;
+  if (!anchors) return null;
+  const props = buildingInkProps(b.type, b, anchors);
+  const glyph = symbol ? markFor(b.type, props.completedSteps) : null;
+  const { x, y } = hexToPixel(b.hex, SIZE);
+  const ring = (kind: 'openRing' | 'spentRing', positions: readonly (readonly number[])[]) =>
+    positions.map(([px, py]) => (
+      <path
+        key={`${kind}${px},${py}`}
+        data-ink-stock={kind === 'openRing' ? 'available' : 'spent'}
+        d={atlas[kind].d}
+        transform={`translate(${px} ${py}) scale(.43) translate(-34 -37)`}
+      />
+    ));
+  return (
+    <g
+      className="ink"
+      transform={`translate(${x},${y}) scale(${(Math.sqrt(3) * SIZE) / 150},${(2 * SIZE) / 160}) translate(-75,-80)`}
+      pointerEvents="none"
+      aria-hidden="true"
+    >
+      {glyph && <path className="ink-mark" d={atlas[glyph].d} />}
+      {stock && b.complete && (
+        <>
+          {ring('openRing', props.slots)}
+          {ring('spentRing', props.spentSlots)}
+        </>
+      )}
+    </g>
+  );
+}
+
+function Building({
+  b,
+  target,
+  dim,
+  mapId,
+  display,
+}: {
+  b: BuildingState;
+  target: boolean;
+  dim: boolean;
+  mapId: string;
+  display: Display;
+}) {
   const def = BUILDINGS[b.type];
   const { x, y } = hexToPixel(b.hex, SIZE);
   const cap = capacity(b);
@@ -212,7 +285,8 @@ function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: 
   const slotR = cap > 6 ? 4.4 : 5.2;
   const steps = def.setupSteps ?? 0;
   const clip = `clip-b${b.id}`;
-  const img = tileArt(b.type);
+  const cut = cutoutArt(b.type);
+  const img = cut ?? tileArt(b.type);
   return (
     <g
       data-building={b.id}
@@ -222,7 +296,7 @@ function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: 
       <clipPath id={clip}>
         <polygon points={hexCorners(x, y, SIZE - 2)} />
       </clipPath>
-      <polygon points={hexCorners(x, y, SIZE - 2)} className="b-bg" />
+      {!cut && <polygon points={hexCorners(x, y, SIZE - 2)} className="b-bg" />}
       {img && (
         <image
           href={img}
@@ -230,12 +304,14 @@ function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: 
           y={y - SIZE * 1.02}
           width={SIZE * 2}
           height={SIZE * 1.8}
-          preserveAspectRatio="xMidYMid slice"
-          clipPath={`url(#${clip})`}
-          className="b-art"
+          preserveAspectRatio={cut ? 'xMidYMid meet' : 'xMidYMid slice'}
+          clipPath={cut ? undefined : `url(#${clip})`}
+          className={cut ? 'b-art b-cut' : 'b-art'}
         />
       )}
-      <polygon points={hexCorners(x, y, SIZE - 3)} className="b-outline" />
+      {!cut && <polygon points={hexCorners(x, y, SIZE - 3)} className="b-outline" />}
+      <Ink b={b} mapId={mapId} symbol={display.buildings === 'pen'} stock={display.stock === 'pen'} />
+      {display.buildings === 'modern' && (
       <g className="b-ribbon">
         <rect x={x - 25} y={y + 12} width={50} height={11} rx={2} />
         <ResIcon r={res && b.type === 'cryoTank' ? res : def.icon} size={11} x={x - 24.5} y={y + 12} />
@@ -249,12 +325,14 @@ function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: 
           {SHORT[b.type]}
         </text>
       </g>
-      {!b.complete && (
+      )}
+      {display.buildings === 'modern' && !b.complete && (
         <text x={x} y={y - 4} textAnchor="middle" className="b-steps">
           SETUP {b.step}/{steps}
         </text>
       )}
-      {b.complete &&
+      {display.stock === 'modern' &&
+        b.complete &&
         Array.from({ length: cap }, (_, i) => {
           const a = (-90 + (360 / cap) * i) * (Math.PI / 180);
           const cx = x + ringR * Math.cos(a);
