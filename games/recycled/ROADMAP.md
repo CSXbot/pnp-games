@@ -21,6 +21,48 @@ How it works is described in `CLAUDE.md`. What is left:
 - **The Depot tab is tight.** It fits, but the Depot art is the one panel that would gain most from
   more room; consider giving it the full width of the right column, or its own full-screen view.
 
+### 1b. Draw the game the way the sheet does
+
+Owner direction, 2026-11-27, from ChatGPT's art kit and the review session's proposal
+(`claude_exchange/2026-11-27 pnp-games tooling proposal.md`). **This supersedes "the illustrations
+are done":** the problem was never image sharpness, it was that we invented a visual language.
+
+**Verified against a 300 dpi crop of the printed starting cells** (`.screens/art/sheet1-starting-cells.png`):
+on paper a building is its **pen symbol from the legend, drawn over the printed illustration**; a
+unit gained is an **open ring** at a fixed position; a unit spent is **that ring filled in**; a
+joined pair gets **one heavy contour around both hexes**. The web game draws an opaque tile, a name
+ribbon, evenly spaced pips and a short link bar - none of which are on the sheet.
+
+**Two independent display settings** (owner's decision), so all four pairs must work. No animation.
+
+| Setting | "Pen marks" | "Modern" | Default |
+|---|---|---|---|
+| Buildings | legend pen symbol over the cut-out illustration; setup stages as the kit's stage symbols; joined pair gets one contour | cut-out illustration with its name label; setup as text; joined pair keeps the short bar | Modern |
+| Stock | open ring appears when gained, filled in when spent, unused positions blank | today's ring of dots: spent / available / empty | Pen marks |
+
+Keep the settings **out of `GameState`** - a per-device display preference, so saves stay version 1
+and sync is untouched.
+
+**Vendored already:** `src/ui/ink/` (traced marks, projection, shared contour) and the kit's one
+supplied cut-out at `src/assets/cutouts/oxygenPlant.png`.
+
+**The work, in order:**
+
+1. Wire `BuildingInk` + `sharedContour` into `HexMap.tsx` behind the settings, mounted in the
+   measured cell (`sqrt(3)*SIZE/150` by `2*SIZE/160`, anchored at 75,80). Render the six printed
+   starting cells and **look at them at real play size** - a hex is about 60-110 px, and how the
+   symbols read at that size is the one thing nobody has checked.
+2. **Eleven more cut-outs.** Only the Oxygen Plant is supplied. Keep the publisher's pixels: the
+   model supplies the silhouette only, colour comes from the existing `tile-*.webp` crops, and it is
+   provable the same way as a masked edit - compare pixels inside the silhouette.
+3. `checkScreen`: keep `.slot-used` / `.slot-full` / `.slot-empty` for "Modern", add the kit's
+   `data-ink-stock` counts for "Pen marks".
+4. Run the kit's two replays (six saves) and its review jobs on the integrated build.
+
+**Cost to be honest about:** four combinations doubles the visual QA surface. Test the default pair
+properly, smoke the other three. **Don't delete `tile-*.webp` until the cut-outs ship** - they are
+the colour source for making them.
+
 ### 2. Automatrons: offer them, don't spend them silently
 
 Owner rulings 10 and 3, made 2026-11-26, not yet implemented. The Laboratory card says an Automatron
