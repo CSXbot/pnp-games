@@ -16,6 +16,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+import cv2
 import numpy as np
 from PIL import Image
 
@@ -23,15 +24,36 @@ GAME = Path(__file__).resolve().parent.parent
 ART = GAME / 'src/assets/art'
 OUT = GAME / 'src/assets/cutouts'
 CLIENT = GAME.parent.parent / 'scripts/art.mjs'
+# Mattes are cached so refining the local step costs nothing. Delete one to re-ask the model.
+CACHE = GAME.parent.parent / '.screens/art/mattes'
 
 PROMPT = (
-    'Isolate the building from its ground. Keep the building, its roof, walls, steps, railings, '
-    'masts and any attached structures exactly as they are, in the same position, at the same '
-    'scale, with the same framing. Delete everything that is not the building: the orange sand, '
-    'the cast shadow on the ground, dust, scattered debris and loose rocks. The removed area must '
-    'be fully transparent. Do not redraw, restyle, sharpen or recolour the building itself. Do not '
-    'add anything. No text.'
+    'Cut the building out so that it stands on nothing at all. Keep the building, its roof, walls, '
+    'steps, railings, masts and any attached structures exactly as they are, in the same position, '
+    'at the same scale, with the same framing. '
+    'EVERYTHING that is not the building itself must be fully transparent, with no exceptions: the '
+    'orange sand and soil it stands on, the shadow it casts on that ground, the patch of ground '
+    'directly beneath it, dust, debris and loose rocks. Do not leave a halo, a shadow pool or any '
+    'orange fringe around the base - transparency must run right up to where the structure meets '
+    'the ground. Do not redraw, restyle, sharpen or recolour the building itself. Do not add '
+    'anything. No text.'
 )
+# A cut-out that keeps this much of the printed sand has kept the ground or the cast shadow.
+# The kit's hand-traced reference scores about 8 percent.
+MAX_SAND_PCT = 12
+
+# The gates are heuristics: they flag an asset for a human look, and two buildings were looked at
+# and judged fine. Each exception says why, so it can be re-argued rather than inherited blindly.
+OVERRIDES = {
+    'rover': dict(
+        trim=False, max_sand=25,
+        reason="its own bodywork is tan, so the sand test counts the vehicle; trimming ate holes in the roof",
+    ),
+    'transceiver': dict(
+        min_coverage=8,
+        reason='a genuinely small building in a large tile, so 9% of the tile is the whole of it',
+    ),
+}
 
 
 def pad_square(tile: Image.Image) -> tuple[Image.Image, int, int]:
@@ -47,38 +69,83 @@ def pad_square(tile: Image.Image) -> tuple[Image.Image, int, int]:
     return canvas, ox, oy
 
 
+def sand_fraction(rgba: np.ndarray) -> float:
+    """How much of what we kept is the printed ground, by `extract_art.py`'s own test: sand is
+    saturated orange, buildings are greys, whites and dark metal."""
+    rgb, a = rgba[:, :, :3].astype(float), rgba[:, :, 3]
+    vis = a > 127
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    sat = np.divide(mx - mn, np.where(mx == 0, 1, mx))
+    sand = (sat >= 0.28) & (mx >= 90) & (rgb[:, :, 0] > rgb[:, :, 2]) & vis
+    return sand.sum() / max(vis.sum(), 1)
+
+
+def trim_ground(tile: np.ndarray, kept: np.ndarray) -> np.ndarray:
+    """Drop printed ground the model left inside its silhouette.
+
+    The model gives a rough region; the publisher's own pixels decide the edge. Sand reachable from
+    outside the silhouette is ground - the cast shadow pool, the orange fringe round the base - and
+    goes. Sand enclosed by structure belongs to the building and stays, which is why this floods
+    inwards rather than subtracting every orange pixel.
+    """
+    rgb = tile.astype(float)
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    sat = np.divide(mx - mn, np.where(mx == 0, 1, mx))
+    sand = (sat >= 0.28) & (mx >= 90) & (rgb[:, :, 0] > rgb[:, :, 2])
+
+    passable = (~kept | sand).astype(np.uint8)
+    h, w = passable.shape
+    flood = np.zeros((h + 2, w + 2), np.uint8)
+    border = [(x, y) for x in range(w) for y in (0, h - 1)] + [(x, y) for y in range(h) for x in (0, w - 1)]
+    for x, y in border:
+        if passable[y, x] == 1:
+            cv2.floodFill(passable, flood, (x, y), 2)
+    return kept & (passable != 2)
+
+
 def cut(kind: str, work: Path) -> str:
     tile = Image.open(ART / f'tile-{kind}.webp').convert('RGB')
     padded, ox, oy = pad_square(tile)
     src = work / f'{kind}-in.png'
-    matte = work / f'{kind}-matte.png'
     padded.save(src)
 
-    run = subprocess.run(
-        ['node', str(CLIENT), 'edit', '--quality', 'high', '--size', '1024x1024',
-         '--background', 'transparent', '--image', str(src), '--out', str(matte), '--prompt', PROMPT],
-        capture_output=True, text=True,
-    )
+    CACHE.mkdir(parents=True, exist_ok=True)
+    matte = CACHE / f'{kind}.png'
+    run = subprocess.CompletedProcess([], 0, '', '')
+    if not matte.exists():
+        run = subprocess.run(
+            ['node', str(CLIENT), 'edit', '--quality', 'high', '--size', '1024x1024',
+             '--background', 'transparent', '--image', str(src), '--out', str(matte), '--prompt', PROMPT],
+            capture_output=True, text=True,
+        )
     if run.returncode != 0 or not matte.exists():
         return f'{kind}: FAILED - {(run.stderr or run.stdout).strip().splitlines()[-1][:90]}'
 
     side = padded.width
     alpha = Image.open(matte).convert('RGBA').split()[3]
     alpha = alpha.resize((side, side), Image.LANCZOS).crop((ox, oy, ox + tile.width, oy + tile.height))
+    rule = OVERRIDES.get(kind, {})
     kept = np.array(alpha) > 127
+    if rule.get('trim', True):
+        kept = trim_ground(np.array(tile), kept)
     coverage = kept.mean() * 100
 
     out = tile.copy()
-    out.putalpha(alpha)
+    out.putalpha(Image.fromarray((kept * 255).astype(np.uint8)))
     changed = int(((np.abs(np.array(tile).astype(int) - np.array(out.convert('RGB')).astype(int)).sum(axis=2) > 0) & kept).sum())
     if changed:
         return f'{kind}: REFUSED - {changed} publisher pixels altered inside the silhouette'
-    if not 15 <= coverage <= 85:
+    if not rule.get('min_coverage', 15) <= coverage <= 85:
         return f'{kind}: SUSPECT - keeps {coverage:.0f}% of the tile; not written, look at the matte'
+
+    sand = sand_fraction(np.array(out)) * 100
+    if sand > rule.get('max_sand', MAX_SAND_PCT):
+        return f'{kind}: GROUND LEFT - {sand:.0f}% of what it keeps is printed sand; not written'
 
     out.save(OUT / f'{kind}.webp', 'WEBP', lossless=True, quality=100, method=6)
     size = (OUT / f'{kind}.webp').stat().st_size // 1024
-    return f'{kind}: kept {coverage:.0f}%, 0 pixels altered, {size} KB'
+    note = f" [exception: {rule['reason']}]" if rule else ''
+    return f'{kind}: kept {coverage:.0f}%, sand {sand:.0f}%, 0 pixels altered, {size} KB{note}'
 
 
 def main() -> None:

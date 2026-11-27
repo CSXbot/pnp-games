@@ -34,6 +34,14 @@ art rather than redrawn art; wants rule questions raised, not silently guessed.
 
 ## Working agreements
 
+- **A card's `text` is what the card says**, allowing only icon-to-word substitution. Our readings
+  of it live in `RULES-NOTES.md`, never in the card text. The Laboratory lost the words "every
+  time" to a paraphrase, and those are the two words the owner's Automatron ruling rests on - the
+  player was reading a card that no longer justified the rule. Two paraphrases remain, both
+  harmless but both still paraphrases: the Food Plant and Amplifier say "for every" where the cards
+  say "for all", and the Transceiver text carries the owner's "(3 hexes in between)" reading.
+
+
 - Raise rule ambiguities with the owner instead of guessing, and record each answer in
   `RULES-NOTES.md`.
 - After any change: from the repo root run `npm test`, then `npm run build`, and for a UI change

@@ -139,7 +139,7 @@ export const BUILDINGS: Record<BuildingType, BuildingDef> = {
     instantLocal: 3,
     limit: 1,
     text:
-      'Allows crafting Automatrons. +3 instant local Automatrons. An Automatron can be used instead of any other resource, except Power. Once Full, research one free tech. Limit: 1 Laboratory.',
+      'Allows crafting Automatrons. +3 instant local Automatrons. An Automatron can be used every time instead of any other resources, except Power. Once Full, research one free tech. Limit: 1 Laboratory.',
   },
   workshop: {
     type: 'workshop',
