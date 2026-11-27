@@ -41,12 +41,13 @@ What that pass established and is worth keeping:
 - A cut-out is **not** hex-clipped the way a tile is, so it has to be sized to the hex or it spills
   onto its neighbours. Fixed.
 
-**Open, and the owner's call:** whether to make the other ten cut-outs at all, now that stock is
-dots rather than rings. The argument for was readability of pen rings, which no longer applies.
-What is left is a look: in `.screens/art/modern-only.png` the two cut-outs sit on the pale hex like
-the printed sheet, while the four tiles read as darker, punchier boxes that mark an occupied hex
-more plainly at a glance. Either is defensible. **Don't delete `tile-*.webp` either way** - they are
-the colour source for any cut-out.
+**Settled 2026-11-27:** the owner chose cut-outs for every building - "cleaner look". The
+readability argument had gone with the pen rings, so this is a taste decision and theirs to make.
+`tools/make_cutouts.py` does them, refusing to write any asset where a publisher pixel changed
+inside the silhouette or where the matte keeps an implausible share of the tile.
+
+**Don't delete `tile-*.webp`:** they are the colour source every cut-out is composited from, and the
+fallback for any building whose cut-out is ever withdrawn.
 
 ### 2. Automatrons: offer them, don't spend them silently
 
