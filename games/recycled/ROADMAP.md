@@ -209,6 +209,30 @@ card text, and "Days survived: 16" after a day-17 launch. Still open:
 - **Combining a locked double-1s die is untested.** The engine allows it and `SPEC.md` says so, but
   both the tests and the bot avoid that path.
 
+### 9. The single file is 2.5 MB
+
+Up from ~1.6 MB, and it is all art: 2.0 MB of the 2.5 is base64 images. It loads once and then
+works offline, so this is a cost rather than a bug - but it is worth a decision rather than drift.
+
+| | Base64 | Where it is used |
+|---|---|---|
+| Cards (12 x 530x710) | 654 KB | one 69x92 thumbnail in the inspector, and a picker fallback that can never fire now every building has a cut-out |
+| Cut-outs (12) | 499 KB | the board. Lossless on purpose: the publisher's pixels are composited through the matte and the gate proves none changed |
+| Depot | 377 KB | native resolution on purpose - the manual's small print needs every pixel |
+| Board | 252 KB | |
+| Tiles (12) | 132 KB | the documented fallback when a building has no cut-out. All twelve have one, so this never fires either |
+
+The three choices, in order of what they cost to look at:
+
+1. **Ship a small card.** A 200px card for the inspector thumbnail would save about 500 KB. The
+   full card would then exist nowhere in the build - **(you)** worth saying whether you ever want
+   to read a card at full size in the game.
+2. **Stop shipping the tiles.** Keep them in the repo (the cut-out tool composites from them) but
+   out of the bundle. Saves 132 KB and costs the fallback.
+3. **Lossy cut-outs.** Would roughly halve 499 KB, and would mean the shipped asset is no longer
+   byte-identical to the publisher's pixels the gate checked. I'd rather not, and would do 1 and 2
+   first.
+
 ## Known issues
 
 - **(you) Balance.** A careful player won by launch on **day 17 of 75** in the first playtest, which
