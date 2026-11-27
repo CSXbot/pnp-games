@@ -118,14 +118,24 @@ many as the player wants. My reasoning: some skills say "once per round", which 
 that don't say that can be used more, also rules say "at any time"." So the general rule: a skill is
 limited only where its card says so.
 
-*The windows* (settled by the tech lead and the consultant, 2026-11-27, from the Game Director's two
-principles; the Researcher was not asked): **Magic Blood** may be used any time from the Travel to
-the end of that round - between or after the main-phase actions too - because the card says only
-"After travelling", and the rulebook writes "right after" when it means immediately ("gained right
-after the Travel action", p82; "Right after traveling", p26). **Cross Training** may be used any time
-in the round before the Travel is committed, before or after a Gift taken first; by ruling B the
-Travel is an instant, so there is no "during". Example: a Warrior on 3 hearts travels, Explores for 2
-hearts (5), then pays 3 hearts for Magic +3 and starts the next Travel on 2 hearts, with Adrenaline.
+*The windows* - **amended by the Game Director, 2026-11-27**, superseding the group's first reading
+(which had Magic Blood open until the end of the round). Said to the consultant, relayed verbatim:
+"Good catch about the "window". I guess it should be "but before any other action (in general
+sense, I don't want to clash with the game terminology here) is used." It changes my ruling
+sligntly. If I use one of such skills, and then use another skill, or take an action, the window is
+closed." So:
+
+- The skills still repeat (ruling C), but as **one uninterrupted run at their moment**. **Magic
+  Blood**: right after the Travel, before anything else. **Cross Training**: before the Travel, before
+  anything else.
+- **Anything the player does closes the window:** Explore, Adventure, a Boss, taking a Gift, or
+  choosing to use another skill. Example: a Warrior travels, Explores for 2 hearts, and can no longer
+  use Magic Blood that round.
+- **A skill that fires by itself does not close it** (the consultant's stated assumption, put to the
+  Game Director): Overcoming, set off by Magic Blood's own heart, leaves the run open, as p107 pairs
+  the two.
+- **Open, with the Game Director:** an Archer who takes a Gift on a double first - may he still Cross
+  Train before travelling? Proposed default: no, the Gift closed the window.
 
 **D (Q12). Magic Berry gives one food per gain, not per point.** "Per gain, of course. It's obvious
 in the wording." Applied by the tech lead: one food for each effect that raises Magic, however many
