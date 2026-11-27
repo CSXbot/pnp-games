@@ -6,6 +6,22 @@ everything before 2026-11-27.
 
 ## 2026-11-27 · Restore the Depot frame and the launch manual
 
+**Found by the Art Director (ChatGPT), not by us, and it is the same mistake we had just fixed
+elsewhere.** Earlier the same evening the building cut-outs turned out to be clipped by our crop
+window rather than by the sheet. `DEPOT_BOX = (95, 110, ...)` was the identical error on a bigger
+component: it started *inside* the console's printed metal frame, so the frame, the corner bolts
+and the side hinges had never been extracted - and `close_depot.py` then asked a model to
+reconstruct a bottom lip when much of what was missing was simply uncropped print. **Look for the
+crop before reaching for the model.**
+
+Verified here before merging rather than taken on trust: nine template patches spanning the asset
+match the publisher's embedded JPEG at dx=0, dy=0, score 1.000, so it is pixel-exact where it is
+not repairing; the changed pixels are confined to y 1108-1482, x 503-2027, which is the lower rail
+and the corner the hex board is printed over; no lettering, checkbox or count is touched; the pen
+marks still land inside the printed cells in the enlarged view. Re-running the extractor reproduces
+the asset *pixel for pixel* - the WebP bytes differ because libwebp versions differ, so the PR's
+"byte for byte" holds on its author's machine and not on every machine.
+
 The previous crop clipped the upper metal frame and the bottom of the book. Its transparency mask also reached into the Depot title. The map covers the lower-left corner of the manual on Sheet 1, so the former inpaint blurred the binding into the Batteries label.
 
 The new outline follows the exterior. The original page supplies the title, grid, day tracks, instructions and checkboxes at their native sheet coordinates. An image edit supplied a donor for the hidden binding and paper. Its lettering was discarded. The retained riveted lip came from the preceding Depot asset. The small repair layer and the outline are in `tools/depot/`; normal extraction now applies both. The display canvas begins at sheet (0, 0) and measures 2496 × 1500.

@@ -102,9 +102,15 @@ building tile is **not** one of them: that ground is part of the building art.
    hexes.
 2. ~~**Hex outlines break.**~~ **Done:** joins are drawn under the buildings and the name ribbon
    over the stock dots; cut-outs are not hex-clipped at all.
-3. ~~**The Depot is a lazy rectangular cut.**~~ **Done 2026-11-27:** the cut follows the console's
-   own outline, and `tools/close_depot.py` reconstructs the bottom lip the hex board covers on the
-   sheet - the only reconstructed part of the art, recorded in `art/decisions.md`.
+3. ~~**The Depot is a lazy rectangular cut.**~~ **Done 2026-11-27**, in two passes. The first made
+   the cut follow the console's outline and reconstructed its bottom lip. The Art Director then
+   found that the crop box itself started *inside* the printed metal frame, so the frame, bolts and
+   hinges had never been extracted at all, and the manual's binding was being inpainted into the
+   Batteries line. The Depot is now rebuilt from the sheet's embedded JPEG in sheet coordinates,
+   with only the board-covered corner reconstructed. See `art/decisions.md`.
+   ~~**The launch manual is blurry.**~~ Largely answered by the same change: the manual is whole,
+   the binding is no longer smeared into it, and the enlarged view fits on a laptop. Item 4 below
+   stands only for the limit of the source scan itself.
 4. **The launch manual is blurry**, small print smeared. **Not fixable by re-extracting:** the
    source PDF holds a single 300 ppi JPEG for the whole A4 page (2480x3508, compression ratio ~4%),
    so the manual region is only a few hundred pixels and 600 dpi would just upscale it. The options
