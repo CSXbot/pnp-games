@@ -1417,3 +1417,21 @@ button.die {
     gap: 8px;
   }
 }
+
+/* The Depot sheet is 2345px of printed machine shown in a 460px column, so the row icons and the
+   manual's print are below reading size. Tapping enlarges it rather than shrinking the board. */
+.depot-zoom {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+}
+.modal.depot-zoomed {
+  max-width: min(96vw, 1500px);
+}
+.modal.depot-zoomed .depot {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  background: none;
+}

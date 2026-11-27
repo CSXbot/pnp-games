@@ -72,7 +72,16 @@ function dayX(day: number): number {
  * tally marks for days, X in taken tech boxes, circled stock and darkened spent boxes,
  * ticks in the manual.
  */
-export function DepotArt({ state, onLaunch }: { state: GameState; onLaunch: () => void }) {
+export function DepotArt({
+  state,
+  onLaunch,
+  onZoom,
+}: {
+  state: GameState;
+  onLaunch: () => void;
+  /** Tapping the sheet opens it large. At tablet size the panel is too narrow to read the rows. */
+  onZoom?: () => void;
+}) {
   const { x0, y0, width, height } = DEPOT;
   const X = (x: number) => x - x0;
   const Y = (y: number) => y - y0;
@@ -93,6 +102,11 @@ export function DepotArt({ state, onLaunch }: { state: GameState; onLaunch: () =
   return (
     <section className="panel depot depot-art-panel" aria-label="Recycle Depot">
       <div className="depot-art-wrap">
+        {onZoom && (
+          <button className="btn btn-small depot-zoom" onClick={onZoom} aria-label="See the Depot sheet larger">
+            Enlarge
+          </button>
+        )}
       <svg viewBox={`0 0 ${width} ${height}`} className="depot-art" role="img" aria-label={`Day ${state.day} of 75 completed`}>
         <image href={DEPOT.src} width={width} height={height} />
         {!over && (

@@ -101,6 +101,7 @@ export function App() {
   const [tab, setTab] = useState<TabId>('depot');
   const [newGameOpen, setNewGameOpen] = useState(false);
   const [conflict, setConflict] = useState<RemoteSave | null>(null);
+  const [depotZoom, setDepotZoom] = useState(false);
   // Read once, before the save effect below stamps a fresh time on mount: the comparison needs to
   // know when this browser's shift was last saved, not when this page was opened.
   const [bootMeta] = useState(() => readMeta());
@@ -253,6 +254,7 @@ export function App() {
         setPicker(false);
         setHelp(false);
         setNewGameOpen(false);
+        setDepotZoom(false);
       } else if (e.key === 'r' && state.phase === 'roll' && !state.techPending) {
         commit({ t: 'roll' });
       } else if (e.key === 'u') {
@@ -369,7 +371,7 @@ export function App() {
             ))}
           </nav>
           <div className="tabpanel" data-panel="depot">
-            <DepotArt state={state} onLaunch={() => commit({ t: 'launch' })} />
+            <DepotArt state={state} onLaunch={() => commit({ t: 'launch' })} onZoom={() => setDepotZoom(true)} />
           </div>
           <div className="tabpanel" data-panel="accidents">
             <AccidentTable state={state} />
@@ -432,6 +434,20 @@ export function App() {
                 New game
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {depotZoom && (
+        <div className="modal-backdrop" onClick={() => setDepotZoom(false)}>
+          <div className="modal depot-zoomed" role="dialog" aria-label="Recycle Depot" onClick={(e) => e.stopPropagation()}>
+            <header>
+              <h2>Recycle Depot</h2>
+              <button className="btn" onClick={() => setDepotZoom(false)}>
+                Close <kbd>Esc</kbd>
+              </button>
+            </header>
+            <DepotArt state={state} onLaunch={() => commit({ t: 'launch' })} />
           </div>
         </div>
       )}
