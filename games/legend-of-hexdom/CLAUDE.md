@@ -43,7 +43,8 @@ sheets are image-only 300 dpi rasters with no text layer. The rulebook has a tex
 
 | What | Path under `sources/Legend of Hexdom/` | In scope |
 |---|---|---|
-| Rulebook 1.2, 112 A5 pages | `English_Legend of Hexdom - Rulebook 1.2.pdf` (byte-identical copy in `Hex Forest/Hex Forest - Rulebook/`) | yes |
+| Rulebook 1.2, 112 A5 pages | `English_Legend of Hexdom - Rulebook 1.2.pdf` (byte-identical copy in `Hex Forest/Hex Forest - Rulebook/`) | yes - the edition we implement |
+| Rulebook 1.3, 108 pages, in German, Spanish, French, Italian, Portuguese | `<Language>_Legend of Hexdom - Rulebook 1.3.pdf` | reference only: translations, no English 1.3 exists (Game Director); compared in `research/2026-11-27-rulebook-1.3-comparison.md`, nothing in scope changed |
 | 100 assembled A4 sheets, Warrior | `Hex Forest/HexForest-Warrior/HF_<n>_Warrior-A4.pdf` | 1-3 |
 | 100 A5 maps | `Hex Forest/Hex Forest - A5 Pack/Hexforest-Maps/<n>.pdf` | 1-3 |
 | 10 A5 sidesheets A-J | `.../A5-HexForest-TablesCharacters-English/A5-HexForest-Tables/HexForest-A5-Table-<X>.pdf` | A-C |

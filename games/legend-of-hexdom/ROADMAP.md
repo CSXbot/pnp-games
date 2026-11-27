@@ -28,6 +28,7 @@ Director.
 
 - Expert mode (4 dice, no repeated actions, double damage, score x1.5): its own stage-1 pass.
 - More characters, maps 4-100, sidesheets D-J. Lost Sands, Winter Tales, Epic maps, Bonus
-  characters. Legacy mode, perhaps never.
+  characters. Legacy mode, perhaps never; if it comes, rulebook 1.3 clarifies the Survivalist curse
+  (Villages only, not their underlying terrain).
 - Pen-like marks with the Art Director's help (Game Director, 2026-11-27, "probably for the
   future").
