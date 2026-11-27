@@ -22,7 +22,11 @@ import { homedir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const VISION_MODEL = 'gpt-4.1';
+// The best vision model on the account, on the Game Director's instruction (2026-11-27). Sol is the
+// flagship tier of OpenAI's GPT-5.6 family (Terra is balanced, Luna fast). `gpt-4.1` was the default
+// until then and was never re-checked; on the same blind Hexdom review it guessed at what icons meant,
+// where Sol cited a page for each claim. Re-check with GET /v1/models when a new family appears.
+const VISION_MODEL = 'gpt-5.6-sol';
 // Checked against this account on 2026-11-27: plain `gpt-image-1` does not exist here, and none of
 // these accept `input_fidelity`, so passing it 400s the whole chain.
 const IMAGE_MODELS = ['gpt-image-2.6-flare', 'gpt-image-1.5'];

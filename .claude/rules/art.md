@@ -131,9 +131,24 @@ original**; a reconstruction that is only better when zoomed in is not an improv
 ## Tool facts, checked 2026-11-27
 
 `gpt-image-1` does not exist on this account; the image models are `gpt-image-2.6-flare` and
-`gpt-image-1.5`, neither accepts `input_fidelity`, and the vision reviewer is `gpt-4.1`. Edits
-return fixed aspect ratios, so pad the target to the output aspect and crop back, or the subject
-gets reframed.
+`gpt-image-1.5`, neither accepts `input_fidelity`. Edits return fixed aspect ratios, so pad the
+target to the output aspect and crop back, or the subject gets reframed.
+
+**The vision reviewer is the best model on the account**, the Game Director's standing instruction
+(2026-11-27): `gpt-5.6-sol` as of that date. When a new family appears, check the model list and
+move the default in `art.mjs`.
+
+**What a review needs, learned on Legend of Hexdom:**
+
+- **The rules, as text.** A reviewer asked which details "carry rules" without the rulebook can
+  only guess, and it does - dashed borders became "harder enemies". Paste the relevant pages,
+  marked by page number, into the ask, setup included.
+- **Native-resolution crops.** The API fits a `detail: high` image into 2048 px and then shrinks
+  its short side to 768 px. A whole A4 sheet arrives at about 1086x768, and its icons at about
+  25 px: the old reviewer read a bow as a shield. Crop regions no more than about 768 px on the
+  short side.
+- **A citation for every claim**, and "not shown" instead of a guess. Then check every specific
+  number against the crop yourself: Sol read the Travel box's six distinct dice as three pairs.
 
 ## Everything else
 

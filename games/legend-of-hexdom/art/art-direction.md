@@ -2,7 +2,7 @@
 
 For the Art Director, who has no memory between jobs. Everything a visual decision needs is here or
 in `decisions.md` beside it. Attach both to every art call (`scripts/art.mjs --game
-legend-of-hexdom`). Written by the tech lead from the sheets and the rulebook at 300 dpi; page
+legend-of-hexdom`). Written by the tech lead from the sheets and the rulebook at 300 dpi, then checked against the Art Director's blind review (`decisions.md`); page
 numbers are the rulebook's (`English_Legend of Hexdom - Rulebook 1.2.pdf`).
 
 ## The components
@@ -33,15 +33,24 @@ A pen, three dice and the sheet (p7). Every mark below is shown in a rulebook fi
   A food spent is a **slash through a painted diamond** (p35: two of the five printed-filled
   diamonds slashed after a "3" travel). So a diamond has three states: empty, painted, painted and
   slashed.
-- **HP box:** hearts are filled when gained and **crossed with an X** when lost (p42). Same three
-  states.
+- **HP box:** a heart lost is **crossed** (p42). Gaining a heart paints the next empty one: inferred
+  from the Food box and the printed-filled starting hearts, not shown in a figure.
 - **Attribute tracks:** rings filled in from 1 upwards (p21, p51).
-- **Treasure box:** the ring beside the treasure's icon is filled, and that treasure is **crossed
-  off the Adventure table** where it was won (p18).
-- **Gems:** crossed off the Adventure table (p19), then either drawn into the Relic box's empty gem
-  outlines or traded.
+- **Treasure box:** the treasure is **crossed off the Adventure table** where it was won, and
+  "marked" in the Treasure box (p18), where each treasure has an empty ring. Filling that ring is
+  inferred; the mark is not shown.
+- **Gems:** crossed off the Adventure table (p19), then "entreasured" in the Relic box's empty gem
+  outlines or traded. The mark in a gem outline is not shown.
 - **Bosses and Gifts:** a defeated Boss is marked (p18); a taken Gift is crossed out (p20).
-- **Score line:** under the map, the player writes counts against the printed multipliers.
+- **Skills:** no figure shows a mark for an unlocked skill; the red diamond on the Food box is the
+  record.
+- **Score line:** under the map, multipliers and "= TOTAL". Where the player writes the counts is
+  not shown.
+- **The name line** on the card ("_____, the Warrior"): the player names the character (p10). The
+  card's **NOTES box** has no rule.
+
+The X on the start, the arrowheads, and the red "-2 HP" route are the rulebook figures'
+convention, not required by the text. They are the pen language this brief adopts, not rules.
 
 ## Details that carry rules - a web game that drops one is wrong
 
@@ -76,13 +85,36 @@ A pen, three dice and the sheet (p7). Every mark below is shown in a rulebook fi
 - The drawing inside a terrain hex beyond telling which terrain it is.
 - Water is drawn two ways, plain ripples or a cresting wave. The rulebook names only "Water". This
   is put to the Game Director as `SPEC.md` question 8 and is **not** settled.
-- The portrait on the card, the box frames, the colours of the frames.
+- The portrait on the card, the box frames, the colours of the frames, the white sticker outline
+  round a Village or Castle, the titles.
+- The markers in front of skills 2 and 3 on the card are two different reds. No rule refers to
+  the difference.
+- Pictures are not disposable, though: an enemy's, a Boss's or a Gift's picture is how the sheet
+  identifies it.
 
 ## What gives it its identity
 
 The illustrated hex map with the player's own path drawn across it, a chain of arrows; dense
 icon-only tables beside it; and pen marks - fill, slash, X - on printed boxes. The whole sheet is
 a landscape A4 that is read at a glance: map left, everything else right.
+
+## At risk on a screen
+
+From the Art Director's review on `gpt-5.6-sol`, checked against the crops:
+
+- The Adventure table: small level numbers beside similar attribute icons, and the solid-versus-
+  dashed distinction is a few pixels wide but changes the damage.
+- The six Treasure silhouettes are small and similar, and exactly which one matters for Bosses.
+- Explore and Adventure cells stack several quantities, slashes and tiny `+1`/`+2` labels.
+- The Food and attribute tracks are many tiny adjacent targets; the `+` and red milestones can't
+  be carried by colour alone.
+- The terrain under a Village or Castle is partly covered and gets hard to identify when reduced.
+- The drawn path must not hide whether a hex is Mountain, Water or ordinary.
+- The Gift and Boss cells pack art, dice, icons and text into narrow strips.
+- Temptations: one checkmark in place of paint, slash and cross loses the difference between
+  gained, spent, damaged and unavailable; a movement highlight in place of the persistent route
+  loses the record the rules and the score depend on; text labels in place of icons depart from
+  the sheet's shared vocabulary.
 
 ## Sizes, measured
 
