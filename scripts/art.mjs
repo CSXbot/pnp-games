@@ -4,6 +4,10 @@
 //   art.mjs edit     --prompt "..." --image target.png [--ref ctx.png]... [--mask m.png] --out f.png
 //   art.mjs review   --ask "..." --image a.png [--label "what this is"]... [--out notes.md]
 //
+// Add `--game <slug>` to any of them to attach that game's standing brief and decision log from
+// games/<slug>/art/. The Art Director has no memory between calls: without this it re-decides
+// settled questions, and has twice proposed work the Game Director had already rejected.
+//
 // `generate` makes art that doesn't exist in the sheets. `edit` is reference-guided: the target
 // image plus whatever context helps (the whole card, a sibling card for palette or lighting), and
 // optionally a mask so only part of the target may change. `review` is the loop closer - a vision
@@ -15,6 +19,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const VISION_MODEL = 'gpt-4.1';
 // Checked against this account on 2026-11-27: plain `gpt-image-1` does not exist here, and none of
@@ -40,6 +45,27 @@ function parseArgs(argv) {
 const list = (v) => (v === undefined ? [] : [].concat(v));
 
 const args = parseArgs(process.argv.slice(2));
+
+/** The game's standing brief plus its decision log, as one block to prepend. */
+function notebook(slug) {
+  if (!slug || slug === 'true') return '';
+  const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'games', slug, 'art');
+  const parts = [];
+  for (const [file, heading] of [
+    ['art-direction.md', 'STANDING BRIEF for this game - read before deciding anything'],
+    ['decisions.md', 'DECISIONS ALREADY MADE - do not reopen these; they are the Game Director\'s'],
+  ]) {
+    const f = path.join(dir, file);
+    if (existsSync(f)) parts.push(`===== ${heading} =====\n${readFileSync(f, 'utf8').trim()}`);
+  }
+  if (!parts.length) {
+    console.error(`no notebook at games/${slug}/art/ - proceeding without it`);
+    return '';
+  }
+  console.log(`notebook: ${slug} (${parts.length} file${parts.length > 1 ? 's' : ''})`);
+  return parts.join('\n\n') + '\n\n===== THE TASK =====\n';
+}
+const brief = notebook(args.game);
 const cmd = args._[0];
 
 const keyFile = path.join(homedir(), '.openai-token');
@@ -66,7 +92,7 @@ const blob = (f) => new Blob([readFileSync(f)], { type: 'image/png' });
 
 async function generate() {
   const body = {
-    prompt: args.prompt,
+    prompt: brief + args.prompt,
     n: Number(args.n ?? 1),
     size: args.size ?? '1024x1024',
     quality: args.quality ?? 'medium',
@@ -100,7 +126,7 @@ async function edit() {
   for (const model of args.model ? [args.model] : IMAGE_MODELS) {
     const form = new FormData();
     form.set('model', model);
-    form.set('prompt', args.prompt);
+    form.set('prompt', brief + args.prompt);
     form.set('n', String(args.n ?? 1));
     if (args.size) form.set('size', args.size);
     if (args.quality) form.set('quality', args.quality);
@@ -122,7 +148,7 @@ async function edit() {
 async function review() {
   const images = list(args.image);
   const labels = list(args.label);
-  const content = [{ type: 'input_text', text: args.ask }];
+  const content = [{ type: 'input_text', text: brief + args.ask }];
   images.forEach((f, i) => {
     if (labels[i]) content.push({ type: 'input_text', text: `Image ${i + 1} - ${labels[i]}:` });
     content.push({

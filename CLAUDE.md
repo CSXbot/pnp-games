@@ -263,6 +263,22 @@ decision, 2026-11-26 and confirmed 2026-11-27: "It's my purchase and my decision
 So send the real pages and crops to whatever model or person is doing the work, without asking. The
 *site* stays private behind Access, unchanged - that is a separate thing, and it does not move.
 
+### The Art Director has a notebook, because it has no memory
+
+Every game keeps `games/<slug>/art/`:
+
+- **`art-direction.md`** - the standing brief. What the player physically does on paper, which
+  visual details carry rules, the sizes things are actually drawn at, what must never change, and
+  the Game Director's taste decisions.
+- **`decisions.md`** - dated, newest first. What was asked, what came back, what was accepted or
+  rejected and **why**. Append after every art call.
+
+`scripts/art.mjs --game <slug>` attaches both to the call, labelled so the model knows the
+decisions are not open for reopening. Without it the Art Director re-decides settled questions: it
+twice proposed work that had already been rejected. Files rather than the provider's stored
+conversations, because they are visible, versioned, survive a change of model, and the next tech
+lead or consultant can read them.
+
 ### Give the model the originals
 
 "Retro sci-fi building" throws away information we already own. Send the real thing, through
