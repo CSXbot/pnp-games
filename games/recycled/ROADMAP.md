@@ -35,9 +35,10 @@ What that pass established and is worth keeping:
   (`.screens/art/sheet1-starting-cells.png`). Not what the game draws, and now deliberately so.
 - A hex is **87 CSS px** on the iPad layout - the size any mark has to read at.
 - **Cut-outs work and are provable.** The model supplies only a matte; its colour is discarded and
-  the publisher's pixels are composited through it, with zero altered inside the silhouette. Stored
-  as lossless WebP, 43 KB against 77 KB for PNG. Two exist: Oxygen Plant (from the kit) and Food
-  Plant (made here).
+  the publisher's pixels are composited through it, with zero altered inside the silhouette.
+  **All twelve exist** (2026-11-27), re-cut from the whole printed illustration band after the old
+  230x196 crop window turned out to be what was clipping them, and centred in one shared 290x199
+  frame so relative scale survives.
 - A cut-out is **not** hex-clipped the way a tile is, so it has to be sized to the hex or it spills
   onto its neighbours. Fixed.
 
@@ -95,14 +96,15 @@ it works is in `CLAUDE.md`. What is left:
 Four defects, confirmed from zoomed screenshots at play size (2026-11-26). The rust ground under a
 building tile is **not** one of them: that ground is part of the building art.
 
-1. **The board's outer edge is ragged** - a dark, torn fringe where the board was cut out of the Mars
-   background.
-2. **Hex outlines break** where pre-drawn buildings were inpainted away, and where building tiles are
-   drawn over them. **Check the cheap fix first:** if `HexMap` draws the hex border *after* the tile,
-   the lines stay continuous and no re-extraction is needed for this one.
-3. **The Depot is a lazy rectangular cut** through a machine that is not rectangular. It slices the
-   shape and drags in neighbouring sheet content at the top left. The cut has to follow the machine's
-   outline, pipes and rounded corners included.
+1. ~~**The board's outer edge is ragged.**~~ **Done 2026-11-27:** the alpha is flooded from the page
+   and the Mars backdrop inwards, so it traces the printed rim instead of approximating it with a
+   square dilation. The one corner where the cosmonaut is printed over the rim keeps only its
+   hexes.
+2. ~~**Hex outlines break.**~~ **Done:** joins are drawn under the buildings and the name ribbon
+   over the stock dots; cut-outs are not hex-clipped at all.
+3. ~~**The Depot is a lazy rectangular cut.**~~ **Done 2026-11-27:** the cut follows the console's
+   own outline, and `tools/close_depot.py` reconstructs the bottom lip the hex board covers on the
+   sheet - the only reconstructed part of the art, recorded in `art/decisions.md`.
 4. **The launch manual is blurry**, small print smeared. **Not fixable by re-extracting:** the
    source PDF holds a single 300 ppi JPEG for the whole A4 page (2480x3508, compression ratio ~4%),
    so the manual region is only a few hundred pixels and 600 dpi would just upscale it. The options
@@ -185,8 +187,6 @@ the vacuous fit check and the save-overwrite risk are fixed. Still open, roughly
 - **A data review to match the art review.** One second read of Sheet 2 found a wrong resource that
   a test was pinning in place; four earlier rulings were the same kind of error. Numbers get no
   second reader today. Proposal: a crop beside each transcribed value, reviewed the way art is.
-- **Trim the shelf `CLAUDE.md`** (it suggests ~75 lines, 288 to ~215) and give it a line budget, so
-  adding a line means merging or deleting one.
 - **Who is "you"** - the file changes speaker halfway through, so "Art is never done on your say-so"
   reads backwards in one half.
 - **Kit extraction has no home in the stage map**, and game 2's stage 3 is where it will land.
@@ -195,13 +195,28 @@ the vacuous fit check and the save-overwrite risk are fixed. Still open, roughly
 - Smaller: test dir convention (`test/` vs `tests/`), "pure functions" vs `act`'s clone-then-mutate,
   `.btn-small` at 36px inside the 44px touch block, reasons that exist only as a `title` attribute.
 
+### 8. Open findings from playtest 1
+
+The first playtest ran by hand on 2026-11-27 (`playtest/reports/2026-11-27-1-manual.md`, with the
+consultant's triage). Fixed since: the board resizing on hover, the Transceiver's self-contradicting
+card text, and "Days survived: 16" after a day-17 launch. Still open:
+
+- **A full Food Plant is highlighted for Produce** and nothing on screen says why. It is correct -
+  the yield overflows into its joined Cryo Tank - but the player can't tell before clicking.
+- **Recycle asked for a hex where Salvage didn't.** The one-target shortcut covers every action, so
+  Produce asking is explained by the above; Recycle is not explained by the code and needs a repro.
+  A playtest journal would settle it in one replay.
+- **Combining a locked double-1s die is untested.** The engine allows it and `SPEC.md` says so, but
+  both the tests and the bot avoid that path.
+
 ## Known issues
 
-- **(you) Balance hasn't been checked against real play.** The test players usually lose, mostly on Sanity or
-  Oxygen; without a head start the strategy bot lost all 200 of its games. It's unknown whether the
-  game is that hard or the bot is weak. If it feels too punishing in play, re-check the consumption
-  table, the unused-dice penalty and the double-1s handling against the rulebook before changing
-  anything.
+- **(you) Balance.** A careful player won by launch on **day 17 of 75** in the first playtest, which
+  is the opposite of the earlier worry. The strategy bot's near-zero win rate says nothing: it was
+  written to exercise the late game, not to play well. The real number comes from teaching the
+  playtester's strategy to `test/bot.ts` and simulating - and from building task 2 first, because
+  ruling 3 shortens the launch route and is not implemented. Play a game yourself before any rule
+  is touched; the report's suggested changes would be house rules, which are yours.
 - **The Depot art is small** in the right-hand column on laptop screens. The tab strip in task 1 fixes
   this for tablet width; giving it more width on the laptop layout is still open.
 
