@@ -59,6 +59,17 @@ highlighting can't drift from the rules, and show the exact reason anything is u
 afterwards - Recycled needed a second pass only because it was built before the iPad was a target.
 Flip `pnp.tabletReady: true` when the layout is meant to hold, then make `check:screens` pass -
 the flag is what turns the fit check from a warning into a failure, so it goes on first, not last.
+
+**Take the viewport from a browser on the device, not from the device's spec.** An iPad Pro is
+1366x1024 and `check:screens` tested exactly that for weeks; a browser with its tab strip and
+address bar showing hands the page about 865px. The reference column was starved to 200px and the
+Launch button rendered off-screen with nothing to scroll, while the check said it fitted. Test the
+browser height and the standalone height.
+
+**A new check has to be proven able to fail.** Break it on purpose and watch it go red before you
+trust it. The privacy test was verified that way and holds; `check:screens` was not, and spent
+weeks reporting "fits" when `.app{height:100dvh;overflow:hidden}` meant the page could never
+scroll, so "fits" only ever meant "no console errors".
 **You:** try it on the real device once it fits. I can measure that nothing scrolls; I can't feel
 whether a tick box is big enough for a finger.
 

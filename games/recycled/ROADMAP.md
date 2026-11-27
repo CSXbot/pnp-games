@@ -1,54 +1,12 @@
 # Recycled: roadmap
 
-What's left, in the order it should be done. Finished work is described in `CLAUDE.md` (how it
-works) rather than kept here as history. Items marked **(you)** are waiting on the owner, not on
-Claude.
+Open work only. **Finished work lives in `CLAUDE.md`**, which describes how things are; this file
+describes what is not done. Items marked **(you)** wait on the Game Director.
+
+**Released: 1.0.0 on 2026-11-27** (`recycled-v1.0.0`). Everything below is after that line, not
+missing from it. See `RETRO.md` for what the first cycle cost and what changed because of it.
 
 ## Next, in order
-
-### 1. Finish the iPad fit
-
-The layout itself is **done** (2026-11-26): both arrangements fit their window with no page scroll,
-`pnp.tabletReady` is `true` so `npm run check:screens` now enforces it, and the 51 tests still pass.
-How it works is described in `CLAUDE.md`. What is left:
-
-- ~~An `apple-touch-icon`.~~ **Done 2026-11-26:** generated, checked at 60 px, shipped at
-  `/apple-touch-icon.png` with a matching `/favicon.png`. Master and prompt in `shelf/icons/`.
-  **(you)** say if you'd rather have one of the two rejected designs in `.screens/icons/`.
-- **(you) Try it on the real iPad.** Nothing here has touched a physical device: check that the Depot's pen
-  marks and the manual's tick boxes are big enough for a finger, that tap-to-inspect reads well, and
-  that the standalone Home Screen app gets the full 1024 px of height.
-- **The Depot tab is tight.** It fits, but the Depot art is the one panel that would gain most from
-  more room; consider giving it the full width of the right column, or its own full-screen view.
-
-### 1b. The Modern look, and the cut-outs
-
-**Scope cut by the owner, 2026-11-27: the pen look is parked.** The game ships one look - the
-illustration with its name label, dots for stock, the short bar between joined buildings - and the
-settings toggle is gone with it. The traced marks stay vendored but unrendered in `src/ui/ink/`
-(see its README); they are cut from the publisher's own sheets and would be expensive to redo.
-
-What that pass established and is worth keeping:
-
-- The printed sheet's language is a pen symbol over the illustration, an open ring per unit gained,
-  that ring filled in when spent, one contour round a joined pair. Verified at 300 dpi
-  (`.screens/art/sheet1-starting-cells.png`). Not what the game draws, and now deliberately so.
-- A hex is **87 CSS px** on the iPad layout - the size any mark has to read at.
-- **Cut-outs work and are provable.** The model supplies only a matte; its colour is discarded and
-  the publisher's pixels are composited through it, with zero altered inside the silhouette.
-  **All twelve exist** (2026-11-27), re-cut from the whole printed illustration band after the old
-  230x196 crop window turned out to be what was clipping them, and centred in one shared 290x199
-  frame so relative scale survives.
-- A cut-out is **not** hex-clipped the way a tile is, so it has to be sized to the hex or it spills
-  onto its neighbours. Fixed.
-
-**Settled 2026-11-27:** the owner chose cut-outs for every building - "cleaner look". The
-readability argument had gone with the pen rings, so this is a taste decision and theirs to make.
-`tools/make_cutouts.py` does them, refusing to write any asset where a publisher pixel changed
-inside the silhouette or where the matte keeps an implausible share of the tile.
-
-**Don't delete `tile-*.webp`:** they are the colour source every cut-out is composited from, and the
-fallback for any building whose cut-out is ever withdrawn.
 
 ### 2. Automatrons: offer them, don't spend them silently
 
@@ -78,40 +36,21 @@ the prompt.
 
 ### 3. Finish cross-device saves
 
-**Built on 2026-11-26** and working end to end against a local Worker: a shift played in one browser
-reaches another, and a browser with its own game in progress is asked rather than overwritten. How
-it works is in `CLAUDE.md`. What is left:
+Shipped in 1.0.0 and confirmed across real devices through the live site. What is left:
 
-- ~~**(you) Confirm it on the real site.**~~ **Done 2026-11-27:** the owner confirmed a shift
-  crossing devices through the live site, so the real Access assertion path - which every test
-  until then had stubbed with `DEV_EMAIL` under `wrangler dev` - works.
 - **Export / Import save.** The parachute: a file or clipboard copy, the only route that works from
   a `file://` copy or with no network.
 - **Move it to `packages/kit`** when a second game needs it - not before.
 - The Worker's D1 row is never pruned. Harmless at one row per game, worth revisiting if the shelf
   ever holds many games.
 
-### 4. Re-cut the art
+### 4. The launch manual is the last art defect
 
-Four defects, confirmed from zoomed screenshots at play size (2026-11-26). The rust ground under a
-building tile is **not** one of them: that ground is part of the building art.
+Three of the four defects found on 2026-11-26 are fixed and described in `CLAUDE.md`: the board's
+ragged edge, the broken hex outlines and the Depot's rectangular cut. One is left, and it is the
+one re-extraction cannot solve.
 
-1. ~~**The board's outer edge is ragged.**~~ **Done 2026-11-27:** the alpha is flooded from the page
-   and the Mars backdrop inwards, so it traces the printed rim instead of approximating it with a
-   square dilation. The one corner where the cosmonaut is printed over the rim keeps only its
-   hexes.
-2. ~~**Hex outlines break.**~~ **Done:** joins are drawn under the buildings and the name ribbon
-   over the stock dots; cut-outs are not hex-clipped at all.
-3. ~~**The Depot is a lazy rectangular cut.**~~ **Done 2026-11-27**, in two passes. The first made
-   the cut follow the console's outline and reconstructed its bottom lip. The Art Director then
-   found that the crop box itself started *inside* the printed metal frame, so the frame, bolts and
-   hinges had never been extracted at all, and the manual's binding was being inpainted into the
-   Batteries line. The Depot is now rebuilt from the sheet's embedded JPEG in sheet coordinates,
-   with only the board-covered corner reconstructed. See `art/decisions.md`.
-   ~~**The launch manual is blurry.**~~ Largely answered by the same change: the manual is whole,
-   the binding is no longer smeared into it, and the enlarged view fits on a laptop. Item 4 below
-   stands only for the limit of the source scan itself.
-4. **The launch manual is blurry**, small print smeared. **Not fixable by re-extracting:** the
+**The launch manual is blurry**, small print smeared. **Not fixable by re-extracting:** the
    source PDF holds a single 300 ppi JPEG for the whole A4 page (2480x3508, compression ratio ~4%),
    so the manual region is only a few hundred pixels and 600 dpi would just upscale it. The options
    are, in order: **(you)** an uncompressed copy of the sheet if the publisher ships one (these files
@@ -215,10 +154,12 @@ card text, and "Days survived: 16" after a day-17 launch. Still open:
 - **Combining a locked double-1s die is untested.** The engine allows it and `SPEC.md` says so, but
   both the tests and the bot avoid that path.
 
-### 9. The single file is 2.5 MB
+### 9. The single file is 2.7 MB
 
-Up from ~1.6 MB, and it is all art: 2.0 MB of the 2.5 is base64 images. It loads once and then
-works offline, so this is a cost rather than a bug - but it is worth a decision rather than drift.
+Up from ~1.6 MB, and it is all art. It loads once and then works offline, so this is a cost rather
+than a bug. **The Game Director's call, 2026-11-27: not worth sweating.** It stays on the list
+because it drifts: merging an otherwise correct Depot repair silently took it to 4.6 MB by saving a
+2496x1500 scan losslessly, and no check would have caught that.
 
 | | Base64 | Where it is used |
 |---|---|---|

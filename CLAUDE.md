@@ -100,13 +100,17 @@ wrangler.jsonc      Workers config: ./dist as static assets, plus packages/worke
 - `npm test`: Vitest in every workspace. **No Playwright here**, because the Cloudflare build machine
   has no browser.
 - `npm run build`: builds `dist/index.html` (shelf) and `dist/games/<slug>/index.html` (each game).
-- `npm run check:screens`: Playwright against `dist/` at 1440×900 and 1366×1024. It checks for no
-  console errors, and for no vertical page scroll at 1366×1024 for games marked tablet-ready.
+- `npm run check:screens`: Playwright against `dist/` at 1440×900, 1366×865 (a tablet browser, with
+  its chrome) and 1366×1024 (the Home Screen app). No console errors, nothing unreachable.
 - Inside a game: `npm run dev` for a live dev server, `npm run release` for a local offline copy.
+
 ## Where the rest of this lives
 
-**This file is the always-loaded part and stays under 200 lines.** It was 449 on 2026-11-27, which
-every session paid for. The sections below are stubs: each holds what has to be true even if its
+**This file is the always-loaded part and stays under 215 lines.** It was 449 on 2026-11-27, which
+every session paid for; the split brought it to 187. The limit was 200 and moved once, the same
+day, when the Game Director asked for releases to be in the process - the number was mine and set
+too tight, and trimming real content to defend it would have been the wrong trade. Moving it is
+allowed; moving it quietly is not. The sections below are stubs: each holds what has to be true even if its
 detail file never loads, and the detail loads when it is needed. **A new rule goes in its topic's
 file, not here.**
 
@@ -118,12 +122,11 @@ file, not here.**
 | The seven stages, when to stop, sequencing | the **`game-stages`** skill | you invoke it |
 | Playtesting | the **`playtest`** skill | you invoke it |
 
-Scoping was verified here on 2026-11-27: a fresh session asked with no tools did not have a scoped
-rule's contents, and the same question after it read a matching file did. A rule still does not
-arrive if the work never touches a matching file - running `scripts/art.mjs` from the shell only,
-say - and they are ordinary files, so read the one that covers what you are doing.
+Scoping was verified here on 2026-11-27. A rule still does not arrive if the work never touches a
+matching file - running `scripts/art.mjs` from a shell, say - and they are ordinary files, so open
+the one that covers what you are doing.
 
-## Deployment
+## Deployment and releases
 
 Every push to `main` deploys. `npm ci && npm test && npm run build` then `npx wrangler deploy`, so a
 failing test stops it before anything is published. Commit and push freely, without asking.
@@ -132,6 +135,15 @@ failing test stops it before anything is published. Commit and push freely, with
 No `workers.dev` URL, no preview URLs, and `packages/worker/test/privacy.test.mjs` fails the build
 if that ever changes. The games contain the publishers' art: never link to the site anywhere.
 
+**A release is a label on a trunk that keeps moving.** The site serves `main`, not the tag, so
+`main` is always fit to play - that is the rule a release does *not* give you. Tag `<slug>-vX.Y.Z`
+and bump the game's `package.json`. **Open roadmap items at a release are normal:** a release is a
+line under what is playable, not the end of the list. **Calling one is the Game Director's** - it
+is a priority decision.
+
+**Two different things are called "version".** `GameState.version` is the save schema and changes
+only with a migration. A release number says nothing about it.
+
 What a build costs and how to edit the Access policy: `.claude/rules/deploy.md`.
 
 ## The life of a game
@@ -139,26 +151,27 @@ What a build costs and how to edit the Access policy: `.claude/rules/deploy.md`.
 Seven stages, in order. The expensive mistakes on Recycled all came from starting one before the
 one before it was settled.
 
-**0.** Intake - the PDFs land in `sources/<slug>/`, and you inventory what arrived.
-**1.** Spec and direction, no code - what the player physically does, then `SPEC.md`, then **stop
-and wait** for the Game Director's answers. This is the one stage that genuinely blocks.
-**2.** Engine and data - rules as pure functions, content as tables, every number re-checked.
-**3.** UI, both arrangements built together, not one fitted to the other afterwards.
-**4.** Art, with OpenAI as art director.
-**5.** Shelf and ship. **5b.** Playtest.
-**6.** Retro, before the next game - and update these files while it is fresh.
+**0.** Intake · **1.** Spec and direction, no code · **2.** Engine and data · **3.** UI, both
+arrangements together · **4.** Art · **5.** Shelf and ship · **5b.** Playtest · **6.** Retro,
+before the next release or the next game.
+
+**Stage 1 is the one that genuinely blocks:** how an ambiguous rule reads is mine to settle, and
+guessing there is how a game ends up quietly wrong.
+
+**The first release runs the stages once, end to end. After that every piece of work enters at the
+earliest stage it touches and passes through the rest in order:** an art fix enters at 4, a ruling
+at 1, an expansion at 0. The invariant is the point - never start a later stage on something whose
+earlier stage is unsettled.
 
 **Invoke the `game-stages` skill before starting a stage and before calling one done.** It carries
-what each stage needs from the Game Director, the signals that mean the template doesn't fit this
-game, and the sequencing rules - direction before layout, infrastructure before content, shared
-code moves on the second use, anything an expansion will vary is data from day one.
+what each stage needs from me, the signals that the template doesn't fit this game, and the
+sequencing rules.
 
 ## Art
 
-**Sharing the publishers' art is allowed** with any human or AI working on this project. The Game
-Director's decision, 2026-11-26 and confirmed 2026-11-27: "It's my purchase and my decision, and I
-allow it." So send the real pages and crops to whoever is doing the work, without asking. The
-*site* stays private behind Access; that is a separate thing and it does not move.
+**Sharing the publishers' art is allowed** with any human or AI working on this project - the Game
+Director's decision, 2026-11-26, confirmed 2026-11-27. Send the real pages and crops to whoever is
+doing the work, without asking. The *site* stays private behind Access; that does not move.
 
 **The Art Director has no memory between jobs,** so every game keeps a notebook in
 `games/<slug>/art/`: `art-direction.md` is the standing brief, `decisions.md` is dated and appended

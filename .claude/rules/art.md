@@ -51,6 +51,25 @@ A good first call is to ask the art director, before editing anything: what must
 this to still read as the same component, what is actually degraded at its in-game size, and how a
 re-render would most likely betray the original. That third answer becomes the acceptance checklist.
 
+## Measure the component before you cut it
+
+**Look for the crop before you reach for the model.** Three times on Recycled an asset looked
+damaged and was not: the crop box was. The building tiles were a 230x196 window taken from a
+360x198 printed illustration band, so the Recycler lost its right wall and the Laboratory its
+frame. The Depot's box started *inside* the console's printed metal frame, so the frame, its
+corner bolts and its side hinges had never been extracted - and a model was asked to reconstruct a
+bottom lip when most of what was missing was simply uncropped print. The cards slice their bottom
+badges off. Each time the sheet had printed the whole thing.
+
+So, before any asset work: find the component's real printed bounds and write them down. Flood the
+page or the backdrop inwards from outside the component rather than trusting a hand-set rectangle;
+that is what `board_alpha` and `depot_alpha` do, and both replaced a guessed box. A hand-set crop
+is a measurement someone made once and nobody re-checked.
+
+**A reconstruction is the last resort, not the first.** Ask in order: is it in the crop we are not
+taking? is it elsewhere on the sheet? is it genuinely covered by another component? Only the third
+is a job for a model.
+
 ## Choose the method per part of the component
 
 **Look in the PDF first.** `pdfimages -list` says what is really in there. If a clean original or a
@@ -71,6 +90,10 @@ detail has been reconstructed** rather than extracted.
   inside the mask and the original's everywhere else, so titles, numbers, resource symbols, rules
   text and measured geometry are physically out of reach.
 - **Prove it with a pixel diff** outside the mask. Zero changed pixels, or it is a redraw.
+- **Check what it weighs.** A verification list that does not include file size is incomplete:
+  merging an otherwise correct Depot repair took the single file from 2.5 MB to 4.6, because it
+  saved a 2496x1500 scan losslessly. Lossless is right for a small cut-out and wrong for a
+  photographic scan whose source is already a 5%-ratio JPEG.
 - **Never let a model write text.** Rebuild a title or a cost from verified game data and composite
   it, or keep the original pixels. Invented rules on a game component are worse than blur.
 
