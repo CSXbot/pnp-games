@@ -53,6 +53,7 @@ games/<slug>/       one game per folder: src/, test/ (or tests/), tools/, vite.c
 packages/           shared code, once two games need it
 scripts/            build-all script that assembles dist/
 sources/            my PnP PDFs and scans; gitignored, never commit anything from here
+ROADMAP.md          open work that belongs to the shelf, not to one game
 dist/               build output (gitignored); wrangler publishes this folder
 wrangler.jsonc      Workers config: ./dist as static assets, no Worker script
 ```
@@ -113,7 +114,17 @@ at them.
 **You:** put the files there - every sheet, every rulebook page, and any expansion. If something
 looks missing (a Sheet 2, a page 4, a map referred to by another file) I name the file I need.
 
-**1. Spec, no code.** Write `games/<slug>/SPEC.md` covering:
+**1. Spec and direction, no code.** Two jobs, both before the layout is fixed.
+
+First, **ask what the player physically does**, with the real pages attached (`art.mjs review`):
+what they read, handle, move, flip, draw or reveal; which visual details carry rules or state; and
+what gives the game its identity. Make it cite the page. Save the answer as
+`games/<slug>/art/art-direction.md`. This is the job both Claude sessions skipped on Recycled, and
+it cost a rebuild: the sheet's language is a pen symbol from the legend drawn over the illustration,
+an open ring per unit gained, that ring filled in when spent, one contour round a joined pair - and
+the web game had invented tiles, ribbons, evenly spaced pips and a link bar instead.
+
+Then write `games/<slug>/SPEC.md` covering:
 1. Components and setup, including the exact starting state of the sheet.
 2. Sheet anatomy: every grid, track, box, counter and bonus mark.
 3. The turn loop, step by step.
@@ -199,8 +210,9 @@ instead" after two hours than hand over something that technically works.
 
 ### Sequencing rules learned the hard way
 
-- **Layout before art.** The layout fixes the size each asset is displayed at, and a resolution
-  defect only exists relative to a size. Art first means doing it twice.
+- **Direction before layout; asset production after.** What the player does decides the composition,
+  so settle that while the layout is still open. Producing the assets waits: the layout fixes the
+  size each one is displayed at, and a resolution defect only exists relative to a size.
 - **Infrastructure before content.** Access, routing and the deploy chain get settled while there is
   nothing to lose.
 - **Shared code moves to `packages/kit` the second time it is needed, not the first.** Save sync,
@@ -215,6 +227,10 @@ instead" after two hours than hand over something that technically works.
   needs me rather than you is marked **(you)** there, so the queue is readable at a glance.
 
 ## Art
+
+**Sharing the publishers' art is allowed.** The owner's decision, 2026-11-26: "It's my purchase and
+my decision, and I allow it. It's only for me anyway." So send the real pages and crops to the model
+without asking. The *site* stays private behind Access, unchanged.
 
 ### Give the model the originals
 
@@ -256,6 +272,10 @@ detail has been reconstructed** rather than extracted.
   it, or keep the original pixels. Invented rules on a game component are worse than blur.
 
 ### Close the loop before you show me
+
+**Review blind.** Render one legal interaction, capture it at both sizes, and ask the model what
+visibly changed *before* telling it what should have. Then check its answer against the engine's
+state. A reviewer told the expected answer will confirm it.
 
 Give the vision model the original, the candidate, **and a screenshot at actual play size**, and ask
 it to name specific regressions - not whether it likes it. Then show me the original and the best

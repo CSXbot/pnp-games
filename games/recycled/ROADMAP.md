@@ -48,15 +48,20 @@ supplied cut-out at `src/assets/cutouts/oxygenPlant.png`.
 
 **The work, in order:**
 
-1. Wire `BuildingInk` + `sharedContour` into `HexMap.tsx` behind the settings, mounted in the
-   measured cell (`sqrt(3)*SIZE/150` by `2*SIZE/160`, anchored at 75,80). Render the six printed
-   starting cells and **look at them at real play size** - a hex is about 60-110 px, and how the
-   symbols read at that size is the one thing nobody has checked.
-2. **Eleven more cut-outs.** Only the Oxygen Plant is supplied. Keep the publisher's pixels: the
+1. ~~Wire `BuildingInk` + `sharedContour` into `HexMap.tsx` behind the settings.~~ **Done in
+   `e9f593f`:** the six printed starting cells render 6, 3, 2, 4, 3 and 2 open rings, matching the
+   sheet, checked against engine state in a browser. A hex is **87 CSS px** on the iPad, and the
+   marks read at that size.
+2. **Eleven more cut-outs - now the critical path.** Wiring the ink proved these are load-bearing:
+   black rings on an opaque tile are nearly invisible, so the default pair doesn't actually work
+   until all twelve exist. Judge the look only after they land.
+
+   Method: Only the Oxygen Plant is supplied. Keep the publisher's pixels: the
    model supplies the silhouette only, colour comes from the existing `tile-*.webp` crops, and it is
    provable the same way as a masked edit - compare pixels inside the silhouette.
-3. `checkScreen`: keep `.slot-used` / `.slot-full` / `.slot-empty` for "Modern", add the kit's
-   `data-ink-stock` counts for "Pen marks".
+3. ~~`checkScreen` for the ink.~~ **Done in `e9f593f`:** open rings against `drawn - used`, spent
+   against `used`, blanks as capacity minus what is painted, no stray marks. The Modern pips lost
+   their assertion when they stopped being the default - restore one when that pair is exercised.
 4. Run the kit's two replays (six saves) and its review jobs on the integrated build.
 
 **Cost to be honest about:** four combinations doubles the visual QA surface. Test the default pair

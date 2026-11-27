@@ -25,7 +25,7 @@ The shelf-wide rules (stack, deployment, layout targets, art protocol) are in th
 - **Rules:** every rule from the rulebook and cards is in the engine, re-checked against the PDFs.
 - **Art:** original art throughout (board, buildings, cards, icons, logo, Depot with its launch manual),
   with "pen" marks drawn over the Depot.
-- **Tests:** 51 passing.
+- **Tests:** 91 passing (69 for the game, 22 for the shelf's Worker).
 - **Source PDFs:** `sources/recycled/` at the repo root, gitignored. Base game plus the 3-maps addon
   and the Pioneers expansion, all A4 and image-only, so read them as images.
 
@@ -66,6 +66,28 @@ All four readings that used to sit here as "chosen during development, undispute
 owner on 2026-11-26 and are now rulings 10-13 above. **Silence is not approval:** the remaining
 entries in `RULES-NOTES.md` are still this version's reading rather than the owner's word, and
 should be asked about rather than assumed when one of them matters.
+
+## How the map is drawn
+
+The printed sheet has a visual language and the game now speaks it: a unit gained is an **open ring**
+at a position measured off the sheet, a unit spent is **that ring filled in**, nothing is drawn where
+no circle was ever drawn, and a joined pair gets **one contour round both hexes**. See
+`src/ui/ink/README.md` for provenance and the 150x160 cell space the marks live in.
+
+- **Two display settings**, independent, in `src/ui/display.ts`: `buildings` and `stock`, each
+  `modern` or `pen`, defaulting to **modern buildings, pen stock**. They live under the localStorage
+  key `pnp:recycled:display` and deliberately **not** in `GameState` - a per-device preference, so
+  saves stay version 1 and sync is untouched. All four pairs have to work.
+- **`src/assets/cutouts/<type>.png`** holds the publisher's illustration with the paper removed.
+  Where one exists it replaces the opaque tile, its hex backing and its outline; `tile-*.webp` is the
+  fallback until all twelve exist. **Don't delete the tiles** - they are the colour source for making
+  the cut-outs.
+- **Cut-outs are load-bearing, not decorative.** Pen rings on an opaque tile are nearly invisible;
+  on a cut-out they sit on the pale hex and read cleanly. `.screens/art/ink-cutout-ipad.png` shows
+  both in one shot.
+- A hex is **87 CSS px** on the iPad layout, which is the size any mark has to read at.
+- `checkScreen` asserts the ink: `[data-ink-stock="available"]` against `drawn - used`, `spent`
+  against `used`, blanks as capacity minus what is painted, and no stray marks.
 
 ## Layout
 
@@ -244,6 +266,10 @@ src/ui/                  REACT UI
                          tileArt/cardArt/iconArt
   Help.tsx               How to play modal
   save.ts                SAVE_KEY ('pnp:recycled:state') and LEGACY_SAVE_KEY, shared with the tests
+  display.ts             the two display settings; localStorage, never GameState
+  cloudSave.ts           cross-device sync: decide(), debounced push, hold/release
+  NewGameDialog.tsx      replaces confirm(); holds the future planet picker and expansion switches
+  ink/                   the sheet's pen marks: traced atlas, state projection, shared contour
 src/assets/art/          extracted webp art + board.json / depot.json geometry
 tools/extract_art.py     cuts art from the PDFs (needs pdftoppm, Pillow, numpy, opencv-python-headless)
 tools/calibrate_grid.py  fits the printed hex grid; numbers go into extract_art.py

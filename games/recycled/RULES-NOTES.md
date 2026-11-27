@@ -78,7 +78,10 @@ darkened, so 2 Power.
 ## Automatrons
 
 The card says an Automatron "can be used every time instead of any other resources, except Power".
-In this version that means the following. Automatrons do not replace Batteries for the launch.
+In this version that means the following. Automatrons do not replace Batteries for the launch -
+**this describes the code, not the rule.** Ruling 3 in `CLAUDE.md` overturned it on 2026-11-26:
+Automatrons stand in for missing Food, Oxygen and Batteries at launch. Flip this line when that work
+lands (`ROADMAP.md`, Automatrons).
 
 22. **Automatrons cover a Materials shortfall when you construct.** This happens automatically, and only
     for what you're missing.
