@@ -1314,13 +1314,35 @@ button.die {
     grid-template-columns: 1fr 1fr;
     gap: 3px 10px;
   }
+  /* Two columns means half the width, so the yield text no longer fits beside the name and was
+     breaking phrases across lines ("max" / "3"). Name on one line, yield under it, and a fixed
+     row height so the two columns stay in step. */
   .action {
-    grid-template-columns: 34px 1fr auto;
-    gap: 6px;
-    font-size: 16px;
+    grid-template-columns: 30px 1fr;
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: 0 6px;
+    min-height: 46px;
+    padding: 4px 6px;
+    font-size: 15px;
   }
-  .action .why,
-  .action .effect {
+  .action .cost {
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  .action .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .action .yields {
+    grid-column: 2;
+    font-size: 11.5px;
+    line-height: 1.15;
+    text-align: left;
+    opacity: 0.75;
+  }
+  .action .why {
     font-size: 12px;
   }
   /* Construction spans both columns: it is the one that opens a picker, not a one-click action. */
