@@ -118,6 +118,15 @@ many as the player wants. My reasoning: some skills say "once per round", which 
 that don't say that can be used more, also rules say "at any time"." So the general rule: a skill is
 limited only where its card says so.
 
+*The windows* (settled by the tech lead and the consultant, 2026-11-27, from the Game Director's two
+principles; the Researcher was not asked): **Magic Blood** may be used any time from the Travel to
+the end of that round - between or after the main-phase actions too - because the card says only
+"After travelling", and the rulebook writes "right after" when it means immediately ("gained right
+after the Travel action", p82; "Right after traveling", p26). **Cross Training** may be used any time
+in the round before the Travel is committed, before or after a Gift taken first; by ruling B the
+Travel is an instant, so there is no "during". Example: a Warrior on 3 hearts travels, Explores for 2
+hearts (5), then pays 3 hearts for Magic +3 and starts the next Travel on 2 hearts, with Adrenaline.
+
 **D (Q12). Magic Berry gives one food per gain, not per point.** "Per gain, of course. It's obvious
 in the wording." Applied by the tech lead: one food for each effect that raises Magic, however many
 points it gives - completing Relic box A (Magic +2) gives 1 food, the Attribute Cart (Magic +3) 1
