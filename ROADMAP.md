@@ -43,8 +43,32 @@ didn't say where consultants are listed. **Still open, all of them older than th
 - **Stage 0 has no home for what it produces.** Where the inventory is written and where rendered
   pages are cached; and when `games/<slug>/` and its five documents come into existence.
 - **A stage-2 workspace on `main` either breaks the deploy or goes live before stage 5.** Every
-  push deploys, and a half-built game is in the build. Needs an answer: a branch, or a `pnp.draft`
-  flag the shelf and `build-all` skip.
+  push deploys, and a half-built game is in the build. **Settled 2026-11-27, with the consultant:
+  `pnp.draft` means "not on the shelf", not "not built".** My first answer was that `build-all`
+  should skip a draft, and that was wrong in three ways, each checked against the code:
+  - a game's `build` script is `tsc --noEmit && vite build`, so a skipped draft is never
+    type-checked - its `test` script is `vitest run` alone;
+  - the single-file check (no assets left outside `index.html`) runs inside `build-all`'s loop,
+    so a skipped draft never meets it;
+  - `check-screens` walks `dist/games`, so a draft that isn't in `dist` gets no screen check - and
+    stage 3 is exactly when it needs one.
+
+  A skipped draft would therefore have kept its unit tests and lost everything a branch would have
+  lost, which was the whole reason for not using a branch. And stage 3 needs **(you)** to try the
+  game on the real iPad before stage 5, which needs an address: if drafts aren't deployed the flag
+  gets flipped early to allow the test, and then it means nothing. The site is private with one
+  user, so a half-built game being reachable costs nothing; what stage 5 really adds is the shelf
+  entry.
+
+  What that implies, when game 2 arrives and not before:
+  - **The shelf must read `package.json`.** Today `shelf/index.html` hard-codes
+    `<a href="./games/recycled/index.html">Recycled</a>`, and `pnp.title` is read by nothing -
+    only `pnp.tabletReady`, by `check-screens`. A flag the shelf honours means the shelf has to
+    generate its list.
+  - **A new workspace starts from a scaffold that already builds**, placeholder page included, so
+    the chain runs on it from its first commit. Infrastructure before content, applied to a game.
+  - **A draft's failing test blocks every deploy, Recycled's included.** That is right on a trunk,
+    and the stage text should say so rather than let someone discover it.
 - **The `packages/kit` move has no stage.** When it happens, whether it has its own tests, which
   document describes it. It will land in game 2's stage 3 either way.
 
