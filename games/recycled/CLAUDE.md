@@ -277,6 +277,9 @@ src/ui/                  REACT UI
   ink/                   the sheet's pen marks: traced atlas, state projection, shared contour
 src/assets/art/          extracted webp art + board.json / depot.json geometry
 tools/extract_art.py     cuts art from the PDFs (needs pdftoppm, Pillow, numpy, opencv-python-headless)
+tools/make_cutouts.py    the buildings, matted out of their printed ground; run after extract_art
+tools/close_depot.py     the Depot's reconstructed bottom edge; **run after extract_art**, which
+                         overwrites depot.webp with the version the hex board slices
 tools/calibrate_grid.py  fits the printed hex grid; numbers go into extract_art.py
 test/engine.test.ts      rules tests, 300 random games, 200 strategy games, exact-wording cases
 test/ui.test.tsx         18 full games through the UI (jsdom), checking the screen after every click

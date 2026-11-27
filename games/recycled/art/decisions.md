@@ -4,6 +4,52 @@ Newest first. One entry per decision that would otherwise have to be rediscovere
 what came back, what was accepted or rejected, and why. Reconstructed from commit messages for
 everything before 2026-11-27.
 
+## 2026-11-27 · The buildings were never clipped by the sheet, only by our crop
+
+**Game Director, from the iPad:** "The edges can be improved. For some of it you could just ask
+OpenAI to fill in the parts covered with hexes."
+**What it turned out to be:** not the sheet. A card's illustration band is 360x198 and
+`extract_art.py` was taking a **230x196 window** out of it, centred on the median building pixel -
+a centre the cast shadow drags off to one side. That window cut the Recycler's right wall, the
+Laboratory's frame, the Workshop's doors and the Food Plant's lean-to. The publisher had printed
+all of it.
+**Fixed by taking the band whole** and letting the model's matte decide where the building ends.
+`make_cutouts.py` then centres each silhouette in one shared 290x199 frame, so one printed pixel is
+still the same size in all twelve and the board keeps the sheet's relative scale.
+**A gate had to change with it.** "The trim removed 25% of the silhouette" measured the model's
+generosity, not the trim's accuracy - the trim can only remove ground-coloured pixels, so the
+Transceiver loses 57% of its matte to a perfectly correct trim. It now counts enclosed holes, which
+is what the one bad trim actually left.
+**Not reconstructed:** the masts and chimneys the card's own border cuts off (Oxygen Plant, Cryo
+Tank, Workshop). Nothing is printed above them and they read as foreshortened rather than broken.
+
+## 2026-11-27 · The Depot's bottom edge, reconstructed
+
+**Asked for by the Game Director**, in the same note: fill in what the hexes cover.
+**The problem:** on Sheet 1 the hex board is printed over the console's lower body, so there is no
+bottom edge to extract. The console ended in a flat slice.
+**Method** (`tools/close_depot.py`): the model is sent the whole console, square-padded, with a
+mask that opens only a 145px band below the printed cut, and asked for the console's own bottom lip
+- rolled edge, rivets, same wear - and explicitly no dials, labels, numbers or text. It redrew the
+whole console anyway, garbled text and all; **none of that is used.** Only pixels inside the band
+where the publisher printed nothing are taken, and the run refuses to write if a printed pixel
+moved. The seam is measured: in half the columns the first filled pixel is directly below the last
+printed one.
+**Result:** accepted. 78k px of lower casing, seam 0px.
+**Also looked at and rejected:** extending the crop to keep the PROJAWA control panel that hangs
+off the console's lower left. It is real printed art the crop discards, but it is decorative - no
+pen marks, no state - and keeping it makes the image 9% taller with a large empty corner, which
+shrinks the console in a panel the Game Director had already called too small.
+
+## 2026-11-27 · The board's edge traced instead of approximated
+
+The board's alpha was the union of its hexes grown by a square MaxFilter, with a narrower one above
+the top row and below the bottom row. That gave a staircase where the sheet prints a smooth metal
+bevel, a step where the two radii met, and pale slivers of the neighbouring art. It is now flooded:
+the page and the Mars backdrop are filled inwards from a ring 31px outside the hexes, and the rim's
+dark metal stops the flood. One corner needed naming - the cosmonaut is printed over the rim at the
+bottom-right - and there only the hexes are kept, so it has no rim rather than fragments of him.
+
 ## 2026-11-27 · Codex tried as an Art Director that can look for itself
 
 **Asked:** read this notebook, look at the live board at iPad size, name up to three visual defects
