@@ -42,3 +42,17 @@ paths:
   - an `apple-touch-icon`
 
   Pad the top bar with `env(safe-area-inset-top)`.
+
+## The build marker
+
+Every game shows which build it is, faintly, under its title: `scripts/build-stamp.mjs` gives a
+short commit and a UTC timestamp, the game's `vite.config.ts` injects it as `__BUILD__`, and the
+top bar renders it at 9px and 28% opacity.
+
+It exists because a screenshot from the iPad is how problems get reported, and on 2026-11-27 a
+report arrived 90 seconds after a push: the fix looked broken until commit timestamps were compared
+against screenshot timestamps and the deploy turned out not to have landed. The marker is for
+reading off a screenshot, not for looking at while playing.
+
+`__BUILD__` is undefined under Vitest, which does not apply `vite.config.ts`'s `define`, so the UI
+falls back to `'dev'` rather than throwing.

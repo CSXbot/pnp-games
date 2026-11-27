@@ -1540,3 +1540,23 @@ button.die {
   white-space: nowrap;
   opacity: 0.85;
 }
+
+/* The build marker under the game's title. Deliberately faint - it exists so a screenshot says
+   which build it came from, not to be read while playing. See scripts/build-stamp.mjs. */
+.topbar h1 .build {
+  position: absolute;
+  top: 100%;
+  left: 2px;
+  margin-top: -2px;
+  font-family: var(--body);
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+  color: #ffe9cf;
+  opacity: 0.28;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.topbar h1 {
+  position: relative;
+}

@@ -70,6 +70,9 @@ that is useful, but anything that changes who may decide or share what waits for
 - **Rules in a pure engine** (`src/engine/`, no React, no DOM), content in data tables
   (`src/data/`). The UI never changes state directly: it sends commands to `act(state, cmd)`.
 - **Vitest** for rules and jsdom UI tests. **Playwright** for screen checks in a real browser.
+- **Every game shows its build** faintly under its title, from `scripts/build-stamp.mjs` via the
+  game's `vite.config.ts`. A screenshot has to say which build it is, or a bug report and a fix
+  cross in the post - which they did once.
 - `games/recycled/` is the reference implementation. Copy its structure. When a second game needs a
   feature the first one has, move it into `packages/kit/` instead of copying it.
 

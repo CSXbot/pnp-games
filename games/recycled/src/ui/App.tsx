@@ -55,6 +55,10 @@ import {
   type RemoteSave,
 } from './cloudSave';
 
+declare const __BUILD__: string | undefined;
+/** The build marker, or 'dev' under Vitest, where vite.config's define does not apply. */
+const BUILD = typeof __BUILD__ === 'string' ? __BUILD__ : 'dev';
+
 /** The panels that share one tabbed area on tablet width and stack on a laptop. */
 const TABS = [
   { id: 'depot', label: 'Depot' },
@@ -348,6 +352,9 @@ export function App() {
         <h1>
           <img src={ART.logo} alt="Recycled" className="logo" />
           <span className="sub">· {MAPS[state.mapId]?.name ?? state.mapId}</span>
+          {/* Which build this is, for screenshots. Faint on purpose: it is there to be read off a
+              screenshot, not while playing. Defined in vite.config.ts. */}
+          <span className="build" aria-hidden="true">{BUILD}</span>
         </h1>
         <div className="day-info">
           <b>
