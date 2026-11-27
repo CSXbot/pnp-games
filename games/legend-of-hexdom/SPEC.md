@@ -1,6 +1,7 @@
 # Legend of Hexdom: specification
 
-**Stage 1 draft, 2026-11-27, waiting on the Game Director's answers to the questions in section 7.**
+**Stage 1, 2026-11-27. Ten of the first fourteen questions were settled by the rules group
+(`RULES-NOTES.md`); four wait on the Game Director (section 7).**
 Nothing here is built yet. When it is, this file describes the rules *as implemented*.
 
 Scope: **Hex Forest maps 1-3** (sidesheets A-C), **solo, normal mode**, characters **Warrior,
@@ -93,7 +94,10 @@ Gift adds 30 (p69).
    to a neighbour; never enter a hex already visited or passed through, including the start; may
    enter Mountain or Water only if the die (or a Gift) allows crossing it, and may never end there
    (p12, p36). Each hex entered, including a crossed Mountain or Water, is one of the moves (p35).
-   If no die has a legal move, the unstuck rule may apply (p41, question 2).
+   **Unstuck crossing** (p41, `RULES-NOTES.md` Q2): only when no die in hand has an ordinary legal
+   path; then any die may be used, and each Mountain or Water hex entered without permission costs 2
+   hearts on top of the food. **Sail Boat / Trusty Donkey** (Q3): a path crossing Water / a Mountain
+   may be one hex longer, optionally; the two stack.
 4. **Main phase** with the two remaining dice, one action per die, in the order the player chooses
    (p13): **Explore**, **Adventure**, or **fight a Boss** (only in a Castle). Any mix: two
    Explores, two Adventures, two Bosses, or one of each.
@@ -107,6 +111,9 @@ Gift adds 30 (p69).
      choice still available, or a gem if none is left.
 5. Skills fire at the points their text names. Unlocks and milestone attribute points happen the
    moment the food that reaches them is painted.
+
+**Boxes are lifetime totals** (Q4): once the 50th food or the 32nd heart is painted, further gains
+of that kind are lost.
 
 **Paying.** A food cost slashes painted food; any food that can't be paid is a lost heart each
 (p14, p35). A heart cost or damage crosses hearts. **Gaining** food paints the next diamond;
@@ -122,6 +129,8 @@ it for the sidesheet's reward. The moment the Relic box is full, gain its reward
   non-Mountain, non-Water hex, and crosses Mountain/Water only where allowed. The web game
   computes every legal destination per die, and highlights only those.
 - A Boss can be fought only in a Castle, and only if the die's Boss is not yet defeated.
+- **An enemy whose gem or Treasure is taken** stays on the table and gives the rest of its loot
+  (Q5).
 - **Stuck** (p40): if no die has a legal path, even after an optional Gift and with the unstuck
   rule, the game ends in defeat.
 - **Death** (p24): the game ends in defeat when the last heart is crossed. A combat that kills
@@ -130,7 +139,11 @@ it for the sidesheet's reward. The moment the Relic box is full, gain its reward
 ## 5. End of game
 
 The game is won in the round the **second Boss** is defeated; any die still unused that round may
-still be used, then the game ends (p17, p25). Score as in section 2.
+still be used, then the game ends (p17, p25). Score as in section 2; "hexes travelled" counts every
+hex the path entered, crossed Mountains and Water included, not the start (Q6).
+
+**A defeat is not scored** (Q7). If two Bosses can no longer be beaten, the game goes on until the
+player dies or is stuck.
 
 ## 6. Asset triage
 
@@ -147,156 +160,75 @@ still be used, then the game ends (p17, p25). Score as in section 2.
 They will be re-encoded at the size they are actually displayed (2x for the iPad's screen), and
 the game gets a `pnp.maxKB` budget when it gets a `package.json`.
 
+
 ## 7. Questions for the Game Director
 
-Each in three parts: what the original says, what I propose the web game does, and the question.
-Readings I consider already settled by the sources are listed after the questions, each with its
-citation, so any of them can be overruled too.
+Four questions the rules group could not settle. The other ten, and what each rests on, are in
+`RULES-NOTES.md`. Each question has four parts: what the original says, what has been said in
+public (verified on the page, `research/verification.md`), the group's positions with an example,
+and the question.
 
-**1. May a die be left unused in the main phase?**
-- *Original:* "Here we use the remaining two dice to take actions." (p13). Only Travel is called
-  mandatory: "Travel is mandatory, as heroes don't sit around!" (p34). The Brawler's skill says of
-  its extra Explore "this Explore action is mandatory, you cannot avoid it!" (p105), which suggests
-  actions are otherwise optional.
-- *Proposal:* the two main-phase dice may each be used or left unused. Example: you roll 3, 3, 6,
-  travel with the 6 and arrive in a Swamp with 1 heart. On sidesheet A, Explore Swamp 3-4 costs two
-  hearts, so you end the round without using either 3.
-- *Question:* may the player decline to use a main-phase die?
+**A. May a main-phase die be left unused?** (first asked as Q1)
+- *Original:* "Here we use the remaining two dice to take actions." (p13). Only Travel is ever
+  called mandatory: "everybody has to Travel" (p12), "Travel is mandatory, as heroes don't sit
+  around!" (p34), "you must travel at least 1 hex each turn" (p101). Actions are "can": "you can
+  Explore twice in the same round" (p14). The Brawler's skill: "this Explore action is mandatory, you
+  cannot avoid it!" (p105). Expert mode: "You roll 4 dice, but can only use 3 of them, playing as in
+  normal mode and leaving one behind." (p27).
+- *Said in public:* no answer from the publisher. A player asked on Kickstarter, "Is it mandatory to
+  spend all dice during round? Or can player opt to pass an action (except travel of course, that is
+  mandatory)"; a superbacker replied, "Per the Instruction Book page 13 I would assume that you have
+  to use both the other dice." The publisher's playthrough video says "in the main phase we use the
+  remaining dice one at time to explore to Adventure or to raid a boss", and uses every die in every
+  round it shows.
+- *The group:* all three lean **optional**, none strongly. Against it, the consultant's point: p105's
+  "mandatory" may only answer p22 ("Using skills is not mandatory") - this skill isn't optional -
+  rather than implying ordinary actions are. Example: you roll 3, 3, 6, travel with the 6 and land in
+  a Swamp with 1 heart; on sidesheet A, Explore Swamp 3-4 costs two hearts. Optional: you stop there.
+  Mandatory: each 3 must Explore or Adventure (or both go on the 3-3 Gift, if it is still there).
+- *Question:* may the player leave one or both main-phase dice unused?
 
-**2. When does the unstuck crossing apply?**
-- *Original:* "If you get to a point where your only movement option is to cross Mountains or
-  Water, but lack the specific die for that, you may cross them with any other die, paying a
-  penalty of 2 Heart Points for each Mountain or Water crossed in this way." (p41). The example
-  rolls 2, 4, 6 and offers the 2 or the 4 (one Mountain, 2 HP) or the 6 (two Mountains, 4 HP)
-  (p42).
-- *Proposal:* the unstuck crossing is offered only when **no die has an ordinary legal path**.
-  Then any die may be used; each Mountain or Water entered without that die's permission costs 2
-  hearts, on top of the die's food. A Water hex entered with a 4 (which allows Water) costs
-  nothing extra. If one die has an ordinary legal path, the unstuck crossing is not offered for
-  the others.
-- *Question:* is that the reading? In particular, if one die can still move legally, may the
-  player still choose an unstuck crossing with another?
+**B. Warrior, Adrenaline: does the Travel's own cost count?** (Q9)
+- *Original:* card, "When travelling, if you have 2 [hearts] or less: [Strength] +1"; p106, "when
+  traveling, if you have 2 Heart Points or less, gain a Strength point", with the tip "taking damage
+  they otherwise wouldn't to purposely remain below 2 Heart Points and gain the Adrenaline bonus every
+  time they travel!". A Travel pays its food first, in hearts if there is no food (p12).
+- *Said in public:* nothing on the timing. The publisher's video uses Adrenaline four times, each
+  time with the Warrior already at 2 hearts and paying the Travel in food, so it doesn't decide.
+- *The group:* split, both sides low. The two readings differ in one case only: a Travel that itself
+  takes the Warrior from 3 or more hearts to 2 or fewer. Example: 3 hearts and no food, travel with a
+  3 (2 food): you lose 2 hearts and have 1. The tech lead says that gives the Strength point (the
+  cost is paid while travelling); the Researcher says not ("remain" means already low when the
+  Travel starts).
+- *Question:* does that Travel give the Strength point?
 
-**3. Sail Boat and Trusty Donkey: "move one additional hex".**
-- *Original:* Sail Boat: "You may now use any die to cross Water. When crossing Water, you may also
-  move one additional hex." (p71). Trusty Donkey, the same for Mountains (p72). The sidesheet cell
-  shows "Travel may: + boot, Water".
-- *Proposal:* when a travel path crosses at least one Water hex (Mountain for the Donkey), the
-  player may make it exactly one hex longer than the die allows. One extra hex per travel, however
-  many Water hexes it crosses. Example: with the Sail Boat, a 2 (two hexes) may go Plains, Water,
-  Forest, three hexes.
-- *Question:* one extra hex per travel, or one per Water/Mountain hex crossed? And is the extra hex
-  optional (the path may be either length)?
+**C. Magic Blood and Cross Training: once per Travel, or as often as you can pay?** (Q10, and the
+count half of Q11)
+- *Original:* Warrior, "After travelling, you may [lose a heart] to gain [Magic] +1" (p107: "After
+  traveling, you may take one damage to gain one Magic point"). Archer, "Before travelling, you may
+  [spend 2 food]: [Strength] +1". Neither prints "once a round"; Overcoming, on the Warrior's own card,
+  does. "Active skills can be used at any time, unless otherwise stated." (p22). Of the Druid: "Note
+  that both his second and last skills don't have the "once a round" limitation!" (p87). But no skill
+  tied to the Travel prints it, even ones that can't sensibly repeat - Swift Journey, "travel with
+  the highest die, [gain a heart] [spend a food]"; Navigator, "when you travel [1], [lose a heart]
+  [+]" - while untimed paid skills do: Herbalist, "[2 food], gain [heart], once a round".
+- *Said in public:* nothing.
+- *The group:* the consultant leans **once per Travel** for both (medium for Magic Blood, less for
+  Cross Training, since 2 food per Strength is also the Druid's unlimited rate): they hang on the one
+  Travel a round, like Navigator. The tech lead now leans the same way. The Researcher, which had not
+  seen that argument, read them as repeatable (medium), from p87. Example: a Warrior with 6 hearts
+  after travelling gains Magic +1 for one heart, or up to +5 for five; an Archer with 8 food before
+  travelling gains Strength +1 for 2 food, or up to +4 for all 8.
+- *Question:* once per Travel, or as many as the player can pay for? The same for both skills?
 
-**4. What happens when the Food or HP box is full?**
-- *Original:* the card has exactly 50 food diamonds and 32 hearts. "Food points must be painted
-  from left to right, and from top lines to bottom lines." (p23). For attributes only: "After
-  level 12, any attribute point gained is ignored." (p22). Legacy unlocks speak of "your Food box
-  filled to the maximum and totally used" and "fill your 40th heart" (p29). The card has 32.
-- *Proposal:* as on paper. Once the 50th food has been painted, further food gains are lost, even
-  if most of it has been spent. Once the 32nd heart has been painted, further heart gains are lost.
-  Example: at 50 painted, 44 slashed, the Brown Bear's loot "food, food, +" gives only the
-  attribute point.
-- *Question:* is the box a hard limit on food and hearts *ever gained*? (This makes a long game
-  end in hunger, which may be intended.)
-
-**5. An enemy whose gem or Treasure is already taken.**
-- *Original:* "Treasures can be only taken once. After taking them, cross them off of the Adventure
-  table and mark them in your Treasure box" (p18); "Each Gem can be only taken once. After taking
-  them, cross them off of the Adventure table" (p19).
-- *Proposal:* only the gem or Treasure is crossed off; the enemy can still be fought, and gives
-  whatever else its loot lists. Example, sidesheet A: the Brown Stag (Forest, 1-2) loots only a gem.
-  Fought a second time, it is a combat (it counts for the Archer's Focus) that gives nothing.
-- *Question:* is the enemy still there to fight after its gem or Treasure is gone?
-
-**6. "1 point for each hex traveled" - which hexes?**
-- *Original:* p25, and the score line's last term, "1 x [hex]".
-- *Proposal:* every hex the path entered, including Mountains and Water crossed, and not the start
-  hex. Example: start on Village 3, travel 2 then 3 hexes: 5 points.
-- *Question:* does the start hex count, and do crossed Mountain/Water hexes count?
-
-**7. Is there a score when the game is lost?**
-- *Original:* the tally is described after winning: "the game is over, and you win! Time to tally
-  your points!" (p25). Death and getting stuck are "game over" (p24, p40). Only competitive
-  multiplayer scores players who died (p25).
-- *Proposal:* a lost game shows its score, labelled as a defeat, and keeps it in the history.
-- *Question:* score a defeat, or show no score?
-
-**8. Water is drawn two ways.**
-- *Original:* the maps draw Water either as plain ripples or as a cresting wave (map 1 has both).
-  The rulebook knows only "Mountains and Water".
-- *Proposal:* both are Water, the wave purely decorative.
-- *Question:* agreed?
-
-**9. Warrior, Adrenaline: hearts counted before or after paying for the travel?**
-- *Original:* card: "When travelling, if you have 2 [heart] or less: [Strength] +1". p106: "when
-  traveling, if you have 2 Heart Points or less, gain a Strength point."
-- *Proposal:* counted after the travel is paid, including hunger and any unstuck penalty. Example:
-  3 hearts, no food, travel with a 3 (2 food): you lose 2 hearts, have 1, gain Strength.
-- *Question:* before or after paying?
-
-**10. Warrior, Magic Blood: how often?**
-- *Original:* card: "After travelling, you may [lose a heart] to gain [Magic] +1". p107: "After
-  traveling, you may take one damage to gain one Magic point." No "once a round", unlike
-  Overcoming on the same card.
-- *Proposal:* once per round, right after travelling.
-- *Question:* once per round, or as many hearts as the player wants to pay?
-
-**11. Archer, Cross Training: when and how often?**
-- *Original:* card: "Before travelling, you may [spend 2 food]: [Strength] +1". p76 gives no timing
-  ("he consumes two food for a Strength point"), and p22 says "Active skills can be used at any
-  time, unless otherwise stated."
-- *Proposal:* the card's timing: only before the Travel. As often as the player can pay 2 food
-  each time.
-- *Question:* card timing, and unlimited uses in that window?
-
-**12. Archer, Magic Berry: one food per point, or per gain?**
-- *Original:* card: "Every time you improve your [Magic], gain [food]". p77: "earning him one food
-  whenever he improves his Magic."
-- *Proposal:* one food per point of Magic gained. Example: completing Relic box A (Magic +2) gives
-  2 food. A point ignored at Magic 12 is not an improvement and gives none.
-- *Question:* per point, or one food per event that raises Magic?
-
-**13. Mage, Enchant: does it work against Bosses?**
-- *Original:* card: "When in combat, you can [lose a heart] to use [Magic] instead of [Strength]".
-  The rulebook calls Boss fights "Boss Combats" (p17), but explains Enchant only with Adventure
-  enemies (p94-95).
-- *Proposal:* yes, any combat including Bosses. Example: Gast needs Strength 12 and Magic 8 (exact
-  pairs read in stage 2); a Mage with Magic 12 and Strength 2 who Enchants loses 1 heart instead of
-  10.
-- *Question:* may Enchant be used against a Boss?
-
-**14. Which heart losses count for Mana Shield and Overcoming?**
-- *Original:* both cards use the same mark, a slashed heart: Overcoming, "When you [lose a heart],
-  gain [food]"; Mana Shield, "You can [spend a food] to resist [losing a heart] once a round".
-  Explore cells use the same slashed heart as a cost (sidesheet A, Swamp, 1-2: "lose a heart,
-  attribute point").
-- *Proposal:* every heart lost counts, whatever the cause: combat, a Boss, hunger, an Explore cost,
-  the unstuck penalty, Enchant, Magic Blood. Example: the Mage explores Swamp 1-2 on sidesheet A,
-  spends a food on Mana Shield, keeps her heart and still gains the attribute point.
-- *Question:* agreed, or do only combat losses count?
-
-### Readings I consider settled (overrule any)
-
-- **Starting food is 5**: the first row of the Food box is printed filled, and the p35 figure
-  slashes two of those five after a "3" travel.
-- **Food is experience**: milestones count food painted, not food held (p23). Spending doesn't
-  undo a milestone.
-- **Partial payment**: pay what food you have, a heart for each food short (p14, p35).
-- **Path**: exact length, no hex twice, Mountain/Water crossed count as moves and are visited
-  (p35-36).
-- **Village/Castle column**: chosen per action, so the two dice may use different columns (p14,
-  p48).
-- **Linked/unlinked** as p16 and p52-53. A single requirement is compared directly.
-- **Death** at the last heart; a fatal combat gives no loot (p24, p54).
-- **Bosses**: a die whose Boss is already defeated cannot fight a Boss; the Treasure is a
-  requirement, not spent; two Bosses in one round are allowed solo (p17).
-- **Gifts**: optional; a taken Gift is gone; on a triple, two dice take the Gift and the third
-  travels (p20, p66-67). A Boss's reward is a Gift of choice, or a gem if none are left (p18).
-- **Treasure Crate** takes two Treasures not yet taken, which are then crossed off the Adventure
-  table like any other.
-- **Skills unlocked** scores the two unlockable skills (the score line's icon is the red unlock
-  diamond), so 0-6 points.
-- **Magic Blood's heart triggers Overcoming** (p106-107 say so).
-- **Greed** counts every gem gained, whether it goes to the Relic box or is traded, and the gem a
-  Boss gives when no Gift is left.
+**D. Archer, Magic Berry: one food per point of Magic, or per gain?** (Q12)
+- *Original:* card, "Every time you improve your [Magic], gain [food]"; p77, "earning him one food
+  whenever he improves his Magic". "Whenever we gain attribute points, we should paint them in our
+  attribute box, from level 1 to 12." (p22). Where the rulebook means per unit it says "for each"
+  (p14, p25, p41).
+- *Said in public:* nothing.
+- *The group:* no lean. The Researcher reads one food per gain (low); the tech lead first proposed
+  one per point and now slightly prefers per gain; the consultant has none. Example: the Archer
+  completes sidesheet A's Relic box (Magic +2): 1 food, or 2? Sidesheet C's Attribute Cart (Magic +3):
+  1, or 3? A point ignored at Magic 12 gives nothing either way.
+- *Question:* one food per point of Magic gained, or one per gain?

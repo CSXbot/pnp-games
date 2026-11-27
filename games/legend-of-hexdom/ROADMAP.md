@@ -5,12 +5,10 @@ Director.
 
 ## Stage 1: spec and direction
 
-- **(you)** Answer the 14 questions in `SPEC.md` section 7, and overrule any of the "settled"
-  readings under them. Stage 2 waits on this.
+- **(you)** Answer questions A-D in `SPEC.md` section 7. Overrule any of the group's ten in
+  `RULES-NOTES.md` you disagree with - Q4 (the boxes are lifetime totals) above all. Stage 2's engine
+  waits on this; its data work doesn't.
 - Record each answer in `RULES-NOTES.md` and each ruling in `CLAUDE.md`; fold them into `SPEC.md`.
-- Rules research with Gemini on the 14 questions, brief in `research/brief-2026-11-27.md`.
-  **(you)** Blocked on billing for the Google project: search and Deep Research fail on the Free
-  tier. Findings get verified in a real browser before they reach the Game Director.
 
 ## Stage 2: engine and data
 
