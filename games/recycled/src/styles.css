@@ -571,9 +571,10 @@ kbd {
   stroke-width: 1.6;
 }
 .slot-empty {
-  fill: none;
-  stroke: #cdbcae;
+  fill: #f7f3eecc;
+  stroke: #6b584a;
   stroke-dasharray: 2 2;
+  paint-order: stroke fill;
 }
 .slot-full {
   fill: var(--amber-soft);
@@ -971,6 +972,12 @@ button.die {
   opacity: 0.55;
   cursor: not-allowed;
 }
+/* The reason is the most useful text on a card you cannot use yet, so it does not fade with it. */
+.card:disabled .why {
+  opacity: 1;
+  filter: none;
+  font-weight: 600;
+}
 .card-foot {
   font-size: 13px;
   display: flex;
@@ -1328,7 +1335,7 @@ button.die {
    twelve of them did not fit the iPad without scrolling. It is composed now - the cut-out
    illustration, and the card's own words set live from the verified data. */
 .build-picker .cards {
-  grid-template-columns: repeat(auto-fill, minmax(188px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(224px, 1fr));
   gap: 10px;
 }
 .build-picker .card {
