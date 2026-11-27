@@ -126,16 +126,24 @@ sligntly. If I use one of such skills, and then use another skill, or take an ac
 closed." So:
 
 - The skills still repeat (ruling C), but as **one uninterrupted run at their moment**. **Magic
-  Blood**: right after the Travel, before anything else. **Cross Training**: before the Travel, before
-  anything else.
+  Blood**: right after the Travel, before anything else. (The Game Director confirmed this
+  "immediately after, uninterrupted" window directly, in the ruling on "Before" below.)
 - **Anything the player does closes the window:** Explore, Adventure, a Boss, taking a Gift, or
   choosing to use another skill. Example: a Warrior travels, Explores for 2 hearts, and can no longer
   use Magic Blood that round.
 - **A skill that fires by itself does not close it** (the consultant's stated assumption, put to the
   Game Director): Overcoming, set off by Magic Blood's own heart, leaves the run open, as p107 pairs
   the two.
-- **Open, with the Game Director:** an Archer who takes a Gift on a double first - may he still Cross
-  Train before travelling? Proposed default: no, the Gift closed the window.
+
+**"Before travelling" is a different rule** - the Game Director, directly, 2026-11-27: ""Before
+traveling" read it as "the next action have to be traveling". If traveling is not possible, neither
+is such skill. Applies to any "Before" (not sure if there are other examples). It's a different
+thing compared to the window "immediatelly after uninterrupted"." So **Cross Training** - the only
+"Before" skill on any of the 16 cards, checked - may be used when the next thing the player does is
+the Travel: a run of uses, then the Travel at once. A Gift taken first doesn't prevent it (Gift,
+Cross Training, Travel), which **settles the Gift-first case the other way from the proposed
+default**. If no Travel is possible, it can't be used; if only the unstuck crossing is possible, a
+Travel is possible, so it can.
 
 **D (Q12). Magic Berry gives one food per gain, not per point.** "Per gain, of course. It's obvious
 in the wording." Applied by the tech lead: one food for each effect that raises Magic, however many
