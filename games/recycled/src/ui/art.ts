@@ -19,9 +19,9 @@ export const ART = { banner, logo };
  * rather than on an opaque rectangle. One per building eventually; `tileArt` is the fallback
  * until they all exist.
  */
-const cutouts = import.meta.glob('../assets/cutouts/*.png', { eager: true, import: 'default' }) as Record<string, string>;
+const cutouts = import.meta.glob('../assets/cutouts/*.webp', { eager: true, import: 'default' }) as Record<string, string>;
 export const cutoutArt = (t: BuildingType): string | undefined =>
-  Object.entries(cutouts).find(([k]) => k.endsWith(`/${t}.png`))?.[1];
+  Object.entries(cutouts).find(([k]) => k.endsWith(`/${t}.webp`))?.[1];
 
 export const tileArt = (t: BuildingType) => file(`tile-${t}`);
 export const cardArt = (t: BuildingType) => file(`card-${t}`);

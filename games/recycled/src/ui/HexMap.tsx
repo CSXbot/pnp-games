@@ -20,6 +20,9 @@ import { BOARDS, tileArt, cutoutArt } from './art';
 import { ResIcon } from './Icons';
 
 const SIZE = 40;
+/** A cut-out is drawn to fit inside the hex rather than being clipped by it. */
+const CUT_W = Math.sqrt(3) * SIZE * 0.96;
+const CUT_H = SIZE * 1.5;
 
 export const SHORT: Record<BuildingType, string> = {
   foodPlant: 'FOOD',
@@ -300,10 +303,12 @@ function Building({
       {img && (
         <image
           href={img}
-          x={x - SIZE * 1.0}
-          y={y - SIZE * 1.02}
-          width={SIZE * 2}
-          height={SIZE * 1.8}
+          // A tile is clipped to the hex, so it may overflow its box. A cut-out is not clipped -
+          // it has to be sized to sit inside the hex, or it spills over the neighbours.
+          x={cut ? x - CUT_W / 2 : x - SIZE * 1.0}
+          y={cut ? y - CUT_H * 0.56 : y - SIZE * 1.02}
+          width={cut ? CUT_W : SIZE * 2}
+          height={cut ? CUT_H : SIZE * 1.8}
           preserveAspectRatio={cut ? 'xMidYMid meet' : 'xMidYMid slice'}
           clipPath={cut ? undefined : `url(#${clip})`}
           className={cut ? 'b-art b-cut' : 'b-art'}
