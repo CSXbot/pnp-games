@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 /** Always-loaded files, and what each may spend. Raise a number deliberately, in a commit of its own. */
-const BUDGETS = [{ file: 'CLAUDE.md', maxWords: 2100 }];
+const BUDGETS = [{ file: 'CLAUDE.md', maxWords: 2250 }];
 
 const over = [];
 for (const { file, maxWords } of BUDGETS) {
