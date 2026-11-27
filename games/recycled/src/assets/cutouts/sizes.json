@@ -1,0 +1,54 @@
+{
+  "amplifier": [
+    201,
+    164
+  ],
+  "cryoTank": [
+    183,
+    166
+  ],
+  "foodPlant": [
+    250,
+    198
+  ],
+  "frame": [
+    290,
+    199
+  ],
+  "laboratory": [
+    281,
+    198
+  ],
+  "nuclearPod": [
+    189,
+    147
+  ],
+  "oxygenPlant": [
+    264,
+    198
+  ],
+  "recycler": [
+    238,
+    186
+  ],
+  "researchSite": [
+    239,
+    198
+  ],
+  "rover": [
+    209,
+    198
+  ],
+  "separator": [
+    216,
+    198
+  ],
+  "transceiver": [
+    99,
+    102
+  ],
+  "workshop": [
+    253,
+    198
+  ]
+}

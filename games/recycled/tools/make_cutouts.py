@@ -13,6 +13,7 @@ The API call goes through scripts/art.mjs, which is the only client.
 """
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import tempfile
@@ -196,9 +197,25 @@ def cut(kind: str, work: Path) -> str:
                  ((FRAME[0] - bw) // 2, (FRAME[1] - bh) // 2))
 
     framed.save(OUT / f'{kind}.webp', 'WEBP', lossless=True, quality=100, method=6)
+    record_size(kind, bw, bh)
     size = (OUT / f'{kind}.webp').stat().st_size // 1024
     note = f" [exception: {rule['reason']}]" if rule else ''
     return f'{kind}: {bw}x{bh}, kept {coverage:.0f}%, sand {sand:.0f}%, trim took {eaten:.0f}%, {size} KB{note}'
+
+
+def record_size(kind: str, bw: int, bh: int) -> None:
+    """How big this building is inside the shared frame.
+
+    The board wants every cut-out at one scale - that is the point of the shared frame - but the
+    construction picker wants each card's illustration to fill its box, and a Transceiver that is
+    99px wide in a 290px frame shows up as a speck there. These numbers let the picker scale each
+    one to fit while the board keeps using the frame.
+    """
+    path = OUT / 'sizes.json'
+    sizes = json.loads(path.read_text()) if path.exists() else {}
+    sizes[kind] = [int(bw), int(bh)]
+    sizes['frame'] = list(FRAME)
+    path.write_text(json.dumps(dict(sorted(sizes.items())), indent=2) + '\n')
 
 
 def main() -> None:

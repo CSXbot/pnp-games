@@ -2,7 +2,7 @@ import { BUILDINGS, BUILD_ORDER } from '../data/buildings';
 import { ACCIDENTS, ACTION_COST } from '../data/rules';
 import type { BuildingType, Res } from '../data/types';
 import { actionError, resName, type ActionKind, type ActionParams, type GameState } from '../engine/game';
-import { cardArt, cutoutArt } from './art';
+import { cardArt, cutoutArt, cutoutZoom } from './art';
 import { Amount, Die, ResIcon } from './Icons';
 
 export interface Pending {
@@ -275,7 +275,16 @@ export function BuildPicker({
                 </span>
                 {/* The cut-out, not the printed card: the card's own rules text is a raster that
                     goes to mush at this size, and the words below are the same text, set live. */}
-                <img src={cutoutArt(t) ?? cardArt(t)} alt="" className="card-img" />
+                <span className="card-img">
+                  <img
+                    src={cutoutArt(t) ?? cardArt(t)}
+                    alt=""
+                    // A cut-out carries the shared frame's transparent margin, which is right on
+                    // the board and wrong here: scaled to fit, the Transceiver is a speck on its
+                    // card. The span clips whatever the zoom pushes past the box.
+                    style={cutoutArt(t) ? { transform: `scale(${cutoutZoom(t).toFixed(3)})` } : undefined}
+                  />
+                </span>
                 <span className="card-text">{def.text}</span>
                 <div className="card-foot">
                   <span className="muted">

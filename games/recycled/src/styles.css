@@ -1420,11 +1420,18 @@ button.die {
   color: #fff6e9;
 }
 .build-picker .card-img {
+  display: block;
   width: 100%;
   height: 78px;
-  object-fit: contain;
+  overflow: hidden;
   background: radial-gradient(ellipse at 50% 70%, #f4ece1, #e9ddcd);
   border-radius: 6px;
+}
+.build-picker .card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 .card-text {
   font-size: 12.5px;
