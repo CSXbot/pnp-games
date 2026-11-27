@@ -82,9 +82,9 @@ the prompt.
 reaches another, and a browser with its own game in progress is asked rather than overwritten. How
 it works is in `CLAUDE.md`. What is left:
 
-- **(you) Confirm it on the real site.** Everything so far used `wrangler dev` with a `DEV_EMAIL`
-  stand-in, so the **real Access assertion path has never run**. Open the game on the Mac, play a
-  turn, then open it on the iPad and check the shift is there.
+- ~~**(you) Confirm it on the real site.**~~ **Done 2026-11-27:** the owner confirmed a shift
+  crossing devices through the live site, so the real Access assertion path - which every test
+  until then had stubbed with `DEV_EMAIL` under `wrangler dev` - works.
 - **Export / Import save.** The parachute: a file or clipboard copy, the only route that works from
   a `file://` copy or with no network.
 - **Move it to `packages/kit`** when a second game needs it - not before.
