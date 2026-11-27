@@ -29,7 +29,11 @@ From the Game Director unless marked otherwise:
 - **2026-11-27, modes:** solo normal first, Expert mode soon after, Legacy later or never.
 - **2026-11-27, layout and look:** the A4 arrangement is not binding, and pen-like marks are
   wanted. Detail in `art/art-direction.md`.
-- **Rule answers** go to `RULES-NOTES.md` as they come.
+- **2026-11-27, rules process:** Gemini joins as **Researcher**. The tech lead, the consultant and
+  the Researcher may settle rule questions between them and report each decision; the Game
+  Director resolves the rest after the research, and can overrule any. Verified public findings
+  travel with a question as a part of their own. (Root `CLAUDE.md`, **Routing**.)
+- **Rule answers** go to `RULES-NOTES.md` as they come, each saying who settled it.
 
 ## Sources
 

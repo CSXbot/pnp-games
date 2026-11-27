@@ -14,9 +14,9 @@ The three things that are true whatever stage you are in:
 - **Each stage names what it needs from the Game Director.** Ask for it by name - which file, which
   answer, which switch in a dashboard - rather than guessing or going quiet, and keep working on
   whatever isn't blocked.
-- **Stage 1 genuinely blocks.** How an ambiguous rule should read is the Game Director's to settle,
-  because faithfulness to the original comes first. Guessing there is how a game ends up quietly
-  wrong.
+- **Stage 1 genuinely blocks.** How an ambiguous rule should read is settled by the rules group (tech
+  lead, consultant, Researcher) or by the Game Director, never by the tech lead alone, because faithfulness to
+  the original comes first. Guessing there is how a game ends up quietly wrong.
 - **The template is a default, not a constraint.** A game that doesn't fit it is information. Say so
   early, with the cost so far and the cost to continue. Bending the game to fit is the one thing
   that is never allowed.

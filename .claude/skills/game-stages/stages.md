@@ -39,9 +39,13 @@ Then write `games/<slug>/SPEC.md` covering:
 **State a rule question in the three-part form** (root `CLAUDE.md`, **Who does what**). At this
 stage there is no web game yet, so the middle part is what you propose to implement.
 
-Then stop and wait for my answers or "Approved". **Rules are the exception to "decide it yourself":**
-how an ambiguous rule should read is mine to settle, because faithfulness to the original comes
-first. Record each answer in `RULES-NOTES.md` and each ruling in the game's `CLAUDE.md`.
+Then put the questions to the **rules group** (root `CLAUDE.md`, **Routing**): the Researcher looks
+for what the publisher and players have said and gives its own reading, the consultant gives a second
+opinion where it matters, and the group settles what it can and tells me each decision with its
+reasons. The rest comes to me, with any verified findings as a part of their own; then stop and wait
+for my answers or "Approved". **Rules are the exception to "decide it yourself":** no rule is ever
+settled by the tech lead alone, because faithfulness to the original comes first. Record each answer in
+`RULES-NOTES.md`, saying who settled it, and each ruling in the game's `CLAUDE.md`.
 **You:** answer the numbered questions. This is the one stage that genuinely blocks - guessing a rule
 here is how a game ends up quietly wrong.
 

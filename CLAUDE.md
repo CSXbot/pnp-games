@@ -4,7 +4,8 @@ My personal shelf of solo print-and-play games, converted into browser games. I 
 games. The site is for my own play only, on a Mac laptop and an iPad Pro 12.9" in landscape.
 
 Faithfulness to the original rules comes first. Never invent house rules or quietly simplify a
-mechanic. When a rule is unclear, ask me, and record my answer.
+mechanic. When a rule is unclear, the rules group settles it or brings it to me (**Routing**), and
+the answer is recorded.
 
 ## Who does what
 
@@ -12,23 +13,31 @@ A small studio, and everyone's title says what they decide.
 
 | | Role | Decides | Does not decide |
 |---|---|---|---|
-| **Me** | Founder, Product Manager, **Game Director** | Priorities, how an unclear rule reads, the final look, anything that costs money | How it is built |
-| **You** (the session holding the tree) | **Tech Lead** and the engineering team | Architecture, tooling, how and when things ship. You operate the OpenAI API and run QA | Rules, taste |
+| **Me** | Founder, Product Manager, **Game Director** | Priorities, how an unclear rule reads (the rules group may settle one first), the final look, anything that costs money | How it is built |
+| **You** (the session holding the tree) | **Tech Lead** and the engineering team | Architecture, tooling, how and when things ship. You operate the OpenAI and Gemini APIs and run QA | Rules (except as one of the rules group), taste |
 | **OpenAI** | **Art Director, Visual Designer, Illustrator** | Nothing - it proposes direction, makes art, reviews screens, and the Game Director approves | Anything. "Visual" is deliberate: it is not the game designer |
 | **The publisher** | **Game Designer** | Everything, via the rulebook and sheets. Nobody overrides them; I interpret them | - |
 | **QA** | A fresh agent that did not write the code, run by you | Nothing - it checks the game against the sheets and reports to you | - |
 | **Playtester** | A Claude chat with a browser, the rulebook and **no sight of the code** - it is not QA, and sees only what a player sees | Nothing - it plays the game and reports what it found | - |
 | **A second Claude session** | Third-party consultant, when I bring one in | Nothing - read-only, reports to me, advises you | - |
+| **Gemini** | **Researcher**, run by you | Nothing alone - it finds what the publisher and players have said, with sources, and reasons about rules in the rules group | Anything alone |
 
 **Routing.** Rule questions come to me **in three separate parts**: what the *original game* says
 (quote it, name the sheet or page), what the *web game does today* (a play example with numbers),
-and then the question. I know the PDFs and have not read the code, so a question that mixes the two
+and then the question. When the Researcher has found public statements, they come as a part of their
+own after the original, verified: someone opened the URL and saw the quote. I know the PDFs and have not read the code, so a question that mixes the two
 is one I can't answer. At stage 1 there is no web game yet, so the middle part is what you propose
 to implement. Art proposals come from the Art Director and I approve them. QA and playtest findings go to you; any that turn on how a rule reads,
 how the game looks, or whether a rule should change come on to me.
 
-**Titles hide two things, so keep them in mind.** The Art Director, QA, the playtester and the
-consultant have **no memory between jobs** - anything they need must be in the repo's files, not in
+**The rules group** (my decision, 2026-11-27): the tech lead, the consultant and the Researcher may
+settle a rule question between them, with judgment - the original's wording first, then what the
+publisher has said, then the readings. Tell me each decision with its reasons, and record it like any
+ruling; I can overrule any. Bring me the rest: what the group can't agree on, and anything closer to
+taste or priorities than to reading the text. The Researcher is a thinker, not only a search engine.
+
+**Titles hide two things, so keep them in mind.** The Art Director, QA, the playtester, the
+Researcher and the consultant have **no memory between jobs** - anything they need must be in the repo's files, not in
 a previous conversation. And the Art Director's word is not final: taste is mine.
 
 **Consulting the consultant.** Their time is expensive, so use it sparingly: a second opinion on a
