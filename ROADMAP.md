@@ -7,12 +7,13 @@ on the owner.
 ## Tooling
 
 From the review session's proposal, 2026-11-27 (`claude_exchange/2026-11-27 pnp-games tooling
-proposal.md`), ranked by value for effort. Done: one API client, not three - `gen-image.mjs` is gone
-and `scripts/art.mjs` is the only one.
+proposal.md`), ranked by value for effort. Done: one API client, not three (`gen-image.mjs` is gone); the Art Director's notebook; and privacy
+as a test - `packages/worker/test/privacy.test.mjs` fails the build if `workers_dev` or
+`preview_urls` is ever true, or if the Worker answers on anything but the custom domain. Verified by
+breaking it on purpose.
 
 | | What | Why it earns its place |
 |---|---|---|
-| **Privacy as a test** | A test in `packages/worker/test/` that fails unless `workers_dev` and `preview_urls` are false and the only route is the custom domain | 15 minutes, and it guards the one setting whose failure publishes the publishers' art |
 | **Pre-push gate** | Tracked `.githooks/pre-push` running tests, build and screen check; `git config core.hooksPath .githooks` | A push deploys, so a broken push is a broken site. The suite is ~30s |
 | **Owner's queue at session start** | `SessionStart` hook running `grep -n "(you)" */ROADMAP.md` | Makes the "tell me what you're waiting on" rule mechanical instead of remembered |
 | **Sheet audit** | A `sheet-audit` skill and a fresh-context agent: crop every table and card at 300 dpi, compare against `src/data/`, produce a `### Data Review Request` | The Research Site misread survived a status line claiming every rule was re-checked. Art gets a second reader; numbers get none |
