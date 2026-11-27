@@ -228,9 +228,10 @@ instead" after two hours than hand over something that technically works.
 
 ## Art
 
-**Sharing the publishers' art is allowed.** The owner's decision, 2026-11-26: "It's my purchase and
-my decision, and I allow it. It's only for me anyway." So send the real pages and crops to the model
-without asking. The *site* stays private behind Access, unchanged.
+**Sharing the publishers' art is allowed** with any human or AI working on this project. The owner's
+decision, 2026-11-26 and confirmed 2026-11-27: "It's my purchase and my decision, and I allow it."
+So send the real pages and crops to whatever model or person is doing the work, without asking. The
+*site* stays private behind Access, unchanged - that is a separate thing, and it does not move.
 
 ### Give the model the originals
 
