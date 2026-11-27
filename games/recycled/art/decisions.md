@@ -4,6 +4,12 @@ Newest first. One entry per decision that would otherwise have to be rediscovere
 what came back, what was accepted or rejected, and why. Reconstructed from commit messages for
 everything before 2026-11-27.
 
+## 2026-11-27 · Restore the Depot frame and the launch manual
+
+The previous crop clipped the upper metal frame and the bottom of the book. Its transparency mask also reached into the Depot title. The map covers the lower-left corner of the manual on Sheet 1, so the former inpaint blurred the binding into the Batteries label.
+
+The new outline follows the exterior. The original page supplies the title, grid, day tracks, instructions and checkboxes at their native sheet coordinates. An image edit supplied a donor for the hidden binding and paper. Its lettering was discarded. The retained riveted lip came from the preceding Depot asset. The small repair layer and the outline are in `tools/depot/`; normal extraction now applies both. The display canvas begins at sheet (0, 0) and measures 2496 × 1500.
+
 ## 2026-11-27 · The buildings were never clipped by the sheet, only by our crop
 
 **Game Director, from the iPad:** "The edges can be improved. For some of it you could just ask

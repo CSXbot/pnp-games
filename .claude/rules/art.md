@@ -74,6 +74,26 @@ detail has been reconstructed** rather than extracted.
 - **Never let a model write text.** Rebuild a title or a cost from verified game data and composite
   it, or keep the original pixels. Invented rules on a game component are worse than blur.
 
+## Cutouts that carry printed game information
+
+Before cutting a board, dashboard or player aid from a sheet, mark three things on a native-size
+crop: surviving print, exterior background, and parts hidden by another component. Check sibling
+sheets and rulebook illustrations for the hidden parts. Keep the sheet-space origin alongside the
+export so the game's overlays still point to the same cells.
+
+Trace transparency along the exterior. A light letter, a worn patch of enamel and the white of a
+checkbox can all match the page background. Compare both RGB and alpha in the surviving print
+against the original. For an obscured edge, reuse matching material from the sheet or ask
+`art.mjs edit` for a donor. Composite just the missing paper, metal or binding. Keep printed text,
+icons and game geometry from the original.
+
+Show the vision reviewer the native original, the exported cutout on light and dark backgrounds,
+and the largest view players can actually open. Ask it to point to holes, squared-off curves,
+foreign outlines, blurred lettering and misplaced marks. Check its findings against the original.
+Exercise a marked state in the real UI. Run the regular extractor again and compare the decoded
+output and registration to the approved version. Keep the outline and repair layer with the
+extractor so a fresh export gives the same result.
+
 ## Close the loop before you show me
 
 **Review blind.** Render one legal interaction, capture it at both sizes, and ask the model what

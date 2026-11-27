@@ -1469,13 +1469,27 @@ button.die {
   z-index: 2;
 }
 .modal.depot-zoomed {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   max-width: min(96vw, 1500px);
 }
 .modal.depot-zoomed .depot {
+  display: grid;
+  min-height: 0;
   border: none;
   box-shadow: none;
   padding: 0;
   background: none;
+}
+
+.modal.depot-zoomed .depot-art-wrap {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+.modal.depot-zoomed .depot-art {
+  min-height: 0;
+  max-height: 100%;
 }
 
 /* The playtester's strip in the top bar: see src/ui/playtest.ts. Loud on purpose - a playtest and

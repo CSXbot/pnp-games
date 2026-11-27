@@ -4,7 +4,7 @@
 Usage:
     python3 tools/extract_art.py SHEET1_PLANET1.pdf SHEET2.pdf RULEBOOK_PAGE1.pdf
 
-Needs `pdftoppm` (poppler), Pillow, numpy and opencv-python-headless. Coordinates below are pixels at 300 dpi on the
+Needs `pdftoppm` and `pdfimages` (Poppler), Pillow, numpy and opencv-python-headless. Coordinates below are pixels at 300 dpi on the
 A4 sheets (2480 x 3508).
 """
 
@@ -20,6 +20,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw
+
+from close_depot import restore_depot
 
 OUT = Path(__file__).resolve().parent.parent / 'src' / 'assets' / 'art'
 
@@ -174,54 +176,6 @@ def board(sheet1: Image.Image) -> None:
     save(out, 'board', width)
 
 
-# Depot machine + launch manual from the top of Sheet 1, as one L-shaped image.
-DEPOT_BOX = (95, 110, 2440, 1445)
-
-
-def depot_alpha(arr: np.ndarray) -> np.ndarray:
-    """The console's own outline, not a rectangle through it.
-
-    The sheet's Mars backdrop is a saturated orange-red while the console is desaturated metal and
-    the manual is pale paper, so flooding that backdrop inwards from the border traces the real
-    silhouette - rounded corners, side pipes and all. The old straight-edged alpha sliced the
-    machine across its lower body, losing the switch bank and the dials.
-
-    The crop runs past the console into the hex board, so the machine and the note get separate
-    lower limits: the note hangs below the machine, and one flat cut could not keep both.
-    """
-    h, w = arr.shape[:2]
-    hsv = cv2.cvtColor(arr, cv2.COLOR_RGB2HSV).astype(int)
-    hue, sat = hsv[:, :, 0], hsv[:, :, 1]
-    passable = (((hue < 25) | (hue > 170)) & (sat > 70)).astype(np.uint8)
-    flood = np.zeros((h + 2, w + 2), np.uint8)
-    border = [(x, y) for x in range(w) for y in (0, h - 1)] + [(x, y) for y in range(h) for x in (0, w - 1)]
-    for x, y in border:
-        if passable[y, x] == 1:
-            cv2.floodFill(passable, flood, (x, y), 2)
-    kept = cv2.morphologyEx((passable != 2).astype(np.uint8), cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8), 2).astype(bool)
-
-    SPLIT_X, MACHINE_BOTTOM, NOTE_BOTTOM = 1700, 1035, 1290
-    rows = np.arange(h)[:, None]
-    kept &= rows < np.where(np.arange(w)[None, :] < SPLIT_X, MACHINE_BOTTOM, NOTE_BOTTOM)
-
-    n, lab, stats, _ = cv2.connectedComponentsWithStats(kept.astype(np.uint8), 8)
-    return np.isin(lab, [i for i in range(1, n) if stats[i, cv2.CC_STAT_AREA] > 8000])
-
-
-def depot(sheet1: Image.Image) -> None:
-    x0, y0, x1, y1 = DEPOT_BOX
-    arr = np.array(sheet1.crop(DEPOT_BOX))
-    # The map board pokes into the manual's lower-left corner: paint it out with paper.
-    m = np.zeros(arr.shape[:2], np.uint8)
-    corner = [(1800, 1150), (1898, 1198), (1908, 1300), (1962, 1380), (2008, 1460), (1800, 1460)]
-    cv2.fillPoly(m, [np.array([(x - x0, y - y0) for x, y in corner], np.int32)], 255)
-    arr = cv2.inpaint(arr, m, 9, cv2.INPAINT_TELEA)
-    img = Image.fromarray(arr)
-    img.putalpha(Image.fromarray((depot_alpha(arr) * 255).astype(np.uint8)))
-    save(img, 'depot', None, 88)  # native: the manual's small print needs every pixel the scan has
-    (OUT / 'depot.json').write_text(json.dumps({'x0': x0, 'y0': y0, 'width': x1 - x0, 'height': y1 - y0}) + '\n')
-
-
 CARD_X = [120, 690, 1250, 1810]
 CARD_Y = [1220, 1970, 2710]
 CARD_W, CARD_H = 530, 705
@@ -313,7 +267,7 @@ def main() -> None:
         sheet2 = render(sys.argv[2], tmp, 'sheet2')
         page1 = render(sys.argv[3], tmp, 'page1')
     board(sheet1)
-    depot(sheet1)
+    restore_depot(Path(sys.argv[1]), OUT)
     cards(sheet2)
     icons(sheet2)
     header(page1)
