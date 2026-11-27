@@ -279,6 +279,11 @@ twice proposed work that had already been rejected. Files rather than the provid
 conversations, because they are visible, versioned, survive a change of model, and the next tech
 lead or consultant can read them.
 
+**A second Art Director that looks for itself.** `codex exec -s read-only -C <repo> -i <image> -`
+with the prompt on stdin gives a reviewer that reads the repo rather than only what you chose to
+send, which makes a blind review harder to bias. It has no memory either, so point it at the
+notebook. It authenticates with ChatGPT tokens, not the API key.
+
 ### Give the model the originals
 
 "Retro sci-fi building" throws away information we already own. Send the real thing, through

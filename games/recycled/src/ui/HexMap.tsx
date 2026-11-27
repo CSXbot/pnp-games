@@ -127,10 +127,7 @@ export function HexMap({
           </g>
         );
       })}
-      {state.buildings.map((b) => (
-        <Building key={b.id} b={b} target={!!targets?.has(b.hex)} dim={!!targets && !targets.has(b.hex)} />
-      ))}
-      {/* Shared contour between joined buildings */}
+      {/* Joins are drawn under the buildings, or the bar crosses their name labels */}
       {links.map((b) => {
         const a = hexToPixel(b.hex, SIZE);
         const c = hexToPixel(byId(state, b.link!).hex, SIZE);
@@ -139,6 +136,9 @@ export function HexMap({
         const p2 = lerp(0.64);
         return <line key={b.id} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} className="link" />;
       })}
+      {state.buildings.map((b) => (
+        <Building key={b.id} b={b} target={!!targets?.has(b.hex)} dim={!!targets && !targets.has(b.hex)} />
+      ))}
       {/* Click/hover layer on top of buildings */}
       {hexes.map((h) => {
         const { x, y } = hexToPixel(h.key, SIZE);
@@ -242,19 +242,6 @@ function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: 
         />
       )}
       {!cut && <polygon points={hexCorners(x, y, SIZE - 3)} className="b-outline" />}
-      <g className="b-ribbon">
-        <rect x={x - 25} y={y + 12} width={50} height={11} rx={2} />
-        <ResIcon r={res && b.type === 'cryoTank' ? res : def.icon} size={11} x={x - 24.5} y={y + 12} />
-        <text
-          x={x + 5}
-          y={y + 20.5}
-          textAnchor="middle"
-          className="b-label"
-          {...(SHORT[b.type].length > 7 ? { textLength: 37, lengthAdjust: 'spacingAndGlyphs' } : {})}
-        >
-          {SHORT[b.type]}
-        </text>
-      </g>
       {!b.complete && (
         <text x={x} y={y - 4} textAnchor="middle" className="b-steps">
           SETUP {b.step}/{steps}
@@ -268,6 +255,19 @@ function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: 
           const st = i < b.used ? 'used' : i < b.drawn ? 'full' : 'empty';
           return <circle key={i} cx={cx} cy={cy} r={slotR} className={`slot slot-${st}`} />;
         })}
+      <g className="b-ribbon">
+        <rect x={x - 25} y={y + 12} width={50} height={11} rx={2} />
+        <ResIcon r={res && b.type === 'cryoTank' ? res : def.icon} size={11} x={x - 24.5} y={y + 12} />
+        <text
+          x={x + 5}
+          y={y + 20.5}
+          textAnchor="middle"
+          className="b-label"
+          {...(SHORT[b.type].length > 7 ? { textLength: 37, lengthAdjust: 'spacingAndGlyphs' } : {})}
+        >
+          {SHORT[b.type]}
+        </text>
+      </g>
     </g>
   );
 }

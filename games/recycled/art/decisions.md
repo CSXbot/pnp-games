@@ -4,6 +4,19 @@ Newest first. One entry per decision that would otherwise have to be rediscovere
 what came back, what was accepted or rejected, and why. Reconstructed from commit messages for
 everything before 2026-11-27.
 
+## 2026-11-27 · Codex tried as an Art Director that can look for itself
+
+**Asked:** read this notebook, look at the live board at iPad size, name up to three visual defects
+with the file to change, propose nothing the log has settled.
+**Result:** it did. Two real defects neither I nor the owner had acted on - the join bars crossing
+the CRYO and SEPARATOR name labels, and a stock dot landing on the last letters of RESEARCH. Both
+fixed by drawing order: joins now go under the buildings, the name ribbon over the dots.
+**Worth knowing:** `codex exec` takes images with `-i`, runs `--sandbox read-only`, and
+authenticates with ChatGPT tokens rather than the API key, so it does not bill API spend. The
+variadic `-i` swallows a positional prompt - pass the prompt on stdin with a trailing `-`.
+**Why it is useful:** unlike the Images/Responses path it reads the repo itself, so a review is
+harder for me to bias by choosing what to send.
+
 ## 2026-11-27 · All twelve buildings cut out of their ground
 
 **Asked:** isolate each building from the printed sand, keeping the publisher's pixels.
