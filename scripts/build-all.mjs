@@ -7,7 +7,7 @@
 // so a built page needs no network and can be opened by double-clicking it.
 
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -58,8 +58,20 @@ if (existsSync(icons)) {
   }
 }
 
+// A game is downloaded whole, so its size is a feature of it. The budget is declared per game in
+// package.json ("pnp": { "maxKB": 3500 }) and fails the build, because the one time this mattered
+// nobody was looking: merging an otherwise correct Depot repair saved a 2496x1500 scan losslessly
+// and took Recycled from 2.5 MB to 4.6 without a single check going red.
 console.log('\n=== dist');
-for (const { out } of targets) {
+const over = [];
+for (const { ws, out } of targets) {
   const kb = Math.round(statSync(path.join(dist, out)).size / 1024);
-  console.log(`  ${out}  ${kb} KB`);
+  const pkgPath = path.join(root, ws, 'package.json');
+  const max = existsSync(pkgPath) ? JSON.parse(readFileSync(pkgPath, 'utf8')).pnp?.maxKB : undefined;
+  const note = max ? `  (budget ${max} KB)` : '';
+  console.log(`  ${out}  ${kb} KB${note}`);
+  if (max && kb > max) over.push(`${out} is ${kb} KB, over its ${max} KB budget`);
+}
+if (over.length) {
+  throw new Error(`${over.join('; ')}. Raise "pnp.maxKB" deliberately, or find what grew.`);
 }

@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "pnp": {
     "title": "Recycled",
-    "tabletReady": true
+    "tabletReady": true,
+    "maxKB": 3500
   },
   "type": "module",
   "scripts": {

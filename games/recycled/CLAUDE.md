@@ -16,10 +16,29 @@ The shelf-wide rules (stack, deployment, layout targets, art protocol) are in th
 | `README.md` | How to play, run and build it |
 | `SPEC.md` | The rules as implemented: resources, setup, buildings, turn order, tables, edge cases |
 | `RULES-NOTES.md` | How this version reads rules the rulebook leaves open (player-facing) |
-| `ROADMAP.md` | What's next, known issues, and decisions already settled |
+| `ROADMAP.md` | What's still open. Finished work moves out of it, into here |
+| `RETRO.md` | What the first release cost, what it changed, and why |
 | `CLAUDE.md` | This file: status, agreements, save schema, architecture, what breaks easily |
 
 ## Status
+
+**Released 1.0.0 on 2026-11-27** (`recycled-v1.0.0`), on the Game Director's call: "the game is
+good enough now... it looks great and 100% playable." The site serves `main`, not the tag, so this
+is a label on a moving trunk - `main` stays fit to play. Open work is in `ROADMAP.md` and is
+expected to be there; a release is a line under what is playable, not the end of the list.
+
+What 1.0.0 contains that earlier notes list as open:
+
+- **The iPad layout holds at both heights** - 1366x865 (a browser with its chrome) and 1366x1024
+  (the Home Screen app), both checked by `npm run check:screens` and both confirmed on the device.
+- **Every building is a cut-out**, taken from the whole printed illustration band rather than a
+  window inside it, and centred in one shared 290x199 frame so relative scale survives.
+- **The board's edge is traced** from the printed rim rather than approximated, and the Depot is
+  rebuilt in sheet coordinates with its full metal frame, its riveted rail and a whole launch
+  manual. Only the corner the hex board prints over is reconstructed.
+- **Saves follow you between devices**, confirmed through the live site and the real Access path.
+- **Playtest mode** (`?playtest=1`): its own save key, sync off, a step counter and a journal that
+  replays any position from the seed.
 
 - **Content:** Planet 1 only, base game only, fully playable: both win conditions and every way to lose.
 - **Rules:** every rule from the rulebook and cards is in the engine, re-checked against the PDFs.
