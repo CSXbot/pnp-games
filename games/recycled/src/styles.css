@@ -1130,8 +1130,13 @@ button.die {
 }
 
 /* Depot machine art with pen marks */
+/* The Depot is the one panel whose content is width-bound: its art is 1.68:1, so every pixel of
+   padding costs 1.7 pixels of height too. It gets the panel's frame without the inset. */
 .depot-art-panel {
-  padding: 8px;
+  padding: 3px;
+}
+.depot-art-panel > .depot-art-wrap {
+  margin: 0;
 }
 .depot-art {
   width: 100%;
