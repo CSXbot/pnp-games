@@ -74,16 +74,6 @@ didn't say where consultants are listed. **Still open, all of them older than th
 
 ## Housekeeping
 
-- **(you) Turn off the connectors this project doesn't use** - Airtable, Notion, Gmail, Drive,
-  Calendar. Roughly 150 tool names and their instructions load into every session here. Two ways:
-  `/mcp` switches a server off per project (saved in `~/.claude.json`), or
-  `{"disableClaudeAiConnectors": true}` in `.claude/settings.json` turns them all off for anyone
-  who opens this repo. The second is all-or-nothing and costs us nothing: nothing here uses a
-  connector, and the deprecated Cloudflare one is unused too (everything goes through `npx
-  wrangler`). **Say the word and I'll add the line** - it's config, so it waits for yours.
-  **Measured 2026-11-27:** a headless session in this repo starts with 238 tools and ~290,000
-  tokens of context before it does anything, $2.40 for a single turn. With the connectors off: 22
-  tools, 15,730 tokens, $0.13. That is 95% of start-up context, and every agent we run pays it.
 - **A shelf icon of its own.** The cosmonaut helmet is Recycled's identity and currently serves both
   pages. When a second game lands, the shelf wants its own and each game links its own.
 - **`packages/kit`.** Save sync, the new-game dialog, the top bar and display settings are all shelf
