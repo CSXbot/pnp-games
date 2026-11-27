@@ -11,6 +11,8 @@ did. Output is lossless WebP, which halves the file against PNG for a game downl
 Needs Pillow and an OpenAI key in ~/.openai-token (see the Art section of the root CLAUDE.md).
 The API call goes through scripts/art.mjs, which is the only client.
 """
+from __future__ import annotations
+
 import subprocess
 import sys
 import tempfile
@@ -41,6 +43,10 @@ PROMPT = (
 # A cut-out that keeps this much of the printed sand has kept the ground or the cast shadow.
 # The kit's hand-traced reference scores about 8 percent.
 MAX_SAND_PCT = 12
+# How far from this tile's own ground colour a pixel may be and still count as ground.
+GROUND_TOLERANCE = 38
+# A trim that removes this much of the model's silhouette is eating the building, not the ground.
+MAX_EATEN_PCT = 25
 
 # The gates are heuristics: they flag an asset for a human look, and two buildings were looked at
 # and judged fine. Each exception says why, so it can be re-argued rather than inherited blindly.
@@ -69,31 +75,42 @@ def pad_square(tile: Image.Image) -> tuple[Image.Image, int, int]:
     return canvas, ox, oy
 
 
-def sand_fraction(rgba: np.ndarray) -> float:
-    """How much of what we kept is the printed ground, by `extract_art.py`'s own test: sand is
-    saturated orange, buildings are greys, whites and dark metal."""
-    rgb, a = rgba[:, :, :3].astype(float), rgba[:, :, 3]
-    vis = a > 127
-    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
-    sat = np.divide(mx - mn, np.where(mx == 0, 1, mx))
-    sand = (sat >= 0.28) & (mx >= 90) & (rgb[:, :, 0] > rgb[:, :, 2]) & vis
-    return sand.sum() / max(vis.sum(), 1)
+def ground_colour(tile: np.ndarray, kept: np.ndarray) -> np.ndarray | None:
+    """This tile's printed ground, sampled from what the model called background."""
+    outside = ~kept
+    if outside.sum() < 50:
+        return None
+    return np.median(tile[outside].reshape(-1, 3), axis=0)
 
 
-def trim_ground(tile: np.ndarray, kept: np.ndarray) -> np.ndarray:
+def ground_fraction(tile: np.ndarray, kept: np.ndarray, ground: np.ndarray | None) -> float:
+    """How much of what we kept is that same printed ground.
+
+    Measured against this tile's own ground rather than "anything saturated and warm", which
+    counted the Rover's tan bodywork and the Cryo Tank's panels as sand.
+    """
+    if ground is None or not kept.any():
+        return 0.0
+    near = np.abs(tile.astype(float) - ground).max(axis=2) <= GROUND_TOLERANCE
+    return (near & kept).sum() / kept.sum()
+
+
+def trim_ground(tile: np.ndarray, kept: np.ndarray, ground: np.ndarray | None) -> np.ndarray:
     """Drop printed ground the model left inside its silhouette.
 
-    The model gives a rough region; the publisher's own pixels decide the edge. Sand reachable from
-    outside the silhouette is ground - the cast shadow pool, the orange fringe round the base - and
-    goes. Sand enclosed by structure belongs to the building and stays, which is why this floods
-    inwards rather than subtracting every orange pixel.
-    """
-    rgb = tile.astype(float)
-    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
-    sat = np.divide(mx - mn, np.where(mx == 0, 1, mx))
-    sand = (sat >= 0.28) & (mx >= 90) & (rgb[:, :, 0] > rgb[:, :, 2])
+    The ground colour is **measured from this tile**, not guessed: pixels the model already called
+    background are the sample. Only colours close to that sample are passable, so the flood eats
+    the shadow pool and the orange fringe but not the building's own warm paint - which an
+    "anything saturated and warm" test did, hollowing out the Cryo Tank and the Nuclear Pod.
 
-    passable = (~kept | sand).astype(np.uint8)
+    Flooding from the border, rather than subtracting every matching pixel, keeps ground-coloured
+    areas that are enclosed by structure.
+    """
+    if ground is None:
+        return kept
+    near = np.abs(tile.astype(float) - ground).max(axis=2) <= GROUND_TOLERANCE
+
+    passable = (~kept | near).astype(np.uint8)
     h, w = passable.shape
     flood = np.zeros((h + 2, w + 2), np.uint8)
     border = [(x, y) for x in range(w) for y in (0, h - 1)] + [(x, y) for y in range(h) for x in (0, w - 1)]
@@ -125,9 +142,10 @@ def cut(kind: str, work: Path) -> str:
     alpha = Image.open(matte).convert('RGBA').split()[3]
     alpha = alpha.resize((side, side), Image.LANCZOS).crop((ox, oy, ox + tile.width, oy + tile.height))
     rule = OVERRIDES.get(kind, {})
-    kept = np.array(alpha) > 127
-    if rule.get('trim', True):
-        kept = trim_ground(np.array(tile), kept)
+    raw = np.array(alpha) > 127
+    ground = ground_colour(np.array(tile), raw)
+    kept = trim_ground(np.array(tile), raw, ground) if rule.get('trim', True) else raw
+    eaten = (raw.sum() - kept.sum()) / max(raw.sum(), 1) * 100
     coverage = kept.mean() * 100
 
     out = tile.copy()
@@ -138,14 +156,17 @@ def cut(kind: str, work: Path) -> str:
     if not rule.get('min_coverage', 15) <= coverage <= 85:
         return f'{kind}: SUSPECT - keeps {coverage:.0f}% of the tile; not written, look at the matte'
 
-    sand = sand_fraction(np.array(out)) * 100
+    if eaten > rule.get('max_eaten', MAX_EATEN_PCT):
+        return f'{kind}: TRIM ATE IT - removed {eaten:.0f}% of the silhouette; not written'
+
+    sand = ground_fraction(np.array(tile), kept, ground) * 100
     if sand > rule.get('max_sand', MAX_SAND_PCT):
         return f'{kind}: GROUND LEFT - {sand:.0f}% of what it keeps is printed sand; not written'
 
     out.save(OUT / f'{kind}.webp', 'WEBP', lossless=True, quality=100, method=6)
     size = (OUT / f'{kind}.webp').stat().st_size // 1024
     note = f" [exception: {rule['reason']}]" if rule else ''
-    return f'{kind}: kept {coverage:.0f}%, sand {sand:.0f}%, 0 pixels altered, {size} KB{note}'
+    return f'{kind}: kept {coverage:.0f}%, sand {sand:.0f}%, trim took {eaten:.0f}%, {size} KB{note}'
 
 
 def main() -> None:
