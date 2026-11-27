@@ -34,7 +34,11 @@ def restore_depot(pdf: Path, output: Path) -> None:
                     image.paste(patch, REPAIR_ORIGIN, patch.getchannel("A"))
                 image.putalpha(outline.convert("L"))
     output.mkdir(parents=True, exist_ok=True)
-    image.save(output / "depot.webp", lossless=True, method=6)
+    # Lossy, deliberately. Lossless costs 1903 KB against 459 KB at q=92 - 1.9 MB of the single
+    # file - to preserve the artefacts of a source that is itself a 5%-ratio JPEG. Measured over
+    # the opaque area at q=92: max channel delta 31, mean 2.1, and only 0.4% of pixels differ by
+    # more than 8. Alpha comes out bit-identical, so the silhouette and every mask edge are exact.
+    image.save(output / "depot.webp", quality=92, method=6)
     geometry = dict(x0=0, y0=0, width=image.width, height=image.height)
     (output / "depot.json").write_text(json.dumps(geometry) + "\n")
 
