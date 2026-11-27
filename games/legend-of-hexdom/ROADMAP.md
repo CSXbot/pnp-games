@@ -8,11 +8,17 @@ Director.
 - **(you)** Answer the 14 questions in `SPEC.md` section 7, and overrule any of the "settled"
   readings under them. Stage 2 waits on this.
 - Record each answer in `RULES-NOTES.md` and each ruling in `CLAUDE.md`; fold them into `SPEC.md`.
+- Rules research with Gemini on the 14 questions, brief in `research/brief-2026-11-27.md`.
+  **(you)** Blocked on billing for the Google project: search and Deep Research fail on the Free
+  tier. Findings get verified in a real browser before they reach the Game Director.
 
 ## Stage 2: engine and data
 
 - Measure the three maps: hex centres, terrain per hex including under Villages and Castles,
   Village numbers, Castles. Show the Game Director any hex whose terrain is unclear at 300 dpi.
+- A data test: each sidesheet's Adventure table holds each of the six Treasures exactly once (the
+  B/C reissue fixed a doubled spear and a missing book), and the A4 copies of maps 2 and 3 agree
+  with A5 sidesheets B and C.
 - Type sidesheets A-C and the three cards into `src/data/`, from 300 dpi crops; Boss pairs and
   Treasures from the Boss table.
 - Engine with the standard features (seeded dice, manual dice, undo that never crosses a roll,

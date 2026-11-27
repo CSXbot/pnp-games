@@ -46,6 +46,14 @@ sheets are image-only 300 dpi rasters with no text layer. The rulebook has a tex
 | Same 17 cards as raw PNGs | `.../A5-Classes/A5-<name>.png~` | - |
 | Bonus characters, epic maps, Lost Sands, Winter Tales | their own folders, some zipped | no |
 
+**Which files are newest.** The A4 sheets carry two dates: 60 from 2024-05-17 (map 1 among them)
+and 40 from 2024-05-23 - exactly the sheets on sidesheets B, C, G and H, so maps 2 and 3. A search
+summary of the publisher's MyMiniFactory page (unverified, reported by the consultant) mentions
+"fixed map files for bugged double spears and missing book". The A5 sidesheets and maps are newer
+than both, 2024-06-10, and are the data source. Checked by eye: A5 sidesheets A, B and C each have
+all six Treasures in their Adventure table exactly once. Stage 2 makes that a test, and compares
+the A4 copies.
+
 The `.png~` files are genuine PNGs (1296x887 RGBA), most likely the images the card PDFs were
 exported from, under a backup-file suffix. The PDFs embed a 1555x887 image, so treat the PDFs as
 canonical.
