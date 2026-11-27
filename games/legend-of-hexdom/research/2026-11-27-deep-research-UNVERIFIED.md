@@ -2,9 +2,9 @@
 
 `deep-research-max-preview-04-2026`, given `brief-2026-11-27.md` only (no rulebook). Ran 39
 minutes: 291 Google searches, 36.6M input tokens (11.2M cached), 1.7M output and thinking tokens.
-**Estimated cost about $70-75** at the third-party-listed $2/$12 per million tokens (Google's own
-page not checked) - far above the $1-3 estimate it was run on. Don't run Deep Research Max again
-without a reason worth that.
+**Actual cost £26.16** (the Game Director, from Google's billing). The tech lead's estimate from
+listed prices had been about $70-75, the brief's $1-3. The Game Director's direction since: don't use
+Deep Research for questions like these; ask a strong Gemini model, which can search.
 
 **Nothing below is verified.** Its links are Google grounding redirects, not the pages. A finding
 is used only once someone has opened the page and seen the quote; `verification.md` beside this

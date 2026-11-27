@@ -3,12 +3,6 @@
 Only what is open. Finished work is described in `CLAUDE.md`. **(you)** marks what needs the Game
 Director.
 
-## Stage 1: spec and direction
-
-- **(you)** Answer questions A-D in `SPEC.md` section 7. Overrule any of the group's ten in
-  `RULES-NOTES.md` you disagree with - Q4 (the boxes are lifetime totals) above all. Stage 2's engine
-  waits on this; its data work doesn't.
-- Record each answer in `RULES-NOTES.md` and each ruling in `CLAUDE.md`; fold them into `SPEC.md`.
 
 ## Stage 2: engine and data
 
@@ -23,6 +17,12 @@ Director.
   saves under `pnp:legend-of-hexdom:state` with `migrateSave()`).
 - Data model ready for the other 13 characters, sidesheets D-J and maps 4-100: content is tables,
   skills hook into named moments (travel, damage, combat, gain) rather than special cases.
+
+## Stage 5b: playtest
+
+- Ask the Playtester whether they ever wanted to leave a main-phase die unused. The Game Director
+  ruled both dice mandatory and wants to know how it felt; if nobody ever wants to, the question is
+  moot (`RULES-NOTES.md`, A).
 
 ## Later
 

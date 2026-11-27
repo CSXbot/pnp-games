@@ -1,7 +1,7 @@
 # Legend of Hexdom: specification
 
-**Stage 1, 2026-11-27. Ten of the first fourteen questions were settled by the rules group
-(`RULES-NOTES.md`); four wait on the Game Director (section 7).**
+**Stage 1 done, 2026-11-27.** Every question is answered: ten settled by the rules group and four
+ruled by the Game Director, all in `RULES-NOTES.md`.
 Nothing here is built yet. When it is, this file describes the rules *as implemented*.
 
 Scope: **Hex Forest maps 1-3** (sidesheets A-C), **solo, normal mode**, characters **Warrior,
@@ -98,7 +98,8 @@ Gift adds 30 (p69).
    path; then any die may be used, and each Mountain or Water hex entered without permission costs 2
    hearts on top of the food. **Sail Boat / Trusty Donkey** (Q3): a path crossing Water / a Mountain
    may be one hex longer, optionally; the two stack.
-4. **Main phase** with the two remaining dice, one action per die, in the order the player chooses
+4. **Main phase** with the two remaining dice: **each must be used** (Game Director, A), one action
+   per die, in the order the player chooses
    (p13): **Explore**, **Adventure**, or **fight a Boss** (only in a Castle). Any mix: two
    Explores, two Adventures, two Bosses, or one of each.
    - **Explore** (p14, p46-48): look up the die's row in the column of the current hex's terrain,
@@ -161,74 +162,9 @@ They will be re-encoded at the size they are actually displayed (2x for the iPad
 the game gets a `pnp.maxKB` budget when it gets a `package.json`.
 
 
-## 7. Questions for the Game Director
+## 7. Questions
 
-Four questions the rules group could not settle. The other ten, and what each rests on, are in
-`RULES-NOTES.md`. Each question has four parts: what the original says, what has been said in
-public (verified on the page, `research/verification.md`), the group's positions with an example,
-and the question.
-
-**A. May a main-phase die be left unused?** (first asked as Q1)
-- *Original:* "Here we use the remaining two dice to take actions." (p13). Only Travel is ever
-  called mandatory: "everybody has to Travel" (p12), "Travel is mandatory, as heroes don't sit
-  around!" (p34), "you must travel at least 1 hex each turn" (p101). Actions are "can": "you can
-  Explore twice in the same round" (p14). The Brawler's skill: "this Explore action is mandatory, you
-  cannot avoid it!" (p105). Expert mode: "You roll 4 dice, but can only use 3 of them, playing as in
-  normal mode and leaving one behind." (p27).
-- *Said in public:* no answer from the publisher. A player asked on Kickstarter, "Is it mandatory to
-  spend all dice during round? Or can player opt to pass an action (except travel of course, that is
-  mandatory)"; a superbacker replied, "Per the Instruction Book page 13 I would assume that you have
-  to use both the other dice." The publisher's playthrough video says "in the main phase we use the
-  remaining dice one at time to explore to Adventure or to raid a boss", and uses every die in every
-  round it shows.
-- *The group:* all three lean **optional**, none strongly. Against it, the consultant's point: p105's
-  "mandatory" may only answer p22 ("Using skills is not mandatory") - this skill isn't optional -
-  rather than implying ordinary actions are. Example: you roll 3, 3, 6, travel with the 6 and land in
-  a Swamp with 1 heart; on sidesheet A, Explore Swamp 3-4 costs two hearts. Optional: you stop there.
-  Mandatory: each 3 must Explore or Adventure (or both go on the 3-3 Gift, if it is still there).
-- *Question:* may the player leave one or both main-phase dice unused?
-
-**B. Warrior, Adrenaline: does the Travel's own cost count?** (Q9)
-- *Original:* card, "When travelling, if you have 2 [hearts] or less: [Strength] +1"; p106, "when
-  traveling, if you have 2 Heart Points or less, gain a Strength point", with the tip "taking damage
-  they otherwise wouldn't to purposely remain below 2 Heart Points and gain the Adrenaline bonus every
-  time they travel!". A Travel pays its food first, in hearts if there is no food (p12).
-- *Said in public:* nothing on the timing. The publisher's video uses Adrenaline four times, each
-  time with the Warrior already at 2 hearts and paying the Travel in food, so it doesn't decide.
-- *The group:* split, both sides low. The two readings differ in one case only: a Travel that itself
-  takes the Warrior from 3 or more hearts to 2 or fewer. Example: 3 hearts and no food, travel with a
-  3 (2 food): you lose 2 hearts and have 1. The tech lead says that gives the Strength point (the
-  cost is paid while travelling); the Researcher says not ("remain" means already low when the
-  Travel starts).
-- *Question:* does that Travel give the Strength point?
-
-**C. Magic Blood and Cross Training: once per Travel, or as often as you can pay?** (Q10, and the
-count half of Q11)
-- *Original:* Warrior, "After travelling, you may [lose a heart] to gain [Magic] +1" (p107: "After
-  traveling, you may take one damage to gain one Magic point"). Archer, "Before travelling, you may
-  [spend 2 food]: [Strength] +1". Neither prints "once a round"; Overcoming, on the Warrior's own card,
-  does. "Active skills can be used at any time, unless otherwise stated." (p22). Of the Druid: "Note
-  that both his second and last skills don't have the "once a round" limitation!" (p87). But no skill
-  tied to the Travel prints it, even ones that can't sensibly repeat - Swift Journey, "travel with
-  the highest die, [gain a heart] [spend a food]"; Navigator, "when you travel [1], [lose a heart]
-  [+]" - while untimed paid skills do: Herbalist, "[2 food], gain [heart], once a round".
-- *Said in public:* nothing.
-- *The group:* the consultant leans **once per Travel** for both (medium for Magic Blood, less for
-  Cross Training, since 2 food per Strength is also the Druid's unlimited rate): they hang on the one
-  Travel a round, like Navigator. The tech lead now leans the same way. The Researcher, which had not
-  seen that argument, read them as repeatable (medium), from p87. Example: a Warrior with 6 hearts
-  after travelling gains Magic +1 for one heart, or up to +5 for five; an Archer with 8 food before
-  travelling gains Strength +1 for 2 food, or up to +4 for all 8.
-- *Question:* once per Travel, or as many as the player can pay for? The same for both skills?
-
-**D. Archer, Magic Berry: one food per point of Magic, or per gain?** (Q12)
-- *Original:* card, "Every time you improve your [Magic], gain [food]"; p77, "earning him one food
-  whenever he improves his Magic". "Whenever we gain attribute points, we should paint them in our
-  attribute box, from level 1 to 12." (p22). Where the rulebook means per unit it says "for each"
-  (p14, p25, p41).
-- *Said in public:* nothing.
-- *The group:* no lean. The Researcher reads one food per gain (low); the tech lead first proposed
-  one per point and now slightly prefers per gain; the consultant has none. Example: the Archer
-  completes sidesheet A's Relic box (Magic +2): 1 food, or 2? Sidesheet C's Attribute Cart (Magic +3):
-  1, or 3? A point ignored at Magic 12 gives nothing either way.
-- *Question:* one food per point of Magic gained, or one per gain?
+None open. The answers, who gave them and what they rest on are in `RULES-NOTES.md`. In short,
+beyond what sections 3-5 already say: Adrenaline reads the hearts at the moment the Travel starts;
+Magic Blood and Cross Training can be used repeatedly in their windows, since a skill is limited only
+where its card says so; Magic Berry gives one food per gain of Magic.

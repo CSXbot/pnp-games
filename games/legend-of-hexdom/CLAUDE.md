@@ -10,8 +10,9 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 
 ## Status
 
-**Stage 1 (spec and direction), 2026-11-27: ten of the fourteen rule questions settled by the
-rules group (`RULES-NOTES.md`); four wait on the Game Director** (`SPEC.md` section 7, A-D). Stage 0 (intake) done the same day. No code and no
+**Stage 1 (spec and direction) done 2026-11-27.** All fourteen rule questions are answered: ten
+settled by the rules group, four ruled by the Game Director (`RULES-NOTES.md`). **Stage 2 (engine and
+data) next.** Stage 0 (intake) done the same day. No code and no
 `package.json` yet, so this folder is not an npm workspace and the build ignores it.
 
 ## Rulings and scope

@@ -20,10 +20,11 @@ Legend of Hexdom the same day:
   Druid's note on p87 that settled two questions.
 - **Long calls go in the background:** `gemini-api agent run -m <model> --background`, then poll
   `agent status`. A streamed ten-minute `generate` died on a connection reset.
-- **Deep Research Max is expensive.** One run on 14 questions used 36.6M input tokens - about
-  $70-75 against an estimate of $1-3 - and still missed the publisher's own answers. Ask the Game
-  Director before running it again. For a known source, a targeted search or reading it in the
-  browser is cheaper and better.
+- **Don't use Deep Research for rules questions** (the Game Director, 2026-11-27: "Just ask a good
+  Gemini model without research, it can google"). One Deep Research Max run on 14 questions cost
+  **£26.16** (36.6M input tokens; the tech lead's estimate from listed prices was about $70, the
+  brief's $1-3) and still missed the publisher's own answers. Use a strong model with the
+  `google_search` tool, or read a known source in the browser.
 - **The publisher's own comments are the first place to look.** On Hexdom the Kickstarter campaign
   had 175 creator comments, several of them rulings. Load them all in the Game Director's Chrome and
   search the creator's replies.

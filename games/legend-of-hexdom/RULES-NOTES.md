@@ -90,7 +90,37 @@ at the last heart; Bosses (a defeated Boss's die can't fight, the Treasure is no
 round solo); Gifts (optional, gone once taken, a triple's third die travels); the Treasure Crate;
 skills unlocked scoring 0-6; Magic Blood's heart triggering Overcoming; Greed counting every gem.
 
-## With the Game Director
+## Ruled by the Game Director, 2026-11-27
 
-Q1, Q9, Q10 together with the count half of Q11, and Q12: in `SPEC.md` section 7, each with the
-original, what has been said in public, the group's positions, and the question.
+The four the group could not settle (`SPEC.md` section 7 as it stood, questions A-D). The Game
+Director's words are quoted, because the reasoning is meant to guide the cases that follow.
+
+**A (Q1). Both main-phase dice must be used.** "I lean towards "mandatory" actually, but it seems
+there is no reason not to explore when possible? Let's keep it mandatory and make a note to ask the
+Playtester to gauge how it felt? If it will never feel the need to leave a die unused the question
+is moot." So each die left after the Travel must Explore, Adventure or fight a Boss (Explore is
+always available, so a die always has a use). Still optional: spending a double on a Gift instead
+(p20), and, after the second Boss is defeated, using a die still in hand - p25 says players "may
+continue with their round actions". **For the playtest:** ask whether the player ever wanted to leave
+a die unused.
+
+**B (Q9). Adrenaline is decided at the start of the Travel**, before its costs are paid, so a Travel
+that itself takes the Warrior down to 2 hearts does not give the Strength point. "It should be
+"decided/resolved" at the start of the travel. Think of it like this, I'm a human sitting at desk
+with pen and paper. I decide to travel, it's at this point the character is "traveling", not after
+the turn, before; and, most importantly, there is no "during", it's instant in a sense." **The
+principle for other cases:** a Travel happens at the moment the player commits to it; a condition
+"when travelling" is read from the state at that moment.
+
+**C (Q10, and the count half of Q11). Magic Blood and Cross Training can be used as many times as
+the player wants** in their windows (after the Travel; before the Travel), paying each time. "As
+many as the player wants. My reasoning: some skills say "once per round", which means that skills
+that don't say that can be used more, also rules say "at any time"." So the general rule: a skill is
+limited only where its card says so.
+
+**D (Q12). Magic Berry gives one food per gain, not per point.** "Per gain, of course. It's obvious
+in the wording." Applied by the tech lead: one food for each effect that raises Magic, however many
+points it gives - completing Relic box A (Magic +2) gives 1 food, the Attribute Cart (Magic +3) 1
+food, an Explore cell's two `+` both put into Magic 1 food, and nothing when every point is ignored
+at Magic 12. Separate effects are separate gains: the Food box's `+` milestone, then an Explore in
+the same round, give 1 food each. Overrule if that reading of "per gain" is wrong.
