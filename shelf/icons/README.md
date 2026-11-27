@@ -10,7 +10,7 @@ absolutely. Everything else on the shelf stays inside its single HTML file.
 Regenerate with:
 
 ```
-node scripts/gen-image.mjs --out shelf/icons/source.png --quality low --prompt \
+node scripts/art.mjs generate --out shelf/icons/source.png --quality low --prompt \
   "Square app icon, flat poster style, no text. Rusty orange-brown scratched metal background. \
    Centred: a cream-white silhouette of a 1970s cosmonaut helmet, visor facing forward, with a \
    small recycling arrow loop reflected in the visor. Soviet space programme signage, bold shapes, \

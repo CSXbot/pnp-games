@@ -183,7 +183,7 @@ def cards(sheet2: Image.Image) -> None:
         m = Image.new('L', card.size, 0)
         ImageDraw.Draw(m).rounded_rectangle((0, 0, card.width - 1, card.height - 1), radius=22, fill=255)
         card.putalpha(m)
-        save(card, f'card-{name}', 400)
+        save(card, f'card-{name}')  # native 530px: the sheet is 300 dpi and that is the ceiling
 
         # Illustration band (below the title strip): find the building and crop around it.
         band = sheet2.crop((x + 10, y + 100, x + 380, y + 298))

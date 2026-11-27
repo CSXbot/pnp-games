@@ -150,11 +150,12 @@ the flag is what turns the fit check from a warning into a failure, so it goes o
 **You:** try it on the real device once it fits. I can measure that nothing scrolls; I can't feel
 whether a tick box is big enough for a finger.
 
-**4. Art.** Triage per **Art**, cut from the PDFs in `games/<slug>/tools/`, inline everything, and
-finish with an `### Art Review Request`. Art is never done on your say-so.
-**You:** look at that review, with ChatGPT where a second eye helps, and make any art that isn't in
-the PDFs from the `### External Image Request` I give you. I build against a placeholder so nothing
-waits on it.
+**4. Art, with OpenAI as art director.** Claude owns the integration and brings me the visual
+decisions. Per asset: establish what the source actually holds, pick the method, then close the loop
+before anything ships. Everything runs through `scripts/art.mjs`, a local asset tool - no API call
+is ever part of the game, which stays one offline file.
+**You:** I make the final call between the original and the best candidate, shown side by side in
+both layouts.
 
 **5. Shelf and ship.** Register the game on the shelf, push, confirm the deploy, and play it on the
 real device.
@@ -215,58 +216,67 @@ instead" after two hours than hand over something that technically works.
 
 ## Art
 
-Triage every visual:
-1. **Simple geometry** (dice, checkboxes, tracks, plain icons): build it in SVG/CSS.
-2. **Original art from the PDFs** (boards, cards, illustrations, icons): cut it out with Python
-   (`pdftoppm`, Pillow, numpy, OpenCV) in a script saved under `games/<slug>/tools/`. Measure grids by
-   fitting them, not by eye (see `games/recycled/tools/calibrate_grid.py`). Save the art under
-   `games/<slug>/src/assets/` and **import** it, so it's inlined.
-   **Don't use `public/`:** files there aren't inlined, which breaks the single file.
+### Give the model the originals
 
-   **Only two kinds of image carry geometry:** the board (its grid is measured into `board.json` and
-   the UI stretches the image to match) and the Depot (its pen-mark coordinates are measured in its
-   own pixel space). Everything else - building tiles, cards, icons, logo, banner - carries no
-   geometry, so generative cleanup is allowed there freely and usually beats a hand-written mask.
+"Retro sci-fi building" throws away information we already own. Send the real thing, through
+`scripts/art.mjs review` (Responses API) for judgement and `art.mjs edit` (Images API) for work:
 
-   For the two that do carry geometry, the rule is **not** "never touch them with a model". It is:
+- the **whole component** for context - the full card, the whole sheet region;
+- the **best available crop** of the target, at native resolution;
+- **one or two related components** from the same game - one card establishes the palette, another
+  the perspective and lighting;
+- and say in the prompt **what each reference is for**. References are context, never to be copied
+  into the output.
 
-   - **Never regenerate the whole image.** A redraw shifts the grid, and every tile, storage circle
-     and pen mark then sits in the wrong place.
-   - **Masked edits are fine**, and often the best tool: send the real image plus a mask covering
-     only the part being fixed - a ragged outer edge, a cut that sliced through a machine - so the
-     measured pixels are never in play.
-   - **Prove it, don't assume it.** After any edit, diff the result against the original *outside*
-     the mask. If a pixel moved there, reject it. An edit you can't verify is a redraw.
-   - **Never let a model regenerate text.** The Depot's manual and the printed labels are real text,
-     and a model will replace them with plausible invented wording. Invented rules on a game
-     component are far worse than blurry ones.
+A good first call is to ask the art director, before editing anything: what must be preserved for
+this to still read as the same component, what is actually degraded at its in-game size, and how a
+re-render would most likely betray the original. That third answer becomes the acceptance checklist.
 
-   **Resolution has a ceiling, and it is the PDF.** These sheets hold one 300 ppi JPEG per A4 page
-   (2480x3508, heavily compressed). Re-extracting at 600 dpi upscales; it recovers nothing. If an
-   element is too soft at the size the layout shows it, the fix is a better source file from the
-   publisher, showing it smaller, or redrawing that one element in SVG - not a bigger number in
-   `extract_art.py`.
+### Choose the method per part of the component
 
-   **Cuts follow the shape of the thing.** A machine with rounded corners and pipes is not a
-   rectangle; cutting a straight box through it is a bug, not a simplification.
-3. **Validate art with me before calling it done.** Don't self-certify how it looks: Claude is weak at
-   judging raster quality and has misread its own output. Render each asset **at the size it will
-   actually appear**, plus a 2x crop of every edge and seam, and give me an
-   `### Art Review Request` block with the files and what to look for. I'll check it, with ChatGPT
-   where a second eye helps. Known failure modes to look for first: ragged outlines where a piece was
-   cut from its background, hex or rule lines broken by inpainting or by something drawn over them,
-   crops that slice through a shape, and small print blurred because it was extracted at too low a dpi
-   for its display size.
-4. **New art that doesn't exist in the PDFs** (a Home Screen icon, textures): generate it with
-   `node scripts/gen-image.mjs --prompt "..." --out <file>` (OpenAI key in `~/.openai-token`), at
-   `--quality low` unless there's a reason not to. Render it at the size it will actually be seen -
-   an icon at 60 px, not 1024 - and look before shipping. Keep the master and the prompt next to the
-   output, as `shelf/icons/README.md` does, so it can be regenerated. Show me the candidates; taste
-   is mine, mechanics are yours. If the key is missing, fall back to an `### External Image Request`
-   block I can paste into ChatGPT myself, and build against a placeholder so nothing waits.
+**Look in the PDF first.** `pdfimages -list` says what is really in there. If a clean original or a
+vector exists, extract it directly - no model involved. Recycled's sheets turned out to hold a
+single 300 dpi JPEG per A4 page, no text layer: that is the ceiling, and `extract_art.py` was
+downscaling cards to 400 px from a 530 px native crop, which was pure loss for nothing.
 
-The original art wins when it's available. Otherwise use a clean paper look (off-white `#f8f6f0`,
-dark ink `#1f2421`).
+Reach for a **reference-guided edit** only when the source genuinely cannot answer: an illustration
+flattened, damaged or visibly soft at the size it is drawn; a clipped edge to repair; a subject to
+isolate from paper; an asset missing from a set. **Say in the commit and the asset's notes when
+detail has been reconstructed** rather than extracted.
+
+### What may change, and proving it
+
+- **Never regenerate a whole component that carries geometry.** The board's grid is measured into
+  `board.json` and the Depot's pen marks into its pixels; a redraw moves them.
+- **Mask what must not move**, and **composite locally** afterwards: take the model's pixels only
+  inside the mask and the original's everywhere else, so titles, numbers, resource symbols, rules
+  text and measured geometry are physically out of reach.
+- **Prove it with a pixel diff** outside the mask. Zero changed pixels, or it is a redraw.
+- **Never let a model write text.** Rebuild a title or a cost from verified game data and composite
+  it, or keep the original pixels. Invented rules on a game component are worse than blur.
+
+### Close the loop before you show me
+
+Give the vision model the original, the candidate, **and a screenshot at actual play size**, and ask
+it to name specific regressions - not whether it likes it. Then show me the original and the best
+candidate side by side in both layouts. **If the original looks better at play size, use the
+original**; a reconstruction that is only better when zoomed in is not an improvement.
+
+### Tool facts, checked 2026-11-27
+
+`gpt-image-1` does not exist on this account; the image models are `gpt-image-2.6-flare` and
+`gpt-image-1.5`, neither accepts `input_fidelity`, and the vision reviewer is `gpt-4.1`. Edits
+return fixed aspect ratios, so pad the target to the output aspect and crop back, or the subject
+gets reframed.
+
+### Everything else
+
+Simple geometry (dice, checkboxes, tracks, plain icons) is SVG/CSS. Art that does not exist in the
+sheets - a Home Screen icon, a texture - is `art.mjs generate`; render it at the size it will
+actually be seen before shipping, and keep the master and the prompt beside the output, as
+`shelf/icons/README.md` does. Save art under `games/<slug>/src/assets/` and **import** it so it is
+inlined; **don't use `public/`**, which breaks the single file. The original art wins when it is
+available; otherwise a clean paper look (off-white `#f8f6f0`, dark ink `#1f2421`).
 
 ## Game rules for the code
 

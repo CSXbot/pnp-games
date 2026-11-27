@@ -96,8 +96,24 @@ resolution problem, and the iPad layout makes the Depot panel bigger.
 plus 2x crops of every edge and seam, for the owner to check with ChatGPT. Don't self-certify the result;
 this set was signed off once already and these four defects survived.
 
-**Prerequisites:** `pdftoppm` is installed (poppler, 2026-11-26). Pillow, numpy and
-opencv-python-headless are **not**, and `tools/extract_art.py` needs all three.
+**Prerequisites:** all installed as of 2026-11-27 - poppler (`pdftoppm`, `pdfimages`), Pillow,
+numpy and opencv, so `tools/extract_art.py` can run.
+
+**What the Oxygen Plant pass established (2026-11-27), before doing the rest:**
+
+- **The cards were being thrown away.** `extract_art.py` downscaled them to 400 px from a 530 px
+  native crop. Fixed: all 12 cards are now native, visibly sharper text in the build picker, at a
+  cost of +122 KB in the bundle (1597 -> 1761 KB).
+- **The tiles are already native** - the shipped Oxygen Plant tile is a pixel-exact 1:1 crop of the
+  illustration band (template match 0.999), so there is no lossless gain left there.
+- **Reconstruction was tried twice and rejected both times.** A free reference-guided redraw
+  returned a redesign: stairs, entrance and grate reworked, palette oversaturated. A masked version,
+  confined to the dome roof and composited locally with a verified zero-pixel diff outside the mask,
+  invented panel lines that are not in the source and was indistinguishable at play size. The
+  originals ship. Candidates and both acceptance reviews are in `.screens/art/`.
+- **So defects 1 and 3 are edge work, not re-rendering.** The ragged board outline and the Depot's
+  rectangular cut are mask-and-repair jobs on geometry-bearing images; treat the illustrations as
+  done unless something is visibly broken at play size.
 
 ### 5. Manual dice mode
 
