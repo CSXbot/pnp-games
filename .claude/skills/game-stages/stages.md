@@ -20,7 +20,9 @@ looks missing (a Sheet 2, a page 4, a map referred to by another file) I name th
 First, **ask what the player physically does**, with the real pages attached (`art.mjs review`):
 what they read, handle, move, flip, draw or reveal; which visual details carry rules or state; and
 what gives the game its identity. Make it cite the page. Save the answer as
-`games/<slug>/art/art-direction.md`. This is the job both Claude sessions skipped on Recycled, and
+`games/<slug>/art/art-direction.md`, which is the standing brief from then on: the Game Director's
+taste decisions and anything that must never change are added to it as they are settled
+(`.claude/rules/art.md`). This is the job both Claude sessions skipped on Recycled, and
 it cost a rebuild: the sheet's language is a pen symbol from the legend drawn over the illustration,
 an open ring per unit gained, that ring filled in when spent, one contour round a joined pair - and
 the web game had invented tiles, ribbons, evenly spaced pips and a link bar instead.
@@ -31,13 +33,11 @@ Then write `games/<slug>/SPEC.md` covering:
 3. The turn loop, step by step.
 4. Legality rules, and what happens when no move is legal.
 5. End of game, scoring formulas, or win/lose conditions.
-6. Asset triage (see **Art**).
+6. Asset triage (`.claude/rules/art.md`, **Choose the method per part of the component**).
 7. **Ambiguities:** a numbered list of questions for me.
 
-**State a rule question in three separate parts:** what the **original game** says (quote it, name
-the sheet or page), what the **web game does today** (a play example with numbers), and then the
-question. I know the PDFs and have not read the code, so a question that mixes the two is one I
-can't answer.
+**State a rule question in the three-part form** (root `CLAUDE.md`, **Who does what**). At this
+stage there is no web game yet, so the middle part is what you propose to implement.
 
 Then stop and wait for my answers or "Approved". **Rules are the exception to "decide it yourself":**
 how an ambiguous rule should read is mine to settle, because faithfulness to the original comes
@@ -55,7 +55,7 @@ the crop and ask rather than picking the likelier digit.
 **3. UI, responsive from the start.** The screen never changes state directly; it sends commands to
 `act(state, cmd)`. Highlight only legal targets, from the same function the engine uses, so
 highlighting can't drift from the rules, and show the exact reason anything is unavailable. Build
-**both arrangements together** (see **Layout**) rather than fitting a laptop layout to a tablet
+**both arrangements together** (`.claude/rules/game-code.md`, **Layout**) rather than fitting a laptop layout to a tablet
 afterwards - Recycled needed a second pass only because it was built before the iPad was a target.
 Flip `pnp.tabletReady: true` when the layout is meant to hold, then make `check:screens` pass -
 the flag is what turns the fit check from a warning into a failure, so it goes on first, not last.
@@ -74,8 +74,8 @@ real device.
 **You:** anything that needs your account rather than an API token - billing, a plan upgrade, an
 account-level switch in a dashboard. I tell you exactly what to click.
 
-**5b. Playtest.** A full game played by someone who has the rulebook and not the code (see
-**Playtesting**). Ask me which way to run it and hand me the filled-in prompt; I either run it or
+**5b. Playtest.** A full game played by someone who has the rulebook and not the code - invoke the
+**`playtest`** skill. Ask me which way to run it and hand me the filled-in prompt; I either run it or
 tell you to. Fix the findings, put the strategy into `test/bot.ts`, and run the simulation that
 turns it into a win rate.
 **You:** choose who runs it, and rule on anything the playtester says about how a rule reads or

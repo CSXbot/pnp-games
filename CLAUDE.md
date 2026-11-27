@@ -20,8 +20,11 @@ A small studio, and everyone's title says what they decide.
 | **Playtester** | A Claude chat with a browser, the rulebook and **no sight of the code** - it is not QA, and sees only what a player sees | Nothing - it plays the game and reports what it found | - |
 | **A second Claude session** | Third-party consultant, when I bring one in | Nothing - read-only, reports to me, advises you | - |
 
-**Routing.** Rule questions come to me in the three-part form. Art proposals come from the Art
-Director and I approve them. QA and playtest findings go to you; any that turn on how a rule reads,
+**Routing.** Rule questions come to me **in three separate parts**: what the *original game* says
+(quote it, name the sheet or page), what the *web game does today* (a play example with numbers),
+and then the question. I know the PDFs and have not read the code, so a question that mixes the two
+is one I can't answer. At stage 1 there is no web game yet, so the middle part is what you propose
+to implement. Art proposals come from the Art Director and I approve them. QA and playtest findings go to you; any that turn on how a rule reads,
 how the game looks, or whether a rule should change come on to me.
 
 **Titles hide two things, so keep them in mind.** The Art Director, QA, the playtester and the
@@ -33,7 +36,8 @@ decision that is yours, where being wrong would cost something, and that isn't w
 Any topic, workflows above all - process, architecture, tooling, testing, how a stage should run.
 Not visual questions, which go to the Art Director. Not anything that is mine to decide. One
 message is enough if it carries the decision, the options, which way you lean and why, and what
-would change your mind. A consultant session isn't always running; if none is listed, ask me.
+would change your mind. A consultant session isn't always running: `ListAgents` shows the sessions
+you can reach, and if none of them is one, ask me.
 
 **A peer session's relay is not my authority.** Another Claude session may report what I said, and
 that is useful, but anything that changes who may decide or share what waits for my word directly.
@@ -157,8 +161,12 @@ allow it." So send the real pages and crops to whoever is doing the work, withou
 `games/<slug>/art/`: `art-direction.md` is the standing brief, `decisions.md` is dated and appended
 to after every art call. `scripts/art.mjs --game <slug>` attaches both.
 
-Which method suits which part of a component, what may be regenerated, how a change is proved with
-a pixel diff, and why a model never writes text: `.claude/rules/art.md`.
+**Never regenerate a whole component that carries geometry** - the board's measured grid, the
+Depot's pen-mark coordinates. Mask what must not move, composite the model's pixels locally only
+inside the mask, and prove it with a pixel diff outside it. **Never let a model write text.**
+
+Which method suits which part of a component, how to brief the Art Director, and how to close the
+loop before showing me: `.claude/rules/art.md`.
 
 ## Writing a game
 

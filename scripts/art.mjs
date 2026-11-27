@@ -14,8 +14,9 @@
 // model comparing an original, a candidate and a screenshot at play size.
 //
 // This is a local asset tool. Nothing here ships: the built game is still one offline file.
-// Key in ~/.openai-token or $OPENAI_API_KEY. See the Art section of CLAUDE.md for what may be
-// generated, what may only be masked, and what must never be model-written (text).
+// Key in ~/.openai-token or $OPENAI_API_KEY. **Read .claude/rules/art.md before using this** for
+// what may be generated, what may only be masked, and what must never be model-written (text).
+// Running this from a shell does not load that rule on its own; it is an ordinary file, open it.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import path from 'node:path';

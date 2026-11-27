@@ -31,6 +31,23 @@ after it read a matching file did.
 Not worth adding, with reasons: a Playwright MCP, a GitHub MCP, an image-generation MCP, a second
 image provider. The scripts, `gh` and one client already cover them.
 
+## Open from the cold read of the split (2026-11-27)
+
+A fresh agent was given stages 0 to 2 of a new game using only what the files say
+(`claude_exchange/2026-11-27 cold read of the CLAUDE.md split (a7f35ca).md`). Guess points fell
+from 17 to 10. Fixed since: the three-part form was used in the root file and defined only in the
+stage file, the art stub was missing the geometry and mask-and-composite clause, `scripts/art.mjs`
+and three lines of `stages.md` still pointed at sections that had moved, and "if none is listed"
+didn't say where consultants are listed. **Still open, all of them older than the split:**
+
+- **Stage 0 has no home for what it produces.** Where the inventory is written and where rendered
+  pages are cached; and when `games/<slug>/` and its five documents come into existence.
+- **A stage-2 workspace on `main` either breaks the deploy or goes live before stage 5.** Every
+  push deploys, and a half-built game is in the build. Needs an answer: a branch, or a `pnp.draft`
+  flag the shelf and `build-all` skip.
+- **The `packages/kit` move has no stage.** When it happens, whether it has its own tests, which
+  document describes it. It will land in game 2's stage 3 either way.
+
 ## Housekeeping
 
 - **(you) Turn off the connectors this project doesn't use** - Airtable, Notion, Gmail, Drive,
@@ -40,6 +57,9 @@ image provider. The scripts, `gh` and one client already cover them.
   who opens this repo. The second is all-or-nothing and costs us nothing: nothing here uses a
   connector, and the deprecated Cloudflare one is unused too (everything goes through `npx
   wrangler`). **Say the word and I'll add the line** - it's config, so it waits for yours.
+  **Measured 2026-11-27:** a headless session in this repo starts with 238 tools and ~290,000
+  tokens of context before it does anything, $2.40 for a single turn. With the connectors off: 22
+  tools, 15,730 tokens, $0.13. That is 95% of start-up context, and every agent we run pays it.
 - **A shelf icon of its own.** The cosmonaut helmet is Recycled's identity and currently serves both
   pages. When a second game lands, the shelf wants its own and each game links its own.
 - **`packages/kit`.** Save sync, the new-game dialog, the top bar and display settings are all shelf
