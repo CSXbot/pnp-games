@@ -69,25 +69,19 @@ should be asked about rather than assumed when one of them matters.
 
 ## How the map is drawn
 
-The printed sheet has a visual language and the game now speaks it: a unit gained is an **open ring**
-at a position measured off the sheet, a unit spent is **that ring filled in**, nothing is drawn where
-no circle was ever drawn, and a joined pair gets **one contour round both hexes**. See
-`src/ui/ink/README.md` for provenance and the 150x160 cell space the marks live in.
+One look: the building's illustration with its name label, a dot per storage position round it
+(filled where a unit is held, darkened where one was spent, outlined where nothing was drawn), the
+setup step as text, and a short bar between joined buildings.
 
-- **Two display settings**, independent, in `src/ui/display.ts`: `buildings` and `stock`, each
-  `modern` or `pen`, defaulting to **modern buildings, pen stock**. They live under the localStorage
-  key `pnp:recycled:display` and deliberately **not** in `GameState` - a per-device preference, so
-  saves stay version 1 and sync is untouched. All four pairs have to work.
-- **`src/assets/cutouts/<type>.png`** holds the publisher's illustration with the paper removed.
-  Where one exists it replaces the opaque tile, its hex backing and its outline; `tile-*.webp` is the
-  fallback until all twelve exist. **Don't delete the tiles** - they are the colour source for making
-  the cut-outs.
-- **Cut-outs are load-bearing, not decorative.** Pen rings on an opaque tile are nearly invisible;
-  on a cut-out they sit on the pale hex and read cleanly. `.screens/art/ink-cutout-ipad.png` shows
-  both in one shot.
+- **`src/assets/cutouts/<type>.webp`** holds the publisher's illustration with the paper removed.
+  Where one exists it replaces the opaque tile, its hex backing and its outline; `tile-*.webp` is
+  the fallback. Two exist so far. **Don't delete the tiles** - they are the colour source for
+  cutting the rest.
+- A cut-out is **not clipped to the hex** the way a tile is, so it is sized to fit inside it
+  (`CUT_W`, `CUT_H` in `HexMap.tsx`). Without that it spills onto neighbouring hexes.
 - A hex is **87 CSS px** on the iPad layout, which is the size any mark has to read at.
-- `checkScreen` asserts the ink: `[data-ink-stock="available"]` against `drawn - used`, `spent`
-  against `used`, blanks as capacity minus what is painted, and no stray marks.
+- **`src/ui/ink/` is parked, not used.** Traced pen marks from the publisher's sheets - the look the
+  owner set aside on 2026-11-27. Its README explains what it is and what the pass established.
 
 ## Layout
 

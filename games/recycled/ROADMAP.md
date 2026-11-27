@@ -21,52 +21,32 @@ How it works is described in `CLAUDE.md`. What is left:
 - **The Depot tab is tight.** It fits, but the Depot art is the one panel that would gain most from
   more room; consider giving it the full width of the right column, or its own full-screen view.
 
-### 1b. Draw the game the way the sheet does
+### 1b. The Modern look, and the cut-outs
 
-Owner direction, 2026-11-27, from ChatGPT's art kit and the review session's proposal
-(`claude_exchange/2026-11-27 pnp-games tooling proposal.md`). **This supersedes "the illustrations
-are done":** the problem was never image sharpness, it was that we invented a visual language.
+**Scope cut by the owner, 2026-11-27: the pen look is parked.** The game ships one look - the
+illustration with its name label, dots for stock, the short bar between joined buildings - and the
+settings toggle is gone with it. The traced marks stay vendored but unrendered in `src/ui/ink/`
+(see its README); they are cut from the publisher's own sheets and would be expensive to redo.
 
-**Verified against a 300 dpi crop of the printed starting cells** (`.screens/art/sheet1-starting-cells.png`):
-on paper a building is its **pen symbol from the legend, drawn over the printed illustration**; a
-unit gained is an **open ring** at a fixed position; a unit spent is **that ring filled in**; a
-joined pair gets **one heavy contour around both hexes**. The web game draws an opaque tile, a name
-ribbon, evenly spaced pips and a short link bar - none of which are on the sheet.
+What that pass established and is worth keeping:
 
-**Two independent display settings** (owner's decision), so all four pairs must work. No animation.
+- The printed sheet's language is a pen symbol over the illustration, an open ring per unit gained,
+  that ring filled in when spent, one contour round a joined pair. Verified at 300 dpi
+  (`.screens/art/sheet1-starting-cells.png`). Not what the game draws, and now deliberately so.
+- A hex is **87 CSS px** on the iPad layout - the size any mark has to read at.
+- **Cut-outs work and are provable.** The model supplies only a matte; its colour is discarded and
+  the publisher's pixels are composited through it, with zero altered inside the silhouette. Stored
+  as lossless WebP, 43 KB against 77 KB for PNG. Two exist: Oxygen Plant (from the kit) and Food
+  Plant (made here).
+- A cut-out is **not** hex-clipped the way a tile is, so it has to be sized to the hex or it spills
+  onto its neighbours. Fixed.
 
-| Setting | "Pen marks" | "Modern" | Default |
-|---|---|---|---|
-| Buildings | legend pen symbol over the cut-out illustration; setup stages as the kit's stage symbols; joined pair gets one contour | cut-out illustration with its name label; setup as text; joined pair keeps the short bar | Modern |
-| Stock | open ring appears when gained, filled in when spent, unused positions blank | today's ring of dots: spent / available / empty | Pen marks |
-
-Keep the settings **out of `GameState`** - a per-device display preference, so saves stay version 1
-and sync is untouched.
-
-**Vendored already:** `src/ui/ink/` (traced marks, projection, shared contour) and the kit's one
-supplied cut-out at `src/assets/cutouts/oxygenPlant.png`.
-
-**The work, in order:**
-
-1. ~~Wire `BuildingInk` + `sharedContour` into `HexMap.tsx` behind the settings.~~ **Done in
-   `e9f593f`:** the six printed starting cells render 6, 3, 2, 4, 3 and 2 open rings, matching the
-   sheet, checked against engine state in a browser. A hex is **87 CSS px** on the iPad, and the
-   marks read at that size.
-2. **Eleven more cut-outs - now the critical path.** Wiring the ink proved these are load-bearing:
-   black rings on an opaque tile are nearly invisible, so the default pair doesn't actually work
-   until all twelve exist. Judge the look only after they land.
-
-   Method: Only the Oxygen Plant is supplied. Keep the publisher's pixels: the
-   model supplies the silhouette only, colour comes from the existing `tile-*.webp` crops, and it is
-   provable the same way as a masked edit - compare pixels inside the silhouette.
-3. ~~`checkScreen` for the ink.~~ **Done in `e9f593f`:** open rings against `drawn - used`, spent
-   against `used`, blanks as capacity minus what is painted, no stray marks. The Modern pips lost
-   their assertion when they stopped being the default - restore one when that pair is exercised.
-4. Run the kit's two replays (six saves) and its review jobs on the integrated build.
-
-**Cost to be honest about:** four combinations doubles the visual QA surface. Test the default pair
-properly, smoke the other three. **Don't delete `tile-*.webp` until the cut-outs ship** - they are
-the colour source for making them.
+**Open, and the owner's call:** whether to make the other ten cut-outs at all, now that stock is
+dots rather than rings. The argument for was readability of pen rings, which no longer applies.
+What is left is a look: in `.screens/art/modern-only.png` the two cut-outs sit on the pale hex like
+the printed sheet, while the four tiles read as darker, punchier boxes that mark an occupied hex
+more plainly at a glance. Either is defensible. **Don't delete `tile-*.webp` either way** - they are
+the colour source for any cut-out.
 
 ### 2. Automatrons: offer them, don't spend them silently
 

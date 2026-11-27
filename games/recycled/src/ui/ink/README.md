@@ -1,4 +1,9 @@
-# Pen marks
+# Pen marks (parked 2026-11-27)
+
+**Not in use.** The owner set the pen look aside to get a finished Modern board first. Nothing here
+is rendered today; it is kept because it is traced from the publisher's own sheets and would be
+expensive to redo. The findings below stand if it is picked up again.
+
 
 Vendored from ChatGPT's PnP art kit (`claude_exchange/PnP-art-workflow.zip`, 2026-11-27), which
 traced these from the publisher's own sheets: the 12 building strokes and the storage loop come from
