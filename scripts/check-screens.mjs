@@ -23,9 +23,14 @@ const dist = path.join(root, 'dist');
 // comparisons) has to survive that.
 const shots = path.join(root, '.screens', 'shots');
 
+// Heights are the browser's viewport, not the device's screen. An iPad Pro is 1366x1024, but a
+// browser with its tab strip and address bar showing hands the page about 865px of that - which is
+// how the Depot, the accident table and the log came to be clipped on the real device while this
+// check said the 1024 layout fitted. 1024 stays, for the Home Screen app, which has no chrome.
 const SIZES = [
-  { name: 'laptop', width: 1440, height: 900 },
-  { name: 'ipad', width: 1366, height: 1024 },
+  { name: 'laptop', width: 1440, height: 900, touch: false },
+  { name: 'ipad-browser', width: 1366, height: 865, touch: true },
+  { name: 'ipad-standalone', width: 1366, height: 1024, touch: true },
 ];
 
 if (!existsSync(path.join(dist, 'index.html'))) {
@@ -107,7 +112,9 @@ for (const page of pages) {
     const context = await browser.newContext({
       viewport: { width: size.width, height: size.height },
       // The tablet size is a touch device, so the coarse-pointer rules must be in play.
-      hasTouch: size.name === 'ipad',
+      // Declared per size, not matched off the name: renaming "ipad" to "ipad-browser" once
+      // turned touch emulation off here without anything failing.
+      hasTouch: size.touch === true,
     });
     const tab = await context.newPage();
     const problems = [];

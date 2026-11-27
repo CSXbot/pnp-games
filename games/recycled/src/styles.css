@@ -260,7 +260,11 @@ kbd {
 @media (max-width: 1439px) {
   .layout {
     grid-template-columns: minmax(0, 1fr) minmax(380px, 460px);
-    grid-template-rows: auto minmax(0, 1fr);
+    /* The reference row gets a floor, not the leftovers. A tablet browser with its tab strip and
+       address bar showing gives about 865px, not the device's 1024: at that height "whatever is
+       left" was 200px, and the Depot, the accident table and the log were all clipped to a slot
+       too small to read. The dice and actions above scroll instead, which they can. */
+    grid-template-rows: minmax(0, auto) minmax(320px, 1fr);
     grid-template-areas:
       'map play'
       'map ref';
@@ -292,6 +296,23 @@ kbd {
   .col-ref .panel {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+  }
+  /* The Launch button is the win condition, so it stays in view and the sheet scales to whatever
+     height is left. Before this it sat below the art in a panel too short to show both, and
+     scrolled off the bottom on a tablet browser. Same shape as the enlarged view. */
+  .col-ref .tabpanel > .depot-art-panel {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+  }
+  .depot-art-panel > .depot-art-wrap {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+  }
+  .depot-art-panel .depot-art {
+    min-height: 0;
+    height: 100%;
   }
 }
 
