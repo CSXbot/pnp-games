@@ -15,9 +15,16 @@ import { BOARDS, tileArt, cutoutArt } from './art';
 import { ResIcon } from './Icons';
 
 const SIZE = 40;
-/** A cut-out is drawn to fit inside the hex rather than being clipped by it. */
-const CUT_W = Math.sqrt(3) * SIZE * 0.96;
-const CUT_H = SIZE * 1.5;
+/** Every cut-out shares one frame with its silhouette centred in it (FRAME in
+ *  tools/make_cutouts.py), so one printed pixel is the same size in all twelve and the board keeps
+ *  the sheet's relative scale. The box is drawn a little wider than the hex because a cut-out is
+ *  not clipped and some buildings - the Laboratory above all - really are wider than their hex on
+ *  the printed card. */
+const CUT_FRAME = { w: 290, h: 199 };
+const CUT_W = Math.sqrt(3) * SIZE * 1.15;
+const CUT_H = (CUT_W * CUT_FRAME.h) / CUT_FRAME.w;
+/** Buildings sit a little above the hex centre, leaving room for the name ribbon below. */
+const CUT_RISE = 3.6;
 
 export const SHORT: Record<BuildingType, string> = {
   foodPlant: 'FOOD',
@@ -233,7 +240,7 @@ function Building({ b, target, dim }: { b: BuildingState; target: boolean; dim: 
           // A tile is clipped to the hex, so it may overflow its box. A cut-out is not clipped -
           // it has to be sized to sit inside the hex, or it spills over the neighbours.
           x={cut ? x - CUT_W / 2 : x - SIZE * 1.0}
-          y={cut ? y - CUT_H * 0.56 : y - SIZE * 1.02}
+          y={cut ? y - CUT_H / 2 - CUT_RISE : y - SIZE * 1.02}
           width={cut ? CUT_W : SIZE * 2}
           height={cut ? CUT_H : SIZE * 1.8}
           preserveAspectRatio={cut ? 'xMidYMid meet' : 'xMidYMid slice'}

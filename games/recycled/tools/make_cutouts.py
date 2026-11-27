@@ -45,19 +45,30 @@ PROMPT = (
 MAX_SAND_PCT = 12
 # How far from this tile's own ground colour a pixel may be and still count as ground.
 GROUND_TOLERANCE = 38
-# A trim that removes this much of the model's silhouette is eating the building, not the ground.
-MAX_EATEN_PCT = 25
+# The trim is only allowed to remove ground-coloured pixels, so "how much did it remove" measures
+# how generous the model's matte was, not whether the trim was right: the Transceiver is a small
+# building on a wide apron of sand and loses 57% of its matte to a perfectly correct trim. What
+# actually went wrong the time the trim misbehaved was holes - the Cryo Tank's roof eaten from the
+# inside - so that is what is measured. Enclosed gaps are normal (the Recycler's open bay, the
+# Laboratory's frame) and run to about 1.5%.
+MAX_HOLES_PCT = 6
+# Every cut-out is written into this one frame with its silhouette centred, so one printed pixel
+# is the same size in all twelve and the board keeps the sheet's relative scale. Measured as the
+# widest and tallest of the twelve silhouettes; a building that outgrows it is reported rather
+# than squeezed, and the number is raised deliberately.
+FRAME = (290, 199)
 
-# The gates are heuristics: they flag an asset for a human look, and two buildings were looked at
-# and judged fine. Each exception says why, so it can be re-argued rather than inherited blindly.
+# How little of the band a real building may be. Over the twelve it runs 9% (the Transceiver, a
+# small building on a wide apron of sand) to 55% (the Laboratory), so this only catches a matte
+# that kept nothing.
+MIN_COVERAGE_PCT = 6
+
+# The gates are heuristics: they flag an asset for a human look. Each exception says why, so it
+# can be re-argued rather than inherited blindly.
 OVERRIDES = {
     'rover': dict(
         trim=False, max_sand=25,
         reason="its own bodywork is tan, so the sand test counts the vehicle; trimming ate holes in the roof",
-    ),
-    'transceiver': dict(
-        min_coverage=8,
-        reason='a genuinely small building in a large tile, so 9% of the tile is the whole of it',
     ),
 }
 
@@ -120,6 +131,18 @@ def trim_ground(tile: np.ndarray, kept: np.ndarray, ground: np.ndarray | None) -
     return kept & (passable != 2)
 
 
+def holes(mask: np.ndarray) -> int:
+    """Background pixels fully enclosed by the silhouette - what an over-eager trim leaves."""
+    inv = (~mask).astype(np.uint8)
+    h, w = inv.shape
+    flood = np.zeros((h + 2, w + 2), np.uint8)
+    border = [(x, y) for x in range(w) for y in (0, h - 1)] + [(x, y) for y in range(h) for x in (0, w - 1)]
+    for x, y in border:
+        if inv[y, x] == 1:
+            cv2.floodFill(inv, flood, (x, y), 2)
+    return int((inv == 1).sum())
+
+
 def cut(kind: str, work: Path) -> str:
     tile = Image.open(ART / f'tile-{kind}.webp').convert('RGB')
     padded, ox, oy = pad_square(tile)
@@ -153,20 +176,29 @@ def cut(kind: str, work: Path) -> str:
     changed = int(((np.abs(np.array(tile).astype(int) - np.array(out.convert('RGB')).astype(int)).sum(axis=2) > 0) & kept).sum())
     if changed:
         return f'{kind}: REFUSED - {changed} publisher pixels altered inside the silhouette'
-    if not rule.get('min_coverage', 15) <= coverage <= 85:
+    if not rule.get('min_coverage', MIN_COVERAGE_PCT) <= coverage <= 85:
         return f'{kind}: SUSPECT - keeps {coverage:.0f}% of the tile; not written, look at the matte'
 
-    if eaten > rule.get('max_eaten', MAX_EATEN_PCT):
-        return f'{kind}: TRIM ATE IT - removed {eaten:.0f}% of the silhouette; not written'
+    pitted = holes(kept) / max(kept.sum(), 1) * 100
+    if pitted > rule.get('max_holes', MAX_HOLES_PCT):
+        return f'{kind}: TRIM ATE IT - {pitted:.0f}% of the silhouette is holes; not written'
 
     sand = ground_fraction(np.array(tile), kept, ground) * 100
     if sand > rule.get('max_sand', MAX_SAND_PCT):
         return f'{kind}: GROUND LEFT - {sand:.0f}% of what it keeps is printed sand; not written'
 
-    out.save(OUT / f'{kind}.webp', 'WEBP', lossless=True, quality=100, method=6)
+    ys, xs = np.where(kept)
+    bw, bh = xs.max() - xs.min() + 1, ys.max() - ys.min() + 1
+    if bw > FRAME[0] or bh > FRAME[1]:
+        return f'{kind}: TOO BIG - silhouette is {bw}x{bh}, the shared frame is {FRAME[0]}x{FRAME[1]}'
+    framed = Image.new('RGBA', FRAME, (0, 0, 0, 0))
+    framed.paste(out.crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)),
+                 ((FRAME[0] - bw) // 2, (FRAME[1] - bh) // 2))
+
+    framed.save(OUT / f'{kind}.webp', 'WEBP', lossless=True, quality=100, method=6)
     size = (OUT / f'{kind}.webp').stat().st_size // 1024
     note = f" [exception: {rule['reason']}]" if rule else ''
-    return f'{kind}: kept {coverage:.0f}%, sand {sand:.0f}%, trim took {eaten:.0f}%, {size} KB{note}'
+    return f'{kind}: {bw}x{bh}, kept {coverage:.0f}%, sand {sand:.0f}%, trim took {eaten:.0f}%, {size} KB{note}'
 
 
 def main() -> None:

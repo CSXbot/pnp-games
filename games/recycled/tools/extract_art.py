@@ -8,6 +8,8 @@ Needs `pdftoppm` (poppler), Pillow, numpy and opencv-python-headless. Coordinate
 A4 sheets (2480 x 3508).
 """
 
+from __future__ import annotations
+
 import json
 import math
 import subprocess
@@ -194,14 +196,14 @@ CARDS = [
     'nuclearPod', 'amplifier', 'separator', 'recycler',
     'rover', 'transceiver', 'laboratory', 'workshop',
 ]
-
-
-def is_building(p: tuple[int, int, int]) -> bool:
-    """Not sand: sand is saturated orange; buildings are greys, whites and dark shadows of metal."""
-    r, g, b = p
-    mx, mn = max(p), min(p)
-    sat = (mx - mn) / mx if mx else 0
-    return sat < 0.28 or (mx < 90)
+# The illustration band inside a card, card-relative: left of the cream border, below the title
+# strip, above the rules text, and stopping where the cost chips begin. The whole band is taken
+# for every card. Picking a smaller window and centring it on the building was what cut the
+# Recycler's right wall and the Laboratory's frame off: the sheet had printed all of it.
+BAND = (12, 96, 372, 294)
+# The type badge is printed over the band's top-left corner; there is no art under it to recover.
+BADGE = (42, -13, 80)          # centre x, centre y, radius - band-relative
+CRYO_BADGE = (42, 104, 80)     # the Cryo Tank carries a second one lower down
 
 
 def cards(sheet2: Image.Image) -> None:
@@ -213,30 +215,18 @@ def cards(sheet2: Image.Image) -> None:
         card.putalpha(m)
         save(card, f'card-{name}')  # native 530px: the sheet is 300 dpi and that is the ceiling
 
-        # Illustration band (below the title strip): find the building and crop around it.
-        band = sheet2.crop((x + 10, y + 100, x + 380, y + 298))
-        # The card's corner badge(s) overlap the art: paint them out with the surrounding sand.
+        # The whole illustration band, at print resolution. make_cutouts.py takes it from here:
+        # the model's matte decides where the building ends, not a crop window.
+        bx0, by0, bx1, by1 = BAND
+        band = sheet2.crop((x + bx0, y + by0, x + bx1, y + by1))
+        # The card's corner badge(s) are printed over the art: paint them out with the sand
+        # around them. Nothing is recoverable under a badge - it was never printed.
         badge = np.zeros((band.height, band.width), np.uint8)
-        cv2.circle(badge, (40, -17), 80, 255, -1)
+        cv2.circle(badge, BADGE[:2], BADGE[2], 255, -1)
         if name == 'cryoTank':
-            cv2.circle(badge, (40, 100), 80, 255, -1)
+            cv2.circle(badge, CRYO_BADGE[:2], CRYO_BADGE[2], 255, -1)
         band = Image.fromarray(cv2.inpaint(np.array(band), badge, 9, cv2.INPAINT_TELEA))
-        small = band.resize((band.width // 4, band.height // 4))
-        xs, ys = [], []
-        for yy in range(small.height):
-            for xx in range(small.width):
-                if badge[yy * 4, xx * 4]:
-                    continue
-                if is_building(small.getpixel((xx, yy))):
-                    xs.append(xx)
-                    ys.append(yy)
-        cx = (sorted(xs)[len(xs) // 2]) * 4 if xs else band.width // 2
-        cy = (sorted(ys)[len(ys) // 2]) * 4 if ys else band.height // 2
-        w, h = 230, 196
-        left = min(max(cx - w // 2, 0), band.width - w)
-        top = min(max(cy - h // 2, 0), band.height - h)
-        tile = band.crop((left, top, left + w, top + h))
-        save(tile, f'tile-{name}', 230)
+        save(band, f'tile-{name}')
 
 
 def icons(sheet2: Image.Image) -> None:
