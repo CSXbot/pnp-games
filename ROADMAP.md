@@ -83,9 +83,14 @@ didn't say where consultants are listed. **Still open, all of them older than th
 - **The `packages/kit` move has no stage.** When it happens, whether it has its own tests, which
   document describes it. It will land in game 2's stage 3 either way.
 
+**Settled 2026-11-27:** `main` keeps serving the site - the Game Director's call, "keep it as it
+is". A release stays a label on a moving trunk, and `main` being always fit to play is the whole of
+the protection. The sources manifest is approved in the shape below.
+
 ## Waiting on the Game Director
 
-- **(you) May low-resolution page images be committed?** Today's rule is "`sources/` is gitignored,
+- **(you) May low-resolution page images be committed?** Not needed until game 2's intake, so it
+  is not blocking anything today. Today's rule is "`sources/` is gitignored,
   never commit anything from here". But the cut art is already committed, and you have allowed
   sharing the publishers' art with any human or AI working on the project. The question is narrow:
   may ~150 dpi page images live under each game's art folder? They are what the playtest prompt and
@@ -94,11 +99,6 @@ didn't say where consultants are listed. **Still open, all of them older than th
   goes away. **If no,** the manifest plus a local cache is as far as it goes, and a second machine
   would need a private store, which is not worth building until there is a second machine. It
   changes what is stored where, so it waits for your word.
-- **(you) Is `main` serving the site still the right trade?** Every push deploys, so a release
-  freezes nothing and the protection is "`main` is always fit to play". The alternative is
-  deploying tags, which means your fixes wait for a release. I lean to keeping it, since you play
-  on that site and want fixes immediately - but you are the one playing on it.
-
 ## Housekeeping
 
 - **Keep `claude -p` probes out of the working tree.** On 2026-11-27 a `claude -p` session spawned

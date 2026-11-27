@@ -12,7 +12,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node scripts/check-docs.mjs && npm run test --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present; W=$?; node scripts/check-docs.mjs; D=$?; exit $(( W || D ))",
     "build": "node scripts/build-all.mjs",
     "check:screens": "node scripts/check-screens.mjs",
     "check:docs": "node scripts/check-docs.mjs"

@@ -7,6 +7,10 @@
 // the same. Moving the limit is fine - it is one line here - but it cannot now happen quietly.
 //
 // Words, not lines: the cost is tokens, and one table row can be two hundred characters.
+//
+// The root `test` script runs this *after* the workspace tests and fails if either failed, rather
+// than chaining with `&&`. Chained, a word count over budget would stop the run before the game
+// and Worker tests, hiding a real failure behind "docs too long".
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
