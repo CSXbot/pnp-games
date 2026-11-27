@@ -12,9 +12,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "npm run test --workspaces --if-present",
+    "test": "node scripts/check-docs.mjs && npm run test --workspaces --if-present",
     "build": "node scripts/build-all.mjs",
-    "check:screens": "node scripts/check-screens.mjs"
+    "check:screens": "node scripts/check-screens.mjs",
+    "check:docs": "node scripts/check-docs.mjs"
   },
   "devDependencies": {
     "playwright-core": "^1.65.1",

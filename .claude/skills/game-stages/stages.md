@@ -92,7 +92,19 @@ turns it into a win rate.
 **You:** choose who runs it, and rule on anything the playtester says about how a rule reads or
 whether the game is too easy.
 
-**6. Retro, before the next game.** Stop and improve the process while it is fresh:
+**5c. Cut a release**, when the Game Director says the game is at a good point - it is a priority
+decision and theirs, not something to infer from the roadmap being short. Bump the game's
+`package.json` version, tag `<slug>-vX.Y.Z`, and write what it contains into the game's
+`CLAUDE.md`, not the roadmap. **The site serves `main`, not the tag:** nothing freezes, so the
+protection is that `main` is always fit to play. **Open roadmap items at a release are normal** -
+a release is a line under what is playable, not the end of the list.
+
+**Two different things are called "version".** `GameState.version` is the save schema and changes
+only alongside a migration step. A release number says nothing about it, and bumping one must never
+be mistaken for the other.
+
+**6. Retro, after a release or before the next game.** Scale it to what happened - a fix release
+needs none. Stop and improve the process while it is fresh:
 
 - What cost more than it should have, and which stage it leaked out of.
 - What I got wrong **twice**. That is a line in this file, not something to remember harder.
@@ -100,7 +112,8 @@ whether the game is too easy.
 - Correct this file where it proved wrong - the stages, the sequencing rules, the art triage. A
   workflow that never changes is a workflow nobody is reading.
 
-**You:** tell me what annoyed you that I didn't notice.
+**You:** tell me what annoyed you that I didn't notice. A full playtest belongs to releases that
+change rules or add content, not to every tag - it is hours and real money.
 
 Don't save it all for the end. Stop and update this file whenever you correct me twice on the same
 thing, a stage costs a multiple of what I predicted, or a tool keeps fighting us.

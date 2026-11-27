@@ -40,8 +40,19 @@ stage file, the art stub was missing the geometry and mask-and-composite clause,
 and three lines of `stages.md` still pointed at sections that had moved, and "if none is listed"
 didn't say where consultants are listed. **Still open, all of them older than the split:**
 
-- **Stage 0 has no home for what it produces.** Where the inventory is written and where rendered
-  pages are cached; and when `games/<slug>/` and its five documents come into existence.
+- **Stage 0 has no home for what it produces.** **Shape settled 2026-11-27 with the consultant,
+  to be built at game 2's intake and not before.** A prose inventory rots; a file the tools read
+  does not. So: a committed `sources.json` per game, written by an intake command rather than by
+  hand, holding per source file an id (`sheet1`, `rulebook-p2`), its name under `sources/<slug>/`,
+  a checksum, page count, what it is, the embedded image's pixel size and ppi, and whether it has
+  a text layer. **Tools take ids, not paths** - `extract_art.py` takes three positional PDF paths
+  today, which is why "works on one machine" is true - and fail loudly when a file is missing or
+  its checksum has changed. Page images are extracted once into a gitignored cache beside the
+  sources, named by id, using `pdfimages` where the embedded JPEG can be lifted losslessly. The
+  SPEC's prose inventory is then written *from* the manifest.
+
+  That gives a session without the PDFs the facts about them. It does not let that session **see**
+  the game, and that part is **(you)**: see the question below.
 - **A stage-2 workspace on `main` either breaks the deploy or goes live before stage 5.** Every
   push deploys, and a half-built game is in the build. **Settled 2026-11-27, with the consultant:
   `pnp.draft` means "not on the shelf", not "not built".** My first answer was that `build-all`
@@ -71,6 +82,22 @@ didn't say where consultants are listed. **Still open, all of them older than th
     and the stage text should say so rather than let someone discover it.
 - **The `packages/kit` move has no stage.** When it happens, whether it has its own tests, which
   document describes it. It will land in game 2's stage 3 either way.
+
+## Waiting on the Game Director
+
+- **(you) May low-resolution page images be committed?** Today's rule is "`sources/` is gitignored,
+  never commit anything from here". But the cut art is already committed, and you have allowed
+  sharing the publishers' art with any human or AI working on the project. The question is narrow:
+  may ~150 dpi page images live under each game's art folder? They are what the playtest prompt and
+  the Art Director's calls attach anyway. **If yes,** a fresh clone, a cloud agent and the
+  playtester all work from the repo alone, and the retro's "a fresh session cannot see the game"
+  goes away. **If no,** the manifest plus a local cache is as far as it goes, and a second machine
+  would need a private store, which is not worth building until there is a second machine. It
+  changes what is stored where, so it waits for your word.
+- **(you) Is `main` serving the site still the right trade?** Every push deploys, so a release
+  freezes nothing and the protection is "`main` is always fit to play". The alternative is
+  deploying tags, which means your fixes wait for a release. I lean to keeping it, since you play
+  on that site and want fixes immediately - but you are the one playing on it.
 
 ## Housekeeping
 

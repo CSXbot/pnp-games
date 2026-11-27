@@ -106,13 +106,10 @@ wrangler.jsonc      Workers config: ./dist as static assets, plus packages/worke
 
 ## Where the rest of this lives
 
-**This file is the always-loaded part and stays under 215 lines.** It was 449 on 2026-11-27, which
-every session paid for; the split brought it to 187. The limit was 200 and moved once, the same
-day, when the Game Director asked for releases to be in the process - the number was mine and set
-too tight, and trimming real content to defend it would have been the wrong trade. Moving it is
-allowed; moving it quietly is not. The sections below are stubs: each holds what has to be true even if its
-detail file never loads, and the detail loads when it is needed. **A new rule goes in its topic's
-file, not here.**
+**This file loads into every session, so it has a word budget** that `npm test` enforces
+(`scripts/check-docs.mjs`). Raising it is one line there, in a commit of its own. The sections
+below are stubs: each holds what has to be true even if its detail file never loads. **A new rule
+goes in its topic's file, not here.**
 
 | Topic | Where | Loads when |
 |---|---|---|
@@ -135,14 +132,9 @@ failing test stops it before anything is published. Commit and push freely, with
 No `workers.dev` URL, no preview URLs, and `packages/worker/test/privacy.test.mjs` fails the build
 if that ever changes. The games contain the publishers' art: never link to the site anywhere.
 
-**A release is a label on a trunk that keeps moving.** The site serves `main`, not the tag, so
-`main` is always fit to play - that is the rule a release does *not* give you. Tag `<slug>-vX.Y.Z`
-and bump the game's `package.json`. **Open roadmap items at a release are normal:** a release is a
-line under what is playable, not the end of the list. **Calling one is the Game Director's** - it
-is a priority decision.
-
-**Two different things are called "version".** `GameState.version` is the save schema and changes
-only with a migration. A release number says nothing about it.
+**The site serves `main`, not the tag, so `main` is always fit to play.** A release is a label on
+a trunk that keeps moving; open roadmap items at one are normal. **Calling a release is mine** - it
+is a priority decision. How to cut one is in the `game-stages` skill.
 
 What a build costs and how to edit the Access policy: `.claude/rules/deploy.md`.
 
@@ -174,25 +166,21 @@ Director's decision, 2026-11-26, confirmed 2026-11-27. Send the real pages and c
 doing the work, without asking. The *site* stays private behind Access; that does not move.
 
 **The Art Director has no memory between jobs,** so every game keeps a notebook in
-`games/<slug>/art/`: `art-direction.md` is the standing brief, `decisions.md` is dated and appended
-to after every art call. `scripts/art.mjs --game <slug>` attaches both.
+`games/<slug>/art/` and `scripts/art.mjs --game <slug>` attaches it.
 
-**Never regenerate a whole component that carries geometry** - the board's measured grid, the
-Depot's pen-mark coordinates. Mask what must not move, composite the model's pixels locally only
-inside the mask, and prove it with a pixel diff outside it. **Never let a model write text.**
+**Measure the component before you cut it; reconstruct last.** **Never regenerate anything that
+carries geometry** - mask it, composite locally, prove it with a pixel diff. **Never let a model
+write text.**
 
-Which method suits which part of a component, how to brief the Art Director, and how to close the
-loop before showing me: `.claude/rules/art.md`.
+The methods, the notebook's shape and how to close the loop: `.claude/rules/art.md`.
 
 ## Writing a game
 
 A seeded RNG in the state, undo that never crosses a random event, saves under
 `pnp:<slug>:state` that every load migrates, log lines computed from what really changed, and one
-build with two arrangements (laptop side by side, tablet with the board at full height and the rest
-behind tabs, everything inside `100dvh`).
+build with two arrangements inside `100dvh`.
 
-The detail, including the standard features every game has and the touch rules, is in
-`.claude/rules/game-code.md`.
+The detail, the standard features and the touch rules: `.claude/rules/game-code.md`.
 
 ## Playtesting
 
