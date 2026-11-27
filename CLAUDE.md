@@ -17,14 +17,20 @@ A small studio, and everyone's title says what they decide.
 | **OpenAI** | **Art Director, Visual Designer, Illustrator** | Nothing - it proposes direction, makes art, reviews screens, and the Game Director approves | Anything. "Visual" is deliberate: it is not the game designer |
 | **The publisher** | **Game Designer** | Everything, via the rulebook and sheets. Nobody overrides them; I interpret them | - |
 | **QA** | A fresh agent that did not write the code, run by you | Nothing - it checks the game against the sheets and reports to you | - |
+| **Playtester** | A Claude chat with a browser, the rulebook and no sight of the code | Nothing - it plays the game as a player and reports what it found | - |
 | **A second Claude session** | Third-party consultant, when I bring one in | Nothing - read-only, reports to me, advises you | - |
 
 **Routing.** Rule questions come to me in the three-part form. Art proposals come from the Art
-Director and I approve them. QA findings go to you; any that turn on how a rule reads come on to me.
+Director and I approve them. QA and playtest findings go to you; any that turn on how a rule reads,
+how the game looks, or whether a rule should change come on to me.
 
-**Titles hide two things, so keep them in mind.** The Art Director, QA and the consultant have **no
-memory between jobs** - anything they need must be in the repo's files, not in a previous
-conversation. And the Art Director's word is not final: taste is mine.
+**Titles hide two things, so keep them in mind.** The Art Director, QA, the playtester and the
+consultant have **no memory between jobs** - anything they need must be in the repo's files, not in
+a previous conversation. And the Art Director's word is not final: taste is mine.
+
+**The playtester is not QA.** QA reads the repo and checks the data against the sheets. The
+playtester never opens the repo: its value is that it sees only what a player sees, so anything it
+needs must be handed to it. Added 2026-11-27 at my request; see **Playtesting** below.
 
 **Consulting the consultant.** Their time is expensive, so use it sparingly: a second opinion on a
 decision that is yours, where being wrong would cost something, and that isn't worth my attention.
@@ -203,6 +209,13 @@ real device.
 **You:** anything that needs your account rather than an API token - billing, a plan upgrade, an
 account-level switch in a dashboard. I tell you exactly what to click.
 
+**5b. Playtest.** A full game played by someone who has the rulebook and not the code (see
+**Playtesting**). Ask me which way to run it and hand me the filled-in prompt; I either run it or
+tell you to. Fix the findings, put the strategy into `test/bot.ts`, and run the simulation that
+turns it into a win rate.
+**You:** choose who runs it, and rule on anything the playtester says about how a rule reads or
+whether the game is too easy.
+
 **6. Retro, before the next game.** Stop and improve the process while it is fresh:
 
 - What cost more than it should have, and which stage it leaked out of.
@@ -349,6 +362,44 @@ actually be seen before shipping, and keep the master and the prompt beside the 
 `shelf/icons/README.md` does. Save art under `games/<slug>/src/assets/` and **import** it so it is
 inlined; **don't use `public/`**, which breaks the single file. The original art wins when it is
 available; otherwise a clean paper look (off-white `#f8f6f0`, dark ink `#1f2421`).
+
+## Playtesting
+
+A playtest is a full game played by a Claude chat with a browser, the publisher's rulebook and no
+sight of the code. It has two outputs: findings for you, and an explanation of how the game is won.
+
+**Difficulty is measured in two halves,** because a 75-day game is several hundred clicks and a few
+browser games cannot give a win rate:
+
+1. **The playtester explains.** Where a careful player dies and why, and the best way to play that it
+   found, written as conditions and actions specific enough to program. It also lists the choices it
+   could not settle.
+2. **The engine counts.** Teach that strategy to `test/bot.ts` and run thousands of games. The win
+   rate of a competent strategy from a normal start is the number the Game Director gets. The open
+   questions become simulations, and the answers go back into the notebook.
+
+**Each game keeps `games/<slug>/playtest/`:**
+
+- **`brief.md`** - what fills the braces in the prompt: the address, the rules files, the rulings
+  file, the controls, the budget. The prompt itself lives in `.claude/skills/playtest/`.
+- **`notebook.md`** - how to play well, turning points, open questions, what the engineers measured,
+  and one line per game played. The playtester rewrites its own sections; the measured section is
+  yours.
+- **`reports/`** - one file per run, dated.
+
+**Two rules that are not optional:**
+
+- **It never plays the Game Director's game.** `?playtest=1` gives the game its own save key and
+  turns cloud sync off, so a playtest on the live site cannot overwrite a real shift or offer it to
+  the iPad. The address you hand over always carries it.
+- **A finding needs a position, not a description.** Every move goes through one command and the
+  dice are seeded, so the seed plus the list of commands reproduces any position exactly. The game
+  shows a step number and copies its journal, and a journal that ends in a bug is a regression test
+  already written.
+
+**Who runs it is the Game Director's choice, asked each time:** they paste the prompt into a Claude
+chat themselves, or tell you to run it. Give them the filled-in prompt either way, listing what to
+attach - rulebook, rulings, notebook.
 
 ## Game rules for the code
 

@@ -4,6 +4,7 @@
 import { BUILD_ORDER } from '../src/data/buildings';
 import type { BuildingType } from '../src/data/types';
 import {
+  act,
   actionCost,
   actionError,
   countOf,
@@ -17,6 +18,7 @@ import {
   validTargets,
   type ActionKind,
   type ActionParams,
+  type Command,
   type GameState,
 } from '../src/engine/game';
 
@@ -128,4 +130,53 @@ export function generous(s: GameState): GameState {
   t.depot.food.gained += 8;
   t.depot.radiation.gained += 6;
   return t;
+}
+
+
+/**
+ * Play one game with the heuristics above, handing every command to `emit` before applying it.
+ *
+ * Exists so a test can get a real sequence of commands rather than only the end state - the
+ * playtest journal is exactly such a sequence, and the engine replays it to prove a position can
+ * be reproduced from a seed and a command list.
+ */
+export function drive(
+  start: GameState,
+  emit: (c: Command) => void,
+  opts: { maxCommands?: number; rnd?: () => number } = {},
+): GameState {
+  const max = opts.maxCommands ?? Infinity;
+  let seed = start.seed;
+  const rnd = opts.rnd ?? (() => ((seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31));
+  let s = start;
+  let n = 0;
+  const run = (cmd: Command) => {
+    emit(cmd);
+    n++;
+    s = act(s, cmd);
+  };
+  while (s.phase !== 'won' && s.phase !== 'lost' && n < max) {
+    while (s.techPending && n < max) run({ t: 'tech', idx: techPick(s) });
+    if (n >= max) break;
+    if (canLaunch(s) && rnd() < 0.7) {
+      run({ t: 'launch' });
+      break;
+    }
+    run({ t: 'roll' });
+    if (s.phase === 'choose') run({ t: 'chooseAccident', idx: accidentPick(s.dice) });
+    if (shouldCombine(s)) run({ t: 'combine' });
+    for (let d = 0; d < s.actionDice.length && s.phase === 'actions' && n < max; d++) {
+      while (s.techPending && n < max) run({ t: 'tech', idx: techPick(s) });
+      if (canLaunch(s)) break;
+      const c = bestChoice(s, d, rnd);
+      if (c) run({ t: 'action', die: d, action: c.action, params: c.params });
+    }
+    while (s.techPending && s.phase === 'actions' && n < max) run({ t: 'tech', idx: techPick(s) });
+    if (canLaunch(s) && s.phase === 'actions') {
+      run({ t: 'launch' });
+      break;
+    }
+    if (s.phase === 'actions' && n < max) run({ t: 'endActions' });
+  }
+  return s;
 }

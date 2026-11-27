@@ -1470,3 +1470,26 @@ button.die {
   padding: 0;
   background: none;
 }
+
+/* The playtester's strip in the top bar: see src/ui/playtest.ts. Loud on purpose - a playtest and
+   a real shift must never be confused for one another. */
+.playtest {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 8px;
+  font-size: 13px;
+  color: #ffe9cf;
+}
+.playtest-tag {
+  font-family: var(--display);
+  letter-spacing: 1px;
+  background: #b4441f;
+  color: #fff3e3;
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+.playtest-step {
+  white-space: nowrap;
+  opacity: 0.85;
+}

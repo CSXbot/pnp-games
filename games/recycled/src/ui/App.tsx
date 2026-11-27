@@ -29,7 +29,17 @@ import { ResIcon } from './Icons';
 import { AccidentTable, ActionMenu, BuildPicker, DicePanel, type Pending } from './TurnPanel';
 import { Help } from './Help';
 import { NewGameDialog } from './NewGameDialog';
-import { BROKEN_KEY, LEGACY_SAVE_KEY, SAVE_KEY } from './save';
+import { BROKEN_KEY, LEGACY_SAVE_KEY, SAVE_KEY, saveKey } from './save';
+import {
+  PLAYTEST,
+  journalOf,
+  parseJournal,
+  readJournal,
+  recordStep,
+  replay,
+  writeJournal,
+  type Journal,
+} from './playtest';
 import {
   ago,
   cloudEnabled,
@@ -57,8 +67,11 @@ function load(): GameState | null {
   let raw: string | null = null;
   try {
     // The old key is read only while the new one is empty, so a game in progress survives
-    // the move into pnp-games. The next save writes SAVE_KEY.
-    raw = localStorage.getItem(SAVE_KEY) ?? localStorage.getItem(LEGACY_SAVE_KEY);
+    // the move into pnp-games. The next save writes SAVE_KEY. A playtest has its own key and
+    // inherits nothing.
+    raw = PLAYTEST
+      ? localStorage.getItem(saveKey(true))
+      : (localStorage.getItem(SAVE_KEY) ?? localStorage.getItem(LEGACY_SAVE_KEY));
     if (!raw) return null;
     const migrated = migrateSave(JSON.parse(raw));
     if (migrated) return migrated;
@@ -67,7 +80,7 @@ function load(): GameState | null {
   }
   // A save we can't read is still the player's game. The fresh game that replaces it is written
   // over SAVE_KEY a moment later, so keep the original where a fix can still recover it.
-  if (raw) {
+  if (raw && !PLAYTEST) {
     try {
       if (!localStorage.getItem(BROKEN_KEY)) localStorage.setItem(BROKEN_KEY, raw);
     } catch {
@@ -79,18 +92,49 @@ function load(): GameState | null {
 
 function save(s: GameState) {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+    localStorage.setItem(saveKey(PLAYTEST), JSON.stringify(s));
   } catch {
     /* storage unavailable: play without saving */
   }
+  // A playtest writes no meta and pushes nothing: the meta beside the real save is what decides
+  // which device holds the newest shift, and a test game must not get a vote in that.
+  if (PLAYTEST) return;
   const meta = { savedAt: Date.now(), device: deviceLabel() };
   writeMeta(meta);
   if (cloudEnabled()) schedulePush(s, meta);
 }
 
+/**
+ * The game this page opens with.
+ *
+ * In playtest mode the journal is the authority rather than the saved state: replaying it gives
+ * the same position and keeps the step numbers in a report meaningful across a reload. If it
+ * cannot be replayed - the engine changed under it - the saved game is kept and the journal is
+ * dropped, so the bar says the steps are not trustworthy instead of quietly renumbering them.
+ */
+function boot(): { state: GameState; journal: Journal | null } {
+  if (!PLAYTEST) return { state: load() ?? newGame(), journal: null };
+  const stored = readJournal();
+  if (stored) {
+    try {
+      return { state: replay(stored), journal: stored };
+    } catch {
+      /* fall through to the saved game */
+    }
+  }
+  const saved = load();
+  if (saved) return { state: saved, journal: null };
+  const fresh = newGame();
+  return { state: fresh, journal: journalOf(fresh, []) };
+}
+
 export function App() {
-  const [state, setState] = useState<GameState>(() => load() ?? newGame());
+  const [booted] = useState(boot);
+  const [state, setState] = useState<GameState>(booted.state);
   const [history, setHistory] = useState<GameState[]>([]);
+  // Playtest only: the list of commands that produced `state`, so a report can name a step and the
+  // engineers can replay to it. See src/ui/playtest.ts.
+  const [journal, setJournal] = useState<Journal | null>(booted.journal);
   const [dieSel, setDieSel] = useState<number | null>(null);
   const [pending, setPending] = useState<(Pending & { params?: ActionParams; joining?: boolean }) | null>(null);
   const [picker, setPicker] = useState(false);
@@ -107,6 +151,9 @@ export function App() {
   const [bootMeta] = useState(() => readMeta());
 
   useEffect(() => save(state), [state]);
+  useEffect(() => {
+    if (PLAYTEST && journal) writeJournal(journal);
+  }, [journal]);
   // One look at the cloud copy on load, then flush anything queued when the page goes away.
   useEffect(() => {
     if (!cloudEnabled()) return;
@@ -167,6 +214,7 @@ export function App() {
       }
       // Undo never reaches back past a dice roll or the end of a turn.
       setHistory((h) => (cmd.t === 'roll' || cmd.t === 'endActions' ? [] : [...h, state]));
+      if (PLAYTEST) setJournal((j) => recordStep(j ?? journalOf(state, []), cmd));
       setState(r.state);
       setPending(null);
       setPicker(false);
@@ -181,6 +229,7 @@ export function App() {
       if (!h.length) return h;
       setState(h[h.length - 1]);
       setPending(null);
+      if (PLAYTEST) setJournal((j) => (j && j.cmds.length ? { ...j, cmds: j.cmds.slice(0, -1) } : j));
       return h.slice(0, -1);
     });
   }, []);
@@ -239,11 +288,31 @@ export function App() {
   };
 
   const startNewGame = (mapId: string) => {
-    setState(newGame(mapId));
+    const fresh = newGame(mapId);
+    setState(fresh);
     setHistory([]);
     setPending(null);
     setDieSel(null);
     setNewGameOpen(false);
+    if (PLAYTEST) setJournal(journalOf(fresh, []));
+  };
+
+  /** Replace the game with the one a pasted journal describes. */
+  const loadJournal = (text: string) => {
+    const parsed = parseJournal(text);
+    if (!parsed.ok) return setToast(parsed.error);
+    let next: GameState;
+    try {
+      next = replay(parsed.journal);
+    } catch (e) {
+      return setToast(`That journal does not replay: ${(e as Error).message}`);
+    }
+    setState(next);
+    setJournal(parsed.journal);
+    setHistory([]);
+    setPending(null);
+    setDieSel(null);
+    setToast(`Replayed ${parsed.journal.cmds.length} steps.`);
   };
 
   useEffect(() => {
@@ -298,6 +367,7 @@ export function App() {
           )}
         </div>
         <div className="top-actions">
+          {PLAYTEST && <PlaytestBar journal={journal} onLoad={loadJournal} onToast={setToast} />}
           {hosted && (
             <a className="btn btn-shelf" href="../../index.html" title="Back to the shelf">
               ← Shelf
@@ -427,7 +497,7 @@ export function App() {
             <h2>{state.phase === 'won' ? 'Shift complete, comrade' : 'Shift terminated'}</h2>
             <p>{state.endReason}</p>
             <p className="muted">
-              Days survived: {state.day} · Buildings: {state.buildings.length} · Batteries: {state.batteries}
+              Days completed: {state.day} · Buildings: {state.buildings.length} · Batteries: {state.batteries}
             </p>
             <div className="btn-row">
               <button className="btn btn-primary btn-big" onClick={() => setNewGameOpen(true)}>
@@ -508,6 +578,66 @@ export function App() {
           onStart={startNewGame}
         />
       )}
+    </div>
+  );
+}
+
+/**
+ * The playtester's own strip: which step the game is on, and the journal that reproduces it.
+ *
+ * It is the whole of the "exact position" tooling. A report that says "step 137" plus the copied
+ * journal is a position an engineer can replay, and a journal that ends in a bug is a regression
+ * test already written.
+ */
+function PlaytestBar({
+  journal,
+  onLoad,
+  onToast,
+}: {
+  journal: Journal | null;
+  onLoad: (text: string) => void;
+  onToast: (text: string) => void;
+}) {
+  const copy = async () => {
+    if (!journal) return;
+    const text = JSON.stringify(journal);
+    try {
+      await navigator.clipboard.writeText(text);
+      onToast(`Journal copied: ${journal.cmds.length} steps, seed ${journal.seed}.`);
+    } catch {
+      // Clipboard needs a secure context and permission; falling back to a selectable box always
+      // works, and the playtester can copy it by hand.
+      window.prompt('Copy the journal:', text);
+    }
+  };
+  return (
+    <div className="playtest" role="status">
+      <span className="playtest-tag" title="Its own save, no cloud sync. Nothing here touches the real game.">
+        PLAYTEST
+      </span>
+      {journal ? (
+        <>
+          <span className="playtest-step">
+            step <b>{journal.cmds.length}</b> · seed {journal.seed}
+          </span>
+          <button className="btn btn-small" onClick={copy}>
+            Copy journal
+          </button>
+        </>
+      ) : (
+        <span className="playtest-step" title="This game was not started from a journal, so step numbers would be wrong.">
+          no journal
+        </span>
+      )}
+      <button
+        className="btn btn-small"
+        onClick={() => {
+          const text = window.prompt('Paste a journal to replay:');
+          if (text) onLoad(text);
+        }}
+      >
+        Load
+      </button>
     </div>
   );
 }

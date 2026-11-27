@@ -8,6 +8,7 @@
  * Nothing here may ever block or break a turn. Every network path fails silently.
  */
 import type { GameState } from '../engine/game';
+import { PLAYTEST } from './playtest';
 
 export const GAME_SLUG = 'recycled';
 /** Alongside SAVE_KEY rather than inside it, so the saved value stays a plain GameState. */
@@ -48,6 +49,8 @@ export function decide(local: GameState | null, localMeta: SaveMeta | null, remo
 
 export function cloudEnabled(): boolean {
   if (typeof location === 'undefined' || location.protocol === 'file:') return false;
+  // A playtest is never synced: it would offer a test game to the owner's other devices.
+  if (PLAYTEST) return false;
   try {
     const flag = localStorage.getItem(ENABLED_KEY);
     if (flag === 'off') return false;

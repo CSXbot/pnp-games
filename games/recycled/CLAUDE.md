@@ -39,7 +39,10 @@ art rather than redrawn art; wants rule questions raised, not silently guessed.
   time" to a paraphrase, and those are the two words the owner's Automatron ruling rests on - the
   player was reading a card that no longer justified the rule. Two paraphrases remain, both
   harmless but both still paraphrases: the Food Plant and Amplifier say "for every" where the cards
-  say "for all", and the Transceiver text carries the owner's "(3 hexes in between)" reading.
+  say "for all". The Transceiver text used to carry the owner's "(3 hexes in between)" reading
+  alongside the card's "at least 3 hexes away", which reads as a contradiction - a playtester
+  reported it as one on 2026-11-27. The reading now lives only in `RULES-NOTES.md` and in the
+  refusal the game shows when a placement is too close.
 
 
 - Raise rule ambiguities with the owner instead of guessing, and record each answer in

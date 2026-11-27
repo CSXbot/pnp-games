@@ -126,7 +126,7 @@ export const BUILDINGS: Record<BuildingType, BuildingDef> = {
     instantLocal: 3,
     limit: 3,
     text:
-      'Can only be built at least 3 hexes away from other Transceivers (3 hexes in between). +3 instant local Sanity. Limit: 3 Transceivers.',
+      'Can only be built at least 3 hexes away from other Transceivers. +3 instant local Sanity. Limit: 3 Transceivers.',
   },
   laboratory: {
     type: 'laboratory',

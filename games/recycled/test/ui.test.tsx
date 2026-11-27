@@ -199,7 +199,7 @@ function checkScreen(s: GameState, where: string) {
   if (over) {
     expect(go, msg('game over modal')).not.toBeNull();
     expect(text(go), msg('game over text')).toContain(s.endReason!);
-    expect(text(go), msg('days survived')).toContain(`Days survived: ${s.day}`);
+    expect(text(go), msg('days completed')).toContain(`Days completed: ${s.day}`);
   } else expect(go).toBeNull();
 }
 
