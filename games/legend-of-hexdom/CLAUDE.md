@@ -10,11 +10,26 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 
 ## Status
 
-**Stage 0 (intake) done 2026-11-27. Stage 1 (spec and direction) next.** No code, no
+**Stage 1 (spec and direction) drafted 2026-11-27, waiting on the Game Director's answers** to
+the 14 questions in `SPEC.md` section 7. Stage 0 (intake) done the same day. No code and no
 `package.json` yet, so this folder is not an npm workspace and the build ignores it.
 
-**Scope set by the Game Director, 2026-11-27:** Hex Forest only, **maps 1-3 only**. Not yet:
-Epic-Sized Maps, Bonus Characters, Lost Sands, Winter Tales, maps 4-100.
+## Rulings and scope
+
+From the Game Director unless marked otherwise:
+
+- **2026-11-27, scope:** Hex Forest only, **maps 1-3 only**. Not yet: Epic-Sized Maps, Bonus
+  Characters, Lost Sands, Winter Tales, maps 4-100.
+- **2026-11-27, characters:** three - Warrior, Archer, and a third picked by the tech lead.
+  **The tech lead picked the Mage.** Each attribute then has a lead character (Strength 2, Agility
+  2, Magic 2). Her Enchant changes how a combat is resolved and her Mana Shield is a reaction to
+  damage, and nothing else in scope does either. Six later characters need one of those, so they
+  get built while there are three characters, not retrofitted. The Dwarf was the runner-up and
+  is cheaper, but its Tunneling is the Trusty Donkey's mechanic again.
+- **2026-11-27, modes:** solo normal first, Expert mode soon after, Legacy later or never.
+- **2026-11-27, layout and look:** the A4 arrangement is not binding, and pen-like marks are
+  wanted. Detail in `art/art-direction.md`.
+- **Rule answers** go to `RULES-NOTES.md` as they come.
 
 ## Sources
 
@@ -78,8 +93,13 @@ first row of 5 pre-filled. A `+` (an attribute point) sits at food 10, 30 and 50
 (a skill unlock) at food 20 and 40. Attributes run 1-12, with a red ring at 12. The A4 Warrior uses
 the same card.
 
-## Not yet decided
+## The documents
 
-The Game Director's, at stage 1: which characters the first release offers, which modes (solo is
-certain; Expert and Legacy are solo-compatible), and every rule question in `SPEC.md` once it is
-written.
+| File | What it holds |
+|---|---|
+| `SPEC.md` | The rules as they will be implemented, and the open questions (section 7) |
+| `RULES-NOTES.md` | The Game Director's answers to rule questions |
+| `ROADMAP.md` | What is open |
+| `art/art-direction.md` | The Art Director's standing brief: what the player does on paper, what carries rules |
+| `art/decisions.md` | Every art call: asked, answered, accepted or rejected, and why |
+| `CLAUDE.md` | This file: status, rulings, sources, how the sheets are built |
