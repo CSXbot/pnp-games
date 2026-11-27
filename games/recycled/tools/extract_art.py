@@ -19,7 +19,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 
 OUT = Path(__file__).resolve().parent.parent / 'src' / 'assets' / 'art'
 
@@ -55,6 +55,52 @@ def save(img: Image.Image, name: str, width: int | None = None, quality: int = 8
     path = OUT / f'{name}.webp'
     img.save(path, 'WEBP', quality=quality, method=6)
     print(f'{path.relative_to(OUT.parent.parent.parent)}  {img.width}x{img.height}  {path.stat().st_size // 1024} KB')
+
+
+# How far the printed rim reaches past the outermost hexes, in px at 300 dpi.
+RIM = 31
+# Where another illustration covers the rim. The flood traces the printed outline, but anything
+# light and desaturated beside the rim survives it: on Planet 1 the cosmonaut sits against the
+# bottom-right corner and his white glove and boot are printed over the rim there. Inside these
+# boxes only the hexes themselves are kept, so that corner has no rim rather than fragments of him.
+RIMLESS = [(1500, 2900, 2480, 3508)]
+
+
+def board_alpha(arr: np.ndarray) -> np.ndarray:
+    """The board's printed outline, traced rather than approximated.
+
+    The old alpha was the union of the hexes grown by a square MaxFilter, which gave a staircase
+    where the printed rim is a smooth bevel, and leaked pale slivers of the art beside it. Here the
+    page and the Mars backdrop are flooded inwards from a ring RIM px outside the hexes: the rim's
+    dark metal stops the flood, so what is left is the board as printed, steps and all.
+    """
+    h, w = arr.shape[:2]
+    hexes = Image.new('L', (w, h), 0)
+    d = ImageDraw.Draw(hexes)
+    for r, n in enumerate(ROWS):
+        for c in range(n):
+            d.polygon(hex_points(*hex_center(r, c), HEX_R), fill=255)
+    disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (RIM * 2 + 1, RIM * 2 + 1))
+    outer = cv2.dilate((np.array(hexes) > 0).astype(np.uint8), disc) > 0
+
+    hsv = cv2.cvtColor(arr, cv2.COLOR_RGB2HSV).astype(int)
+    hue, sat, val = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
+    mars = ((hue < 25) | (hue > 170)) & (sat > 70)
+    paper = (val > 243) & (sat < 18)
+    passable = ((mars | paper) & outer).astype(np.uint8)
+    flood = np.zeros((h + 2, w + 2), np.uint8)
+    ring = outer & ~cv2.erode(outer.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
+    for y, x in zip(*np.where(ring)):
+        if passable[y, x] == 1:
+            cv2.floodFill(passable, flood, (int(x), int(y)), 2)
+
+    kept = outer & (passable != 2)
+    inside = np.array(hexes) > 0
+    for x0, y0, x1, y1 in RIMLESS:
+        kept[y0:y1, x0:x1] &= inside[y0:y1, x0:x1]
+    kept = cv2.morphologyEx(kept.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8), 2)
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(kept, 8)
+    return lab == max(range(1, n), key=lambda i: stats[i, cv2.CC_STAT_AREA])
 
 
 def board(sheet1: Image.Image) -> None:
@@ -107,20 +153,8 @@ def board(sheet1: Image.Image) -> None:
     arr[sel] = np.array(lines)[sel]
     img = Image.fromarray(arr)
 
-    # Keep only the board: union of hexes, grown to include the rusty rim.
-    mask = Image.new('L', img.size, 0)
-    d = ImageDraw.Draw(mask)
-    for r, n in enumerate(ROWS):
-        for c in range(n):
-            d.polygon(hex_points(*hex_center(r, c), HEX_R * 1.0), fill=255)
-    wide = np.array(mask.filter(ImageFilter.MaxFilter(37)))
-    tight = np.array(mask.filter(ImageFilter.MaxFilter(15)))
-    # Above the top row and below the bottom row the sheet has other art (Depot plate,
-    # astronaut) right against the rim, so keep the outline tight there.
-    rows_y = np.arange(wide.shape[0])[:, None]
-    edge = (rows_y < ROW0_Y) | (rows_y > ROW0_Y + 8 * DY)
-    mask = Image.fromarray(np.where(edge, tight, wide).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2))
-    img.putalpha(mask)
+    img.putalpha(Image.fromarray((board_alpha(np.array(img)) * 255).astype(np.uint8)))
+    mask = img.split()[3]
     x0, y0, x1, y1 = mask.getbbox()
     out = img.crop((x0, y0, x1, y1))
     # Where the centre hex (row 4, col 4) is in the saved image, for the game to align it.
