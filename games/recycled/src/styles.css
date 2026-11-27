@@ -1154,14 +1154,14 @@ button.die {
 .depot-art-wrap {
   position: relative;
 }
+/* The launch control used to float over the machine's lower-left, which was empty while the
+   Depot art was cut off mid-body. Now that the whole console is there it sits below, where the
+   panel had dead space anyway. */
 .depot-corner {
-  position: absolute;
-  left: 1.5%;
-  bottom: 2%;
-  width: 72%;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-top: 10px;
 }
 .depot-corner .btn-launch {
   margin: 0;
@@ -1295,4 +1295,29 @@ button.die {
 .display-option.selected {
   border-color: var(--rust);
   box-shadow: inset 0 0 0 2px var(--rust-2);
+}
+
+/* ------------------------------------------------------------------ tablet density
+   On the iPad the action list is 10 rows at 44px, which ate the right column and left the
+   Depot, Accidents and Log a 255px sliver. Two columns halves its height and gives that
+   space back, while keeping every target a fingertip tall. */
+@media (max-width: 1439px) {
+  .action-menu ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 10px;
+  }
+  .action {
+    grid-template-columns: 34px 1fr auto;
+    gap: 6px;
+    font-size: 16px;
+  }
+  .action .why,
+  .action .effect {
+    font-size: 12px;
+  }
+  /* Construction spans both columns: it is the one that opens a picker, not a one-click action. */
+  .action-menu ul li:last-child {
+    grid-column: 1 / -1;
+  }
 }
