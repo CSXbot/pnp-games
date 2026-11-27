@@ -2,7 +2,7 @@ import { BUILDINGS, BUILD_ORDER } from '../data/buildings';
 import { ACCIDENTS, ACTION_COST } from '../data/rules';
 import type { BuildingType, Res } from '../data/types';
 import { actionError, resName, type ActionKind, type ActionParams, type GameState } from '../engine/game';
-import { cardArt } from './art';
+import { cardArt, cutoutArt } from './art';
 import { Amount, Die, ResIcon } from './Icons';
 
 export interface Pending {
@@ -254,7 +254,29 @@ export function BuildPicker({
             const err = viaSetup ? `Use the “Set up ${def.name}” action.` : actionError(state, die, 'build', { building: t });
             return (
               <button key={t} className="card" disabled={!!err} onClick={() => onPick(t)} title={def.text}>
-                <img src={cardArt(t)} alt={`${def.name}: ${def.text}`} className="card-img" />
+                <span className="card-top">
+                  <ResIcon r={def.icon} size={18} />
+                  <b className="card-name">{def.name}</b>
+                </span>
+                <span className="card-cost">
+                    <span className="chip chip-ap">{viaSetup ? `${def.cost.ap}/step` : `${def.cost.ap} AP`}</span>
+                    {def.cost.materials > 0 && (
+                      <span className="chip">
+                        {def.cost.materials}
+                        <ResIcon r="materials" size={14} />
+                      </span>
+                    )}
+                    {def.cost.power > 0 && (
+                      <span className="chip">
+                        {def.cost.power}
+                        <ResIcon r="power" size={14} />
+                      </span>
+                    )}
+                </span>
+                {/* The cut-out, not the printed card: the card's own rules text is a raster that
+                    goes to mush at this size, and the words below are the same text, set live. */}
+                <img src={cutoutArt(t) ?? cardArt(t)} alt="" className="card-img" />
+                <span className="card-text">{def.text}</span>
                 <div className="card-foot">
                   <span className="muted">
                     {def.capacity > 0

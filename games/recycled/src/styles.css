@@ -1321,3 +1321,92 @@ button.die {
     grid-column: 1 / -1;
   }
 }
+
+
+/* ------------------------------------------------------------------ build picker
+   The card used to be a photograph of the printed card: its rules text was a raster at 230px and
+   twelve of them did not fit the iPad without scrolling. It is composed now - the cut-out
+   illustration, and the card's own words set live from the verified data. */
+.build-picker .cards {
+  grid-template-columns: repeat(auto-fill, minmax(188px, 1fr));
+  gap: 10px;
+}
+.build-picker .card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 9px 7px;
+  background: var(--panel);
+  border: 2px solid #8a4a2c;
+  border-radius: 9px;
+  text-align: left;
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.card-name {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--maroon);
+  flex: 1;
+  min-width: 0;
+}
+.card-cost {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: #e8d7c3;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.chip-ap {
+  background: var(--rust-2);
+  color: #fff6e9;
+}
+.build-picker .card-img {
+  width: 100%;
+  height: 78px;
+  object-fit: contain;
+  background: radial-gradient(ellipse at 50% 70%, #f4ece1, #e9ddcd);
+  border-radius: 6px;
+}
+.card-text {
+  font-size: 12.5px;
+  line-height: 1.32;
+  color: var(--ink);
+}
+.build-picker .card-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+/* A laptop is shorter than an iPad even though it is wider, and three rows of cards have to fit
+   both. The illustration is what gives. */
+@media (max-height: 960px) {
+  .build-picker .card-img {
+    height: 64px;
+  }
+  .build-picker .card {
+    padding: 7px 8px 6px;
+  }
+  .build-picker .cards {
+    gap: 8px;
+  }
+}
