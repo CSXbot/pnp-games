@@ -35,3 +35,7 @@ paths:
   The application endpoint refuses with `can not update reusable policies through this endpoint`.
 - **Verified on 2026-11-26:** from a fresh browser session `https://games.csx.tools` asks for login,
   the one-time PIN to that inbox gets in, and the shelf and Recycled load with their art.
+- **Check the exit codes before pushing.** Run `npm test` and `npm run build` and look at their exit
+  status, not at filtered output: a build piped through `grep` or `tail` reports the filter's
+  success. On 2026-11-28 a type error that only `tsc` in the build catches (Vitest doesn't
+  type-check) was pushed that way and broke `main` until the next commit.
