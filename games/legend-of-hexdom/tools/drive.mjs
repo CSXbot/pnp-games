@@ -42,7 +42,8 @@ for (const [w, h] of [[1440, 900], [1366, 865], [1366, 1024]]) {
   };
 
   // A new game through the UI.
-  await page.goto('file://' + FILE);
+  // LOOK=sheet drives the trial look (src/ui/look.ts).
+  await page.goto('file://' + FILE + (process.env.LOOK ? `?look=${process.env.LOOK}` : ''));
   await page.getByRole('button', { name: 'Start', exact: true }).click();
   await page.getByRole('button', { name: 'Roll for the start' }).click();
   await page.getByRole('button', { name: 'Roll the dice' }).click();

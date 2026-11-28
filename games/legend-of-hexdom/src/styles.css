@@ -250,3 +250,20 @@ button { font: inherit; color: inherit; }
 .taken.full { right: auto; bottom: auto; font-size: 11px; padding: 1px 6px; }
 .taken { white-space: nowrap; max-width: 95%; overflow: hidden; text-overflow: ellipsis; }
 .strip-live { position: absolute; top: 2px; bottom: 2px; border: 3px solid var(--target); border-radius: 6px; box-shadow: 0 0 0 2px rgba(46,158,91,.25); pointer-events: auto; }
+
+/* The trial look (src/ui/look.ts): the printed sheet's frames and a charcoal pen. */
+:root[data-look="sheet"] {
+  --pen: #2b2b2b;
+  --target: #5e8c68;
+  --lit: #d1a640;
+}
+[data-look="sheet"] .panel { border-radius: 8px; }
+[data-look="sheet"] .panel-title { background: var(--frame); color: #fff; margin: -8px -10px 8px; padding: 4px 10px; border-radius: 4px 4px 0 0; }
+[data-look="sheet"] .panel-title .btn { color: var(--ink); background: #fff; min-height: 32px; padding: 2px 10px; }
+[data-look="sheet"] .panel-title .muted, [data-look="sheet"] .panel-title .sub { color: rgba(255, 255, 255, .75); }
+[data-look="sheet"] .box { border-radius: 6px; padding-top: 0; overflow: hidden; }
+[data-look="sheet"] .box-title { background: var(--frame); color: #fff; margin: 0 -4px 4px; padding: 2px 6px; }
+[data-look="sheet"] .box-note { color: rgba(255, 255, 255, .75); }
+[data-look="sheet"] .hex.target { fill: rgba(94, 140, 104, .16); }
+[data-look="sheet"] .die-btn.on { background: #f7efd9; }
+[data-look="sheet"] .ink-line { opacity: .85; }

@@ -16,9 +16,13 @@ decisions that are theirs to be kept here, short.
 2. **Taste: redraw the table cells cleaner?** The Art Director's suggestion: keep the publisher's
    pictures, rebuild the requirement boxes, numbers and loot icons crisp from the data (text set by
    code, never by a model). More legible, a little less "printed". Yes or no.
-3. **Taste: frames and colours closer to the sheet?** Dark header bars and squarer boxes like the
-   printed panels; and either keep the current colours (yellow = selected, green = where you can go,
-   blue = your ink) or go charcoal ink with muted previews. Keep, or which.
+3. **Taste: A or B?** Picture: `art/compare/2026-11-28-look-A-vs-B.jpg`. To try B on the iPad, tick
+   Menu > "Try the sheet's look". It's per device, and your game is untouched.
+   - **A**, today: yellow = selected, green = where you can go, blue ink.
+   - **B**, the Art Director's idea: dark header bars like the printed panels, squarer boxes,
+     charcoal ink, muted green.
+   - Trade-off: B's charcoal route is harder to see over the grey Mountain and Water hexes.
+   - Mixing is fine, e.g. B's headers with A's blue ink.
 4. **Release: your call (stage 5c). I recommend yes.** Two playtests played four games and won all
    three that finished, one with each character. Their 13 findings are fixed. None was a rule error.
    What isn't done: the two taste questions above, and the Art Director's polish.

@@ -34,6 +34,7 @@ import { AttrIcon, Die } from './Icons';
 import { cloud, exportName, loadGame, storeGame } from './persist';
 import { journalOf, parseJournal, PLAYTEST, readJournal, replay, writeJournal } from './playtest';
 import { Sheet } from './Sheet';
+import { applyLook, currentLook } from './look';
 
 declare const __BUILD__: string | undefined;
 const BUILD = typeof __BUILD__ === 'string' ? __BUILD__ : 'dev';
@@ -838,6 +839,7 @@ function MenuDialog({
 }) {
   const text = JSON.stringify(s);
   const [copied, setCopied] = useState(false);
+  const [look, setLook] = useState(currentLook);
   const [paste, setPaste] = useState('');
   const [jerr, setJerr] = useState<string | null>(null);
   const download = () => {
@@ -870,6 +872,18 @@ function MenuDialog({
           </button>
           <label className="toggle">
             <input type="checkbox" checked={s.manualDice} onChange={(e) => onManual(e.target.checked)} /> Manual dice
+          </label>
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={look === 'sheet'}
+              onChange={(e) => {
+                const l = e.target.checked ? 'sheet' : 'current';
+                applyLook(l, true);
+                setLook(l);
+              }}
+            />{' '}
+            Try the sheet's look: dark headers, charcoal ink (a taste question for you, on this device only)
           </label>
           {journal !== null && (
             <div className="journal">
