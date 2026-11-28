@@ -883,7 +883,7 @@ function MenuDialog({
                 setLook(l);
               }}
             />{' '}
-            Try the sheet's look: dark headers, charcoal ink (a taste question for you, on this device only)
+            Try the sheet's look: dark header bars, squarer boxes (a taste question for you, on this device only)
           </label>
           {journal !== null && (
             <div className="journal">

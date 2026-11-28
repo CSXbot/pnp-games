@@ -19,11 +19,11 @@ decisions that are theirs to be kept here, short.
    column rebuilt to look at before the rest is done.
 3. **Taste: A or B?** Picture: `art/compare/2026-11-28-look-A-vs-B.jpg`. To try B on the iPad, tick
    Menu > "Try the sheet's look". It's per device, and your game is untouched.
-   - **A**, today: yellow = selected, green = where you can go, blue ink.
-   - **B**, the Art Director's idea: dark header bars like the printed panels, squarer boxes,
-     charcoal ink, muted green.
-   - Trade-off: B's charcoal route is harder to see over the grey Mountain and Water hexes.
-   - Mixing is fine, e.g. B's headers with A's blue ink.
+   - **A**, today.
+   - **B**, the Art Director's pick after reviewing both at play size: the printed sheet's dark
+     header bars and squarer boxes, with today's colours. Its words: the charcoal structure feels
+     closer to the sheet, and blue ink and green/yellow keep actions and selection clear.
+   - It costs about one visible log line.
 4. **Release: your call (stage 5c). I recommend yes.** Two playtests played four games and won all
    three that finished, one with each character. Their 13 findings are fixed. None was a rule error.
    What isn't done: the two taste questions above, and the Art Director's polish.

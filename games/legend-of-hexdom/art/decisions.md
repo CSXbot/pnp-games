@@ -2,6 +2,40 @@
 
 Dated, newest first. What was asked, what came back, what was accepted or rejected and why.
 
+## 2026-11-28 (morning) - the trial look, the live-Boss boxes and the portraits, after the fact
+
+**Why after the fact.** Overnight the tech lead built three visual changes without showing them to
+the Art Director, and sent the Game Director a comparison of the trial look before it had been
+reviewed. The Game Director asked whether the visual decisions were aligned with the Art Director;
+they were not, so the review below was run before anything else went to them.
+
+**Asked** `gpt-5.6-sol`, in three calls, with crops at 1366x1024 (each column under 768 px wide):
+1. **Blind**, without this notebook: versions A and B side by side, and the printed sheet. Neither
+   version was named as newer or intended. Question: what differs, column by column, and is each
+   difference better or worse for play?
+2. **With the notebook and the intent:** a recommendation for the Game Director, then the live-Boss
+   boxes on the Boss strip, then the old and new portrait crops beside the Mage's card.
+3. **The recommended mix as built.**
+
+**Came back:**
+- **Blind:** B's charcoal header bars are better for scanning and closer to the sheet. B's charcoal
+  route merges into dark terrain and Castle art. B's muted green makes tappable cells less
+  distinct. B shows about one fewer log line.
+- **Recommendation: a mix.** B's header bars and squarer corners. A's blue ink, bright green and
+  yellow. It would not ship B's charcoal ink or muted green: the route and the tappable cells carry
+  play information, so this is usability. The lost log line is worth the clearer headings.
+- **Live-Boss boxes: keep as shown.** They read as "available now" and hide nothing. If players
+  take green to mean only "tappable", let the action preview spell out "no 3-heart penalty" rather
+  than adding anything inside the cell.
+- **Portraits: all three new crops are correct.** Whole figure and starting icons, no text, no skill
+  diamond. The purple diamond on the Mage's staff belongs to the portrait. No regression.
+- **The mix as built:** yes, it is the recommendation, except that the corners were not yet square
+  enough on panels, skill boxes and buttons.
+
+**Done:** the trial look is now that mix, with the corners squared (panels 5 px, boxes 4 px,
+buttons 5 px). It fits all three sizes with no overflow. `art/compare/2026-11-28-look-A-vs-B.jpg`
+was redrawn. The choice between A and the mix stays with the Game Director.
+
 ## 2026-11-28 - review of the first screens at play size (stage 4)
 
 **Asked** `gpt-5.6-sol`, with the notebook, four screenshots at 1366x865 and 1440x900 and the
