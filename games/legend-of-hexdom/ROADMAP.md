@@ -30,6 +30,8 @@ Director.
 - Expert mode (4 dice, no repeated actions, double damage, score x1.5): its own stage-1 pass.
 - More characters, maps 4-100, sidesheets D-J. Lost Sands, Winter Tales, Epic maps, Bonus
   characters. Legacy mode, perhaps never; if it comes, rulebook 1.3 clarifies the Survivalist curse
-  (Villages only, not their underlying terrain).
+  (Villages only, not their underlying terrain). Recheck then: the engine refuses a point into an
+  attribute at 12 and drops points when all three are at 12 - harmless now, but Titan Strength and its
+  siblings want the others kept low (consultant's review, 2026-11-28).
 - Pen-like marks with the Art Director's help (Game Director, 2026-11-27, "probably for the
   future").
