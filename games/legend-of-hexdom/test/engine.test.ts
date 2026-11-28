@@ -195,6 +195,21 @@ describe('Archer (Focus, Cross Training C, Magic Berry D)', () => {
     t = act(t, { t: 'point', attr: 'mag' });
     expect(food(t)).toBe(g + 1);
   });
+  test('points still waiting when all three attributes reach 12 are dropped, not left unplaceable (p22)', () => {
+    // Found by the bot (2026-11-28): a gem and a point gained together; the gem completes Relic box A
+    // (+2 to all three), which takes every attribute to 12 while the point still waits.
+    let s = roll(at('archer', 1, 1, { relic: 3, attrs: { str: 10, agi: 10, mag: 10 } }), [3, 3, 1]);
+    s = { ...s, pending: [{ kind: 'gem' }, { kind: 'points', n: 2, group: 98 }] };
+    s = act(s, { t: 'gem', to: 'relic' });
+    expect(s.attrs).toEqual({ str: 12, agi: 12, mag: 12 });
+    expect(s.pending).toEqual([]);
+    expect(lastLog(s)).toMatch(/2 attribute points ignored, all attributes at 12\.$/);
+    // Placing a point that fills the last attribute drops the others still waiting, too.
+    let t: GameState = { ...s, attrs: { str: 12, agi: 12, mag: 11 }, pending: [{ kind: 'points', n: 2, group: 99 }, { kind: 'points', n: 1, group: 100 }] };
+    t = act(t, { t: 'point', attr: 'mag' });
+    expect(t.pending).toEqual([]);
+    expect(lastLog(t)).toBe('Attribute point: +1 Magic, 2 attribute points ignored, all attributes at 12.');
+  });
   test('Focus: Agility +1 after the second Adventure of a round', () => {
     // Map 1 Village 1 (2.2, Plains). Travel 1 to 1.1 Plains; Adventure twice.
     let s = roll(at('archer', 1, 1, { attrs: { str: 12, agi: 12, mag: 11 } }), [1, 1, 3]);

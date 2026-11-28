@@ -446,6 +446,20 @@ function gainAttr(c: Ctx, a: Attr, n: number) {
     }
   }
   if (got < n) c.notes.push(`${ATTR_NAME[a]} is at 12, ${n - got} ignored`);
+  dropPointsIfFull(c);
+}
+
+/**
+ * Points can only go where an attribute is below 12 (p22). Once all three are at 12, any points
+ * still waiting to be placed are ignored: otherwise a point queued behind a gem whose Relic box then
+ * fills every attribute would wait forever (found by the bot, 2026-11-28).
+ */
+function dropPointsIfFull(c: Ctx) {
+  if (!ATTRS.every((a) => c.s.attrs[a] >= ATTR_MAX)) return;
+  const n = c.s.pending.reduce((sum, p) => sum + (p.kind === 'points' ? p.n : 0), 0);
+  if (!n) return;
+  c.s.pending = c.s.pending.filter((p) => p.kind !== 'points');
+  c.notes.push(`${plural(n, 'attribute point', 'attribute points')} ignored, all attributes at 12`);
 }
 
 function queuePoints(c: Ctx, n: number, why: string) {
@@ -812,7 +826,8 @@ export function act(state: GameState, cmd: Command): GameState {
         gainFood(c, 1);
       }
       p.n--;
-      if (p.n <= 0 || ATTRS.every((a) => s.attrs[a] >= ATTR_MAX)) s.pending.shift();
+      if (p.n <= 0) s.pending.shift();
+      dropPointsIfFull(c);
       logAction(c, 'Attribute point:');
       return endRoundIfDone(s);
     }
