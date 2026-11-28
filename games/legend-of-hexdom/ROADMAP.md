@@ -6,13 +6,19 @@ Director.
 ## Waiting on you - the short list
 
 The Game Director asked (2026-11-28) for the game to be finished with the team, and for the
-decisions that are theirs to be kept here, short. Everything else is done or in progress below.
+decisions that are theirs to be kept here, short.
 
-1. **Try the new round on the iPad** (live from the shelf): skills now say how they work and have
-   their own buttons and switches; the cells panel follows the end of the path you draw; dots mark
-   where the chosen die can end; "Tables, Bosses, Gifts" opens the whole sidesheet; Treasures are the
-   sheet's own pictures.
-
+1. **Play a round on the iPad and say if it's better.** New since your try: after travelling, you tap
+   the lit cell itself (each says what it does); skills say how they work and sit under "Skills";
+   while drawing a path the cells show where you'd land and green dots show where the die can end;
+   "Tables, Bosses, Gifts" opens the whole sidesheet; Treasures are the sheet's own pictures.
+2. **Taste: redraw the table cells cleaner?** The Art Director's suggestion: keep the publisher's
+   pictures, rebuild the requirement boxes, numbers and loot icons crisp from the data (text set by
+   code, never by a model). More legible, a little less "printed". Yes or no.
+3. **Taste: frames and colours closer to the sheet?** Dark header bars and squarer boxes like the
+   printed panels; and either keep the current colours (yellow = selected, green = where you can go,
+   blue = your ink) or go charcoal ink with muted previews. Keep, or which.
+4. **When it's a release** - your call, after the playtest's fixes land (stage 5c).
 
 ## Stage 3: UI
 
