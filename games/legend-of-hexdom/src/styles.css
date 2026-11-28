@@ -206,7 +206,9 @@ button { font: inherit; color: inherit; }
 /* Under 950 px of height the side column can't hold the sheet, the strips and a useful log: the
    strips are also in the full-tables view, so they live there and the log gets the room. */
 @media (max-height: 950px) {
-  .side > .strips { display: none; }
+  /* Keep the Bosses in view (the playtester kept opening the full sheet for them, 2026-11-28); the
+     Gifts matter only on a double, whose button names its Gift, and are in the full-tables view. */
+  .side > .strips .strip:nth-child(2) { display: none; }
 }
 
 .journal { display: flex; flex-direction: column; gap: 6px; border: 2px dashed #ffd479; border-radius: 10px; padding: 8px; font-size: 13px; }
