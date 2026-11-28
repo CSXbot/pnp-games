@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "pnp": {
     "title": "Legend of Hexdom",
-    "tabletReady": false
+    "tabletReady": true,
+    "maxKB": 2500
   },
   "type": "module",
   "scripts": {
@@ -25,6 +26,9 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vite-plugin-singlefile": "^2.3.4",
-    "vitest": "^5.1.2"
+    "vitest": "^5.1.2",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/dom": "^10.4.2",
+    "jsdom": "^31.0.1"
   }
 }

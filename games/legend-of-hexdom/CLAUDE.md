@@ -10,9 +10,22 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 
 ## Status
 
-**Stage 2 (engine and data) done 2026-11-28. Stage 3 (UI, both arrangements) next.** Stage 1 done
-2026-11-27: every rule question is answered in `RULES-NOTES.md`. The page at `/games/legend-of-hexdom/`
-is a placeholder until stage 3, and the game is not on the shelf. Stage 0 (intake) done the same day. No code and no
+**Stage 3 (UI) built 2026-11-28, waiting on the Game Director's try on the iPad.** Playable at
+`/games/legend-of-hexdom/` (not on the shelf yet). `pnp.tabletReady` is on and `check:screens` passes at
+1440x900, 1366x865 and 1366x1024; a scripted game (start, roll, travel, act) runs without errors and
+without page scroll at all three. Stage 2 done 2026-11-28, stage 1 2026-11-27.
+
+**The UI:** the board is the A5 map with the player's pen marks drawn over it in SVG (path, arrows,
+the start X, a red leg for an unstuck crossing); the middle column is the turn (dice, the next step,
+every action with its outcome previewed by running `act` on a copy) and the printed Explore and
+Adventure cells of the current hex, scaled to the space left; the right column is the character sheet
+with paper marks, the Boss and Gift strips, and the log, newest first. The art is a provisional cut
+(`tools/extract_art.mjs`); stage 4 settles sizes and encoding with the Art Director.
+
+**Shelf features:** saves (`@pnp/kit/save`), cloud sync (`@pnp/kit/cloudSave`), playtest mode's
+save key and no sync (`?playtest=1`), undo cleared at each roll, manual dice, export and import,
+How to play, the shelf link, the build marker. Not yet: the playtest journal and step counter
+(stage 5b). Stage 0 (intake) done the same day. No code and no
 `package.json` yet, so this folder is not an npm workspace and the build ignores it.
 
 ## Rulings and scope

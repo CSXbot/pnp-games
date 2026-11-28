@@ -4,20 +4,23 @@ Only what is open. Finished work is described in `CLAUDE.md`. **(you)** marks wh
 Director.
 
 
-## Stage 3: UI, both arrangements together
+## Stage 3: UI
 
-- Invoke the `game-stages` skill first. Layout free to depart from the A4 sheet (Game Director);
-  pen-like marks are the target language (`art/art-direction.md`).
-- Standard features: undo that clears at `epoch` changes, saves under `pnp:legend-of-hexdom:state`,
-  export/import, manual dice, "How to play", the shelf link, the build marker.
-- Travel chosen hex by hex from `travelOptions`; a preview of every action's cost before it is
-  committed (Mana Shield and Enchant are flags on the action).
-- Flip `pnp.tabletReady` when the layout is meant to hold, then make `check:screens` pass at all
-  three sizes.
+- **(you)** Play a few rounds on the iPad at `/games/legend-of-hexdom/`: whether a tap on a hex or a
+  die is easy, and whether the printed cells are readable at the size they get. A game opened from the
+  shelf's URL directly; the game is not on the shelf until stage 5.
+- The printed cells shrink to about half size when the hex is a Village or Castle (four columns):
+  readable on a laptop, to be judged on the iPad. If too small: tap a cell to enlarge, or show one
+  table at a time.
+- `check:screens` loads only the opening dialog. The scripted game that checks mid-game screens
+  lives in the scratchpad; make it a tool (`tools/drive.mjs`) so a later change is checked the same
+  way.
 
 ## Stage 4: art
 
-- Extract the A5 maps, sidesheets and cards at display size; measure table cells for marks.
+- With the Art Director: the pen marks (path, slashes, crosses) in the sheet's ink, the type, the
+  frames; the sizes and encoding of the extracted art at the sizes the layout gives them.
+- The Mage portrait's crop catches a sliver of the card's red diamond.
 
 ## Stage 5b: playtest
 
