@@ -905,7 +905,16 @@ function HelpDialog({ onClose }: { onClose: () => void }) {
           lose the difference in hearts; dashed boxes let you pick one, joined boxes need both). In a <b>Castle</b> you may instead fight the <b>Boss</b> your die selects. In a Village or Castle you may use its column or the terrain's.
         </p>
         <p>A <b>double</b> may be spent on that double's <b>Gift</b>; the third die still travels. Beat <b>two Bosses</b> to win. Food is also experience: the marked food boxes give attribute points and unlock your skills.</p>
-        <p className="muted">Pick a die, then tap the map (to travel) or an action (after travelling). Every action shows what it will do before you commit. Undo works within a round, never past a roll. How unclear rules are read: RULES-NOTES.md.</p>
+        <p>
+          <b>On this screen.</b> To travel, pick a die and tap the hexes of your path one by one: green outlines are the next step, green dots are where that die can end, and the
+          table panel shows the cells of the hex you would end on. After travelling, pick a die and tap one of its lit cells: each one says what it will do before you commit
+          ("Show as a list" gives the same choices as buttons). "Tables, Bosses, Gifts" shows the whole sidesheet.
+        </p>
+        <p>
+          <b>Skills</b> are on your card, each saying how it works: automatic ones fire by themselves (the log says so), buttons and switches sit under "Skills" in the turn panel,
+          and the second and third skills unlock at the 20th and 40th food you gather (the red diamonds).
+        </p>
+        <p className="muted">Undo works within a round, never past a roll. How unclear rules are read: RULES-NOTES.md in the project.</p>
         <button className="btn primary" onClick={onClose}>
           Close
         </button>
