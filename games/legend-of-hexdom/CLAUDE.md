@@ -10,16 +10,20 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 
 ## Status
 
-**Stage 3 (UI) built 2026-11-28, waiting on the Game Director's try on the iPad.** On the shelf
-with an "In development" ribbon (the Game Director asked to start it from the shelf, 2026-11-28),
-ahead of stage 5. `pnp.tabletReady` is on and `check:screens` passes at
-1440x900, 1366x865 and 1366x1024; a scripted game (start, roll, travel, act) runs without errors and
-without page scroll at all three. Stage 2 done 2026-11-28, stage 1 2026-11-27.
+**Where it stands (2026-11-28, overnight).** Stage 3 (UI) done and tried on the iPad by the Game
+Director; their feedback (skills hard to find, travel hard to plan, Treasure choice as text) fixed the
+same night. Stage 4 (art) under way: the Art Director's review of the screens at play size is in
+`art/decisions.md`; its usability items are built, its taste items wait for the Game Director. Stage 5:
+on the shelf with an "In development" ribbon. Stage 5b: the first playtest is running. Open decisions
+for the Game Director: `ROADMAP.md`, "Waiting on you".
 
 **The UI:** the board is the A5 map with the player's pen marks drawn over it in SVG (path, arrows,
 the start X, a red leg for an unstuck crossing); the middle column is the turn (dice, the next step,
 every action with its outcome previewed by running `act` on a copy) and the printed Explore and
-Adventure cells of the current hex, scaled to the space left; the right column is the character sheet
+Adventure cells of the current hex, scaled to the space left. After travelling, the chosen die's cells
+are the buttons: each says what it will do, an enemy with two requirements offers one button per
+requirement, and "Show as a list" gives the same choices as a list. While a path is drawn the cells
+show its end, and green dots on the map show where the die can end; the right column is the character sheet
 with paper marks, the Boss and Gift strips, and the log, newest first. The art is a provisional cut
 (`tools/extract_art.mjs`); stage 4 settles sizes and encoding with the Art Director.
 
