@@ -3,17 +3,22 @@
 Only what is open. Finished work is described in `CLAUDE.md`. **(you)** marks what needs the Game
 Director.
 
+## Waiting on you - the short list
+
+The Game Director asked (2026-11-28) for the game to be finished with the team, and for the
+decisions that are theirs to be kept here, short. Everything else is done or in progress below.
+
+1. **Try the new round on the iPad** (live from the shelf): skills now say how they work and have
+   their own buttons and switches; the cells panel follows the end of the path you draw; dots mark
+   where the chosen die can end; "Tables, Bosses, Gifts" opens the whole sidesheet; Treasures are the
+   sheet's own pictures.
+
 
 ## Stage 3: UI
 
-- **(you)** Play a few rounds on the iPad, from the shelf: whether a tap on a hex or a die is easy,
-  and whether the printed cells are readable at the size they get.
-- The printed cells shrink to about half size when the hex is a Village or Castle (four columns):
-  readable on a laptop, to be judged on the iPad. If too small: tap a cell to enlarge, or show one
-  table at a time.
-- `check:screens` loads only the opening dialog. The scripted game that checks mid-game screens
-  lives in the scratchpad; make it a tool (`tools/drive.mjs`) so a later change is checked the same
-  way.
+- The Game Director's first try (2026-11-28): hexes easy to tap; cells readable but could be better
+  (to the Art Director at stage 4); skills hard to find, travel hard to plan without the whole
+  tables, Treasure choice as text - all three addressed the same night.
 
 ## Stage 4: art
 

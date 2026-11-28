@@ -59,8 +59,17 @@ for (const id of ['A', 'B', 'C']) {
   await flat(png).extract(T_CROP).resize({ width: Math.round(T_CROP.width * T_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, `tables-${id}.jpg`));
   await flat(png).extract(GIFT_CROP).resize({ width: Math.round(GIFT_CROP.width * STRIP_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, `gifts-${id}.jpg`));
   await flat(png).extract(RELIC_CROP).resize({ width: Math.round(RELIC_CROP.width * STRIP_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, `relic-${id}.jpg`));
-  // The Boss table is pixel-identical on A, B and C: cut it once.
-  if (id === 'A') await flat(png).extract(BOSS_CROP).resize({ width: Math.round(BOSS_CROP.width * STRIP_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, 'bosses.jpg'));
+  // The Boss table and the Treasure box are pixel-identical on A, B and C: cut them once.
+  if (id === 'A') {
+    await flat(png).extract(BOSS_CROP).resize({ width: Math.round(BOSS_CROP.width * STRIP_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, 'bosses.jpg'));
+    // The six Treasure icons, from the Treasure box (centres measured on a native crop), so every
+    // Treasure the game shows is the sheet's own picture - the same one the Boss table prints.
+    // Each column's box runs from just right of its tick ring to just left of the next column's ring.
+    const T_ICONS = { spear: [945, 290], hook: [1042, 290], crow: [945, 355], hammer: [1042, 355], skull: [945, 425], book: [1042, 425] };
+    for (const [t, [left, y]] of Object.entries(T_ICONS)) {
+      await flat(png).extract({ left, top: y - 35, width: 66, height: 70 }).png({ compressionLevel: 9 }).toFile(path.join(OUT, `treasure-${t}.png`));
+    }
+  }
 }
 const rel = (xs, o) => xs.map((v) => +((v - o) * T_SCALE).toFixed(1));
 art.tables = {

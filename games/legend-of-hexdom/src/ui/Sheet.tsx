@@ -2,12 +2,25 @@
 // Marks follow the paper (art/art-direction.md): a gained heart, food or level is painted; food spent
 // is slashed; a heart lost is crossed.
 
-import { CHARACTERS, SKILL_TEXT } from '../data/characters';
+import { CHARACTERS, SKILL_TEXT, type SkillId } from '../data/characters';
 import { ATTR_MAX, FOOD_BOX, FOOD_POINT_AT, FOOD_SKILL_AT, HEART_BOX } from '../data/rules';
 import { ATTR_NAME, ATTRS, TREASURES, TREASURE_NAME } from '../data/types';
 import { sheetOf, skillsUnlocked, type GameState } from '../engine/game';
-import { PORTRAIT, RELIC_ART } from './art';
-import { AttrIcon, FoodIcon, HeartIcon, TreasureIcon } from './Icons';
+import { PORTRAIT, RELIC_ART, TREASURE_ART } from './art';
+import { AttrIcon, FoodIcon, HeartIcon } from './Icons';
+
+/** How each skill is used on this screen - the part the card can't say. */
+export const SKILL_HOW: Record<SkillId, string> = {
+  adrenaline: 'automatic, when you travel',
+  overcoming: 'automatic, the first heart you lose each round',
+  magicBlood: 'button in the turn panel, right after you travel',
+  focus: 'automatic, on your second Adventure of a round',
+  crossTraining: 'button in the turn panel, before you travel',
+  magicBerry: 'automatic, whenever your Magic goes up',
+  enchant: 'switch in the turn panel, before an Adventure or a Boss',
+  manaShield: 'switch in the turn panel, for the next action',
+  greed: 'automatic, for every gem',
+};
 
 export function Sheet({ s }: { s: GameState }) {
   const ch = CHARACTERS[s.character];
@@ -21,9 +34,15 @@ export function Sheet({ s }: { s: GameState }) {
           <h2>the {ch.name}</h2>
           <ul className="skills">
             {ch.skills.map((k, i) => (
-              <li key={k} className={i < unlocked ? 'on' : 'off'}>
+              <li key={k} className={i < unlocked ? 'on' : 'off'} title={SKILL_TEXT[k].text}>
                 <b>{SKILL_TEXT[k].name}</b>
-                {i >= unlocked && <span className="lock"> (food {FOOD_SKILL_AT[i - 1]})</span>}: {SKILL_TEXT[k].text}
+                {i < unlocked ? (
+                  <>
+                    : {SKILL_TEXT[k].text} <span className="how">({SKILL_HOW[k]})</span>
+                  </>
+                ) : (
+                  <span className="how"> - locked until food {FOOD_SKILL_AT[i - 1]} (the red diamond)</span>
+                )}
               </li>
             ))}
           </ul>
@@ -71,7 +90,7 @@ export function Sheet({ s }: { s: GameState }) {
             {TREASURES.map((t) => (
               <span key={t} className={s.treasures.includes(t) ? 'owned' : ''} title={TREASURE_NAME[t]}>
                 <span className={`ring${s.treasures.includes(t) ? ' painted' : ''}`} />
-                <TreasureIcon t={t} size={20} />
+                <img src={TREASURE_ART[t]} alt={TREASURE_NAME[t]} className="t-icon" />
               </span>
             ))}
           </div>

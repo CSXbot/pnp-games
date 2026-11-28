@@ -179,3 +179,31 @@ button { font: inherit; color: inherit; }
 @media (pointer: coarse) {
   .btn, .die-btn, .pick { touch-action: manipulation; }
 }
+
+/* Skills: grouped and labelled, so they can be found (the Game Director couldn't, 2026-11-28). */
+.skills-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border-top: 2px dashed #d8d2c0; padding-top: 6px; }
+.skills-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #6b3fa0; }
+.btn.skill, .toggle.skill { border-color: #8a5bb8; }
+.toggle.skill { border: 2px solid #8a5bb8; border-radius: 10px; padding: 4px 10px; background: #f6f0fb; font-size: 13px; }
+.skills .how { color: #6b3fa0; font-style: italic; }
+.skills .off .how { color: var(--muted); }
+.t-icon { width: 22px; height: 24px; object-fit: contain; display: block; }
+.treasure-pick { display: flex; align-items: center; gap: 8px; }
+.treasure-pick img { width: 40px; height: 44px; object-fit: contain; }
+.treasure-pick small { display: block; color: var(--muted); font-size: 12px; }
+.here-title { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.btn.small { min-height: 34px; padding: 4px 10px; font-size: 12px; }
+.cell { cursor: zoom-in; }
+.end-dot { fill: var(--target); stroke: #fff; stroke-width: 5; opacity: .9; pointer-events: none; }
+.tables-dialog { max-width: none; width: auto; }
+.tables-head { justify-content: space-between; }
+.tables-head h2 { margin: 0; }
+.tables-body { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.full-table { position: relative; background-repeat: no-repeat; border: 2px solid var(--frame); border-radius: 8px; }
+.tables-body .strips { width: 360px; }
+
+/* Under 950 px of height the side column can't hold the sheet, the strips and a useful log: the
+   strips are also in the full-tables view, so they live there and the log gets the room. */
+@media (max-height: 950px) {
+  .side > .strips { display: none; }
+}

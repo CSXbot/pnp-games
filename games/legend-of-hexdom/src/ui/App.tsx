@@ -28,9 +28,9 @@ import {
   type GameState,
 } from '../engine/game';
 import { hexLabel, poiAt } from '../engine/hex';
-import { PORTRAIT } from './art';
+import { PORTRAIT, TREASURE_ART } from './art';
 import { Board } from './Board';
-import { Here, rowsOf, Strips } from './Here';
+import { FullTables, Here, rowsOf, Strips } from './Here';
 import { AttrIcon, Die } from './Icons';
 import { cloud, exportName, loadGame, storeGame } from './persist';
 import { Sheet } from './Sheet';
@@ -77,6 +77,8 @@ export function App() {
   const [die, setDie] = useState<number | null>(null);
   const [draft, setDraft] = useState<string[]>([]);
   const [shield, setShield] = useState(false);
+  const [enchant, setEnchant] = useState(false);
+  const [tables, setTables] = useState(false);
 
   // Save every change; push it to the cloud when hosted.
   useEffect(() => {
@@ -118,6 +120,7 @@ export function App() {
       setDie(null);
       setDraft([]);
       setShield(false);
+      setEnchant(false);
     },
     [state],
   );
@@ -158,6 +161,11 @@ export function App() {
     return t;
   }, [paths, draft]);
   const complete = paths.find((p) => p.path.length === draft.length && p.path.every((k, i) => draft[i] === k));
+  const ends = useMemo(() => {
+    const e = new Set<string>();
+    for (const p of paths) if (draft.every((k, i) => p.path[i] === k)) e.add(p.path[p.path.length - 1]);
+    return e;
+  }, [paths, draft]);
 
   return (
     <div className={`app${PLAYTEST ? ' playtest' : ''}`}>
@@ -199,6 +207,7 @@ export function App() {
               visited={state.visited}
               legs={state.legs}
               targets={targets}
+              ends={ends}
               draft={draft}
               onHex={(k) => setDraft((d) => [...d, k])}
             />
@@ -217,10 +226,17 @@ export function App() {
               extendable={targets.size > 0}
               shield={shield}
               setShield={setShield}
+              enchant={enchant}
+              setEnchant={setEnchant}
               commit={commit}
               onNew={() => setDialog('new')}
             />
-            <Here s={state} litRows={die !== null && state.travelled ? rowsOf([state.dice[die]], [false]) : state.phase === 'round' ? rowsOf(state.dice, state.used) : []} />
+            <Here
+              s={state}
+              at={draft.length ? draft[draft.length - 1] : undefined}
+              litRows={die !== null && state.travelled ? rowsOf([state.dice[die]], [false]) : state.phase === 'round' ? rowsOf(state.dice.filter((_, i) => i !== die || !travelling), state.used.filter((_, i) => i !== die || !travelling)) : []}
+              onTables={() => setTables(true)}
+            />
           </div>
           <div className="side">
             <Sheet s={state} />
@@ -234,6 +250,7 @@ export function App() {
 
       {dialog === 'new' && <NewGameDialog inProgress={!!state && state.phase !== 'won' && state.phase !== 'lost' && state.round > 0} onCancel={state ? () => setDialog(null) : undefined} onStart={startNew} />}
       {dialog === 'help' && <HelpDialog onClose={() => setDialog(null)} />}
+      {tables && state && <FullTables s={state} onClose={() => setTables(false)} />}
       {dialog === 'menu' && state && (
         <MenuDialog
           s={state}
@@ -303,6 +320,8 @@ function Turn(props: {
   extendable: boolean;
   shield: boolean;
   setShield: (b: boolean) => void;
+  enchant: boolean;
+  setEnchant: (b: boolean) => void;
   commit: (c: Command) => void;
   onNew: () => void;
 }) {
@@ -369,8 +388,8 @@ function Turn(props: {
           </button>
         )}
         {magicBlood && (
-          <button className="btn" onClick={() => commit({ t: 'magicBlood' })}>
-            Magic Blood first: lose a heart, +1 Magic ({preview(s, { t: 'magicBlood' })})
+          <button className="btn skill" onClick={() => commit({ t: 'magicBlood' })}>
+            Skill - Magic Blood: lose a heart, +1 Magic ({preview(s, { t: 'magicBlood' })}). Only before the roll.
           </button>
         )}
       </section>
@@ -437,27 +456,40 @@ function Turn(props: {
                 </button>
               );
             })}
-            {!actionError(s, { t: 'crossTraining' }) && (
-              <button className="btn" onClick={() => commit({ t: 'crossTraining' })}>
-                Cross Training: 2 food for +1 Strength ({preview(s, { t: 'crossTraining' })})
-              </button>
-            )}
           </div>
+          {!actionError(s, { t: 'crossTraining' }) && (
+            <div className="skills-bar">
+              <span className="skills-label">Skill</span>
+              <button className="btn skill" onClick={() => commit({ t: 'crossTraining' })}>
+                Cross Training: 2 food for +1 Strength ({preview(s, { t: 'crossTraining' })}) - then travel
+              </button>
+            </div>
+          )}
         </>
       ) : (
-        <MainPhase s={s} die={die} commit={commit} shield={props.shield} />
+        <MainPhase s={s} die={die} commit={commit} shield={props.shield} enchant={props.enchant} />
       )}
 
-      {mageShield && !pending && (
-        <label className="toggle">
-          <input type="checkbox" checked={props.shield} onChange={(e) => props.setShield(e.target.checked)} /> Mana Shield on the next action: a food stops the first heart lost
-        </label>
+      {!pending && (mageShield || (hasSkill(s, 'enchant') && s.travelled)) && (
+        <div className="skills-bar">
+          <span className="skills-label">Skills</span>
+          {hasSkill(s, 'enchant') && s.travelled && (
+            <label className="toggle skill">
+              <input type="checkbox" checked={props.enchant} onChange={(e) => props.setEnchant(e.target.checked)} /> Enchant: the next fight uses Magic for Strength (costs a heart)
+            </label>
+          )}
+          {mageShield && (
+            <label className="toggle skill">
+              <input type="checkbox" checked={props.shield} onChange={(e) => props.setShield(e.target.checked)} /> Mana Shield: a food stops the next action's first lost heart
+            </label>
+          )}
+        </div>
       )}
     </section>
   );
 }
 
-function MainPhase({ s, die, commit, shield }: { s: GameState; die: number | null; commit: (c: Command) => void; shield: boolean }) {
+function MainPhase({ s, die, commit, shield, enchant }: { s: GameState; die: number | null; commit: (c: Command) => void; shield: boolean; enchant: boolean }) {
   const won = s.bossesDefeated.length >= 2;
   const magicBlood = !actionError(s, { t: 'magicBlood' });
   const opts: { label: string; cmd: Command }[] = [];
@@ -472,15 +504,12 @@ function MainPhase({ s, die, commit, shield }: { s: GameState; die: number | nul
       const picks = e.req.type === 'unlinked' ? [0, 1] : [undefined];
       for (const pick of picks) {
         const req = pick === undefined ? e.req.reqs.map((r) => `${ATTR_NAME[r.a]} ${r.v}`).join(' and ') : `${ATTR_NAME[e.req.reqs[pick].a]} ${e.req.reqs[pick].v}`;
-        opts.push({ label: `Adventure in the ${col}: ${e.name}, meet ${req}`, cmd: sh({ t: 'adventure', die, column: which, pick }) });
-        if (hasSkill(s, 'enchant') && e.req.reqs.some((r) => r.a === 'str') && (pick === undefined || e.req.reqs[pick].a === 'str'))
-          opts.push({ label: `… with Enchant (Magic for Strength, costs a heart)`, cmd: sh({ t: 'adventure', die, column: which, pick, enchant: true }) });
+        opts.push({ label: `Adventure in the ${col}: ${e.name}, meet ${req}${enchant ? ', Enchanted' : ''}`, cmd: sh({ t: 'adventure', die, column: which, pick, enchant: enchant || undefined }) });
       }
     }
     if (poiAt(mapOf(s), position(s))?.kind === 'castle' && !s.bossesDefeated.includes(d)) {
       const b = BOSSES[d - 1];
-      opts.push({ label: `Fight ${b.name}`, cmd: sh({ t: 'boss', die }) });
-      if (hasSkill(s, 'enchant')) opts.push({ label: `… ${b.name} with Enchant`, cmd: sh({ t: 'boss', die, enchant: true }) });
+      opts.push({ label: `Fight ${b.name}${enchant ? ', Enchanted' : ''} (needs the ${TREASURE_NAME[b.treasure]})`, cmd: sh({ t: 'boss', die, enchant: enchant || undefined }) });
     }
   }
   return (
@@ -490,8 +519,8 @@ function MainPhase({ s, die, commit, shield }: { s: GameState; die: number | nul
       </div>
       <div className="actions">
         {magicBlood && (
-          <button className="btn" onClick={() => commit({ t: 'magicBlood' })}>
-            Magic Blood: lose a heart, +1 Magic ({preview(s, { t: 'magicBlood' })})
+          <button className="btn skill" onClick={() => commit({ t: 'magicBlood' })}>
+            Skill - Magic Blood: lose a heart, +1 Magic ({preview(s, { t: 'magicBlood' })}). Only now, before any other action.
           </button>
         )}
         {opts.map((o, i) => {
@@ -548,8 +577,12 @@ function Pending({ s, commit }: { s: GameState; commit: (c: Command) => void }) 
         <div className="prompt">The Treasure Crate: choose a Treasure.</div>
         <div className="row wrap">
           {TREASURES.filter((t) => !s.treasures.includes(t)).map((t) => (
-            <button key={t} className="btn" onClick={() => commit({ t: 'treasure', treasure: t })}>
-              {TREASURE_NAME[t]}
+            <button key={t} className="btn treasure-pick" onClick={() => commit({ t: 'treasure', treasure: t })}>
+              <img src={TREASURE_ART[t]} alt="" />
+              <span>
+                {TREASURE_NAME[t]}
+                <small>{BOSSES.filter((b) => b.treasure === t).map((b) => `for ${b.name}`).join('')}</small>
+              </span>
             </button>
           ))}
         </div>

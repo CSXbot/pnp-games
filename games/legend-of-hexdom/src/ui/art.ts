@@ -16,6 +16,12 @@ import relicC from '../assets/relic-C.jpg';
 import tablesA from '../assets/tables-A.jpg';
 import tablesB from '../assets/tables-B.jpg';
 import tablesC from '../assets/tables-C.jpg';
+import tBook from '../assets/treasure-book.png';
+import tCrow from '../assets/treasure-crow.png';
+import tHammer from '../assets/treasure-hammer.png';
+import tHook from '../assets/treasure-hook.png';
+import tSkull from '../assets/treasure-skull.png';
+import tSpear from '../assets/treasure-spear.png';
 
 export const GEO = geometry;
 export const MAP_ART: Record<number, string> = { 1: map1, 2: map2, 3: map3 };
@@ -24,3 +30,5 @@ export const GIFT_ART: Record<string, string> = { A: giftsA, B: giftsB, C: gifts
 export const RELIC_ART: Record<string, string> = { A: relicA, B: relicB, C: relicC };
 export const BOSS_ART = bosses;
 export const PORTRAIT: Record<string, string> = { warrior: pWarrior, archer: pArcher, mage: pMage };
+/** The six Treasures as the sheet prints them (cut from its Treasure box). */
+export const TREASURE_ART: Record<string, string> = { spear: tSpear, hook: tHook, crow: tCrow, hammer: tHammer, skull: tSkull, book: tBook };

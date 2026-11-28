@@ -23,6 +23,10 @@ Adventure cells of the current hex, scaled to the space left; the right column i
 with paper marks, the Boss and Gift strips, and the log, newest first. The art is a provisional cut
 (`tools/extract_art.mjs`); stage 4 settles sizes and encoding with the Art Director.
 
+**Checking screens:** `tools/drive.mjs <outDir> [state.json...]` plays the built game in Chrome at
+the three sizes, mid-game and from saved positions, and fails on a console error, a page that
+scrolls, or printed cells overflowing their panel (proved able to fail by breaking the layout).
+
 **Shelf features:** saves (`@pnp/kit/save`), cloud sync (`@pnp/kit/cloudSave`), playtest mode's
 save key and no sync (`?playtest=1`), undo cleared at each roll, manual dice, export and import,
 How to play, the shelf link, the build marker. Not yet: the playtest journal and step counter

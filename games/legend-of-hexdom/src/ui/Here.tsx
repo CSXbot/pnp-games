@@ -4,13 +4,27 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import { COLUMNS, rowOfDie, type Column } from '../data/types';
-import { columnFor, enemyAt, lootLeft, position, sheetOf, mapOf, type GameState } from '../engine/game';
-import { hexLabel } from '../engine/hex';
+import { enemyAt, lootLeft, position, sheetOf, mapOf, type GameState } from '../engine/game';
+import { hexLabel, isLand, poiAt, terrainAt } from '../engine/hex';
 import { BOSS_ART, GEO, GIFT_ART, TABLE_ART } from './art';
 
 const T = GEO.tables;
 
-function Cell({ sheet, table, row, col, k, lit, taken }: { sheet: string; table: 'explore' | 'adventure'; row: number; col: number; k: number; lit: boolean; taken: boolean }) {
+/** The table columns a hex offers: its terrain, and its Village or Castle (p14, p48). */
+function columnsAt(s: GameState, hex: string): Column[] {
+  const map = mapOf(s);
+  const out: Column[] = [];
+  const t = terrainAt(map, hex);
+  if (isLand(t)) out.push(t as Column);
+  const poi = poiAt(map, hex);
+  if (poi) out.push(poi.kind === 'village' ? 'village' : 'castle');
+  return out;
+}
+
+/** Whether an Adventure cell's gem or Treasure has been taken (Q5): it is crossed off, the enemy stays. */
+const takenAt = (s: GameState, row: number, col: Column) => lootLeft(s, row * 2 + 1, col).length < enemyAt(s, row * 2 + 1, col).loot.length;
+
+function Cell({ sheet, table, row, col, k, lit, taken, onClick }: { sheet: string; table: 'explore' | 'adventure'; row: number; col: number; k: number; lit: boolean; taken: boolean; onClick?: () => void }) {
   const ys = T[table];
   const x = T.cols[col];
   const y = ys[row];
@@ -18,6 +32,7 @@ function Cell({ sheet, table, row, col, k, lit, taken }: { sheet: string; table:
   const h = ys[row + 1] - y;
   return (
     <div
+      onClick={onClick}
       className={`cell ${table}${lit ? ' lit' : ''}`}
       style={{
         width: w * k,
@@ -46,11 +61,15 @@ function useBox<T extends HTMLElement>(): [React.RefObject<T | null>, { w: numbe
   return [ref, box];
 }
 
-export function Here({ s, litRows }: { s: GameState; litRows: number[] }) {
+/**
+ * `at`: a hex other than the player's, shown while a path is being drawn - "what would I find
+ * there" is what planning a Travel needs.
+ */
+export function Here({ s, litRows, at, onTables }: { s: GameState; litRows: number[]; at?: string; onTables: () => void }) {
   const sheet = sheetOf(s);
-  const here = position(s);
+  const here = at ?? position(s);
   // Before the start roll there is no position yet.
-  const cols = here ? (['terrain', 'poi'] as const).map((w) => columnFor(s, w)).filter((c): c is Column => !!c) : [];
+  const cols = here ? columnsAt(s, here) : [];
   const [ref, box] = useBox<HTMLDivElement>();
   const grid = useRef<HTMLTableElement>(null);
   const [fit, setFit] = useState(1);
@@ -70,9 +89,15 @@ export function Here({ s, litRows }: { s: GameState; litRows: number[] }) {
   }, [box.w, box.h, k, cols.length, here]);
   return (
     <section className="here panel" aria-label="The tables for this hex">
-      <div className="panel-title">
-        {here ? hexLabel(mapOf(s), here) : 'Not on the map yet'}
-        <span className="muted"> · sidesheet {sheet.id}</span>
+      <div className="panel-title here-title">
+        <span>
+          {at ? 'If you end at ' : ''}
+          {here ? hexLabel(mapOf(s), here) : 'Not on the map yet'}
+          <span className="muted"> · sidesheet {sheet.id}</span>
+        </span>
+        <button className="btn small" onClick={onTables}>
+          Tables, Bosses, Gifts
+        </button>
       </div>
       <div className="here-box" ref={ref}>
         {here && box.w > 0 && (
@@ -99,11 +124,10 @@ export function Here({ s, litRows }: { s: GameState; litRows: number[] }) {
                     <td className="dice-label">{`${row * 2 + 1}-${row * 2 + 2}`}</td>
                     {(['explore', 'adventure'] as const).flatMap((table) =>
                       cols.map((col) => {
-                        const full = table === 'adventure' ? enemyAt(s, die, col).loot.length : 0;
-                        const left = table === 'adventure' ? lootLeft(s, die, col).length : 0;
+                        void die;
                         return (
                           <td key={table + col}>
-                            <Cell sheet={sheet.id} table={table} row={row} col={COLUMNS.indexOf(col)} k={k} lit={litRows.includes(row)} taken={left < full} />
+                            <Cell sheet={sheet.id} table={table} row={row} col={COLUMNS.indexOf(col)} k={k} lit={!at && litRows.includes(row)} taken={table === 'adventure' && takenAt(s, row, col)} onClick={onTables} />
                           </td>
                         );
                       }),
@@ -147,3 +171,37 @@ export function Strips({ s }: { s: GameState }) {
 }
 
 export const rowsOf = (dice: number[], used: boolean[]) => [...new Set(dice.filter((_, i) => !used[i]).map(rowOfDie))];
+
+/** The whole sidesheet, large: Explore and Adventure for every terrain, the Bosses and the Gifts. */
+export function FullTables({ s, onClose }: { s: GameState; onClose: () => void }) {
+  const sheet = sheetOf(s);
+  // As large as the screen allows: the extracted tables are 740x777.
+  const h = Math.min(window.innerHeight - 140, 777 * 1.25);
+  const k = h / T.height;
+  return (
+    <div className="modal" role="dialog" aria-modal="true" onClick={onClose}>
+      <div className="dialog tables-dialog" onClick={(e) => e.stopPropagation()}>
+        <div className="row tables-head">
+          <h2>Sidesheet {sheet.id}: Explore, Adventure, Bosses, Gifts</h2>
+          <button className="btn" onClick={onClose}>
+            Close
+          </button>
+        </div>
+        <div className="tables-body">
+          <div className="full-table" style={{ width: T.width * k, height: T.height * k, backgroundImage: `url(${TABLE_ART[sheet.id]})`, backgroundSize: `${T.width * k}px ${T.height * k}px` }}>
+            {COLUMNS.flatMap((col, c) =>
+              [0, 1, 2].map((row) =>
+                takenAt(s, row, col) ? (
+                  <span key={`${c}.${row}`} className="taken" style={{ left: T.cols[c + 1] * k - 52, top: T.adventure[row + 1] * k - 24 }}>
+                    taken
+                  </span>
+                ) : null,
+              ),
+            )}
+          </div>
+          <Strips s={s} />
+        </div>
+      </div>
+    </div>
+  );
+}

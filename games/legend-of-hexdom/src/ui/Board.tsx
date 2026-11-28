@@ -33,11 +33,13 @@ export function Board(props: {
   legs: Leg[];
   /** Hexes the player may tap now (the next step of a legal path). */
   targets: Set<string>;
+  /** Hexes where a legal path for the chosen die can end, given the path drawn so far. */
+  ends: Set<string>;
   /** The path being chosen, not yet committed. */
   draft: string[];
   onHex: (k: string) => void;
 }) {
-  const { map, visited, legs, targets, draft } = props;
+  const { map, visited, legs, targets, ends, draft } = props;
   const start = visited[0];
   const here = visited[visited.length - 1];
   const all: string[] = [];
@@ -67,6 +69,9 @@ export function Board(props: {
       {start && <XMark at={hexCentre(map, start)} />}
       {draftPts && <polyline points={draftPts} className="draft-line" />}
       {here && <circle cx={hexCentre(map, here)[0]} cy={hexCentre(map, here)[1]} r={map.grid.hexHeight / 2 - 22} className="here-ring" />}
+      {[...ends].map((k) => (
+        <circle key={`end${k}`} cx={hexCentre(map, k)[0]} cy={hexCentre(map, k)[1] + 70} r={18} className="end-dot" />
+      ))}
       {all.map((k) => (
         <polygon
           key={k}
