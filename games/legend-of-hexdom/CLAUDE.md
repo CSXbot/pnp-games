@@ -10,9 +10,9 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 
 ## Status
 
-**Stage 1 (spec and direction) done 2026-11-27.** All fourteen rule questions are answered: ten
-settled by the rules group, four ruled by the Game Director (`RULES-NOTES.md`). **Stage 2 (engine and
-data) next.** Stage 0 (intake) done the same day. No code and no
+**Stage 2 (engine and data) done 2026-11-28. Stage 3 (UI, both arrangements) next.** Stage 1 done
+2026-11-27: every rule question is answered in `RULES-NOTES.md`. The page at `/games/legend-of-hexdom/`
+is a placeholder until stage 3, and the game is not on the shelf. Stage 0 (intake) done the same day. No code and no
 `package.json` yet, so this folder is not an npm workspace and the build ignores it.
 
 ## Rulings and scope
@@ -106,6 +106,32 @@ and pre-filled on the tracks. HP is 4x8 = 32 hearts, first row of 4 pre-filled. 
 first row of 5 pre-filled. A `+` (an attribute point) sits at food 10, 30 and 50, and a red diamond
 (a skill unlock) at food 20 and 40. Attributes run 1-12, with a red ring at 12. The A4 Warrior uses
 the same card.
+
+## Architecture
+
+- `src/data/` - the publisher's content as tables. `maps.ts` (terrain per hex as letters, the
+  terrain under each Village and Castle, the measured grid), `sidesheets.ts` (Explore, Adventure,
+  Relic, Trade, Gifts for A-C, in the notation of `types.ts`: `F-1 H+1`, `AGI9&MAG2` linked,
+  `AGI3/MAG4` unlinked), `rules.ts` (Travel box, Boss table, box sizes, score line - identical on
+  A-C), `characters.ts` (card text and starting attributes).
+- `src/engine/` - pure rules. `act(state, cmd)` is the only way to change a game; `actionError`
+  gives the exact reason a command is refused, and the UI highlights from it and from
+  `travelOptions`, so highlighting can't drift from the rules. Every change to food, hearts and
+  attributes goes through one ledger in `game.ts`, and each log line is built from it.
+- **How the transcriptions were proved:** the maps' grid is measured by `tools/measure_maps.mjs`
+  (residuals under 3 px); every hex, Village, Castle and table cell was read twice, by the tech lead
+  and by a QA agent that never saw the first reading, and the two agree everywhere.
+- `test/data.test.ts` pins what the sheets guarantee; `test/engine.test.ts` has a case per rule and
+  ruling (the worked examples of `RULES-NOTES.md`), and 300 random games in which every log line's
+  claims are checked against the real change in state.
+
+## Save schema
+
+`GameState` in `src/engine/game.ts`, `version: 1` (`SAVE_VERSION`). Every load goes through
+`migrateSave()`; stored ids (map ids, `CharacterId`, `GiftId`, `TreasureId`, hex names `row.col`)
+are never renamed, only added. `epoch` increases at every random event (the start roll, each
+round's roll), which is where the UI clears its undo stack. Manual dice: `start` and `roll` take the
+dice as arguments. Storage key `pnp:legend-of-hexdom:state` (stage 3).
 
 ## The documents
 

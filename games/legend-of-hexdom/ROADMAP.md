@@ -4,19 +4,20 @@ Only what is open. Finished work is described in `CLAUDE.md`. **(you)** marks wh
 Director.
 
 
-## Stage 2: engine and data
+## Stage 3: UI, both arrangements together
 
-- Measure the three maps: hex centres, terrain per hex including under Villages and Castles,
-  Village numbers, Castles. Show the Game Director any hex whose terrain is unclear at 300 dpi.
-- A data test: each sidesheet's Adventure table holds each of the six Treasures exactly once (the
-  B/C reissue fixed a doubled spear and a missing book), and the A4 copies of maps 2 and 3 agree
-  with A5 sidesheets B and C.
-- Type sidesheets A-C and the three cards into `src/data/`, from 300 dpi crops; Boss pairs and
-  Treasures from the Boss table.
-- Engine with the standard features (seeded dice, manual dice, undo that never crosses a roll,
-  saves under `pnp:legend-of-hexdom:state` with `migrateSave()`).
-- Data model ready for the other 13 characters, sidesheets D-J and maps 4-100: content is tables,
-  skills hook into named moments (travel, damage, combat, gain) rather than special cases.
+- Invoke the `game-stages` skill first. Layout free to depart from the A4 sheet (Game Director);
+  pen-like marks are the target language (`art/art-direction.md`).
+- Standard features: undo that clears at `epoch` changes, saves under `pnp:legend-of-hexdom:state`,
+  export/import, manual dice, "How to play", the shelf link, the build marker.
+- Travel chosen hex by hex from `travelOptions`; a preview of every action's cost before it is
+  committed (Mana Shield and Enchant are flags on the action).
+- Flip `pnp.tabletReady` when the layout is meant to hold, then make `check:screens` pass at all
+  three sizes.
+
+## Stage 4: art
+
+- Extract the A5 maps, sidesheets and cards at display size; measure table cells for marks.
 
 ## Stage 5b: playtest
 
