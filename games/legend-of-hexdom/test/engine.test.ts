@@ -188,7 +188,7 @@ describe('Archer (Focus, Cross Training C, Magic Berry D)', () => {
     expect(s.attrs.mag).toBe(2);
     expect(food(s)).toBe(f + 1);
     // Two points from one source, both into Magic: one food.
-    let t = { ...s, pending: [{ kind: 'points' as const, n: 2, group: 99 }] };
+    let t: GameState = { ...s, pending: [{ kind: 'points', n: 2, group: 99 }] };
     const g = food(t);
     t = act(t, { t: 'point', attr: 'mag' });
     t = act(t, { t: 'point', attr: 'mag' });
