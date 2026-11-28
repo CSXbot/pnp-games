@@ -18,7 +18,12 @@ decisions that are theirs to be kept here, short.
 3. **Taste: frames and colours closer to the sheet?** Dark header bars and squarer boxes like the
    printed panels; and either keep the current colours (yellow = selected, green = where you can go,
    blue = your ink) or go charcoal ink with muted previews. Keep, or which.
-4. **When it's a release** - your call, after the playtest's fixes land (stage 5c).
+4. **When it's a release** - your call (stage 5c). The first playtest's nine findings are fixed; a
+   second playtest (the Archer and the Warrior) runs overnight.
+5. **FYI, no decision needed:** the first playtester never wanted to leave a die unused, so your
+   ruling A ("both dice mandatory") looks moot in practice. And the Mage is much the strongest of the
+   three: 19% wins for the bot against 3% for the Archer and the Warrior - the publisher's design, not
+   ours to change, but you may want to know before choosing who to play.
 
 ## Stage 3: UI
 
@@ -34,9 +39,12 @@ decisions that are theirs to be kept here, short.
 
 ## Stage 5b: playtest
 
-- Ask the Playtester whether they ever wanted to leave a main-phase die unused. The Game Director
-  ruled both dice mandatory and wants to know how it felt; if nobody ever wants to, the question is
-  moot (`RULES-NOTES.md`, A).
+- First playtest done 2026-11-28 (`playtest/reports/2026-11-28-1.md`): the Mage won on map 2 in round
+  14 (score 145); nine findings, all fixed the same night. On ruling A it never wanted to leave a die
+  unused. A second run (the Archer on map 1, then the Warrior on map 3) is under way.
+- Measured with the playtester's strategy (`playtest/notebook.md`): Mage 19%, Archer 3%, Warrior 3%
+  over 300 bot games; the bot understates a careful player (it doesn't plan the Boss round). Teach it
+  rules 13-14 and the Warrior's Adrenaline play, then measure again.
 
 ## Later
 
@@ -47,4 +55,8 @@ decisions that are theirs to be kept here, short.
   attribute at 12 and drops points when all three are at 12 - harmless now, but Titan Strength and its
   siblings want the others kept low (consultant's review, 2026-11-28).
 - Pen-like marks with the Art Director's help (Game Director, 2026-11-27, "probably for the
-  future").
+  future"). Started: the route has a pen-like wobble; the tracks paint, slash and cross.
+- A rule question for when the Druid comes: does Enchant's heart (or any skill's own heart) spoil a
+  "perfect combat" (p15, Wolf Pack p86)? Raised by the first playtest; nothing in scope depends on it.
+- Check that the A4 sheets for maps 2 and 3 agree with A5 sidesheets B and C (we use the newer A5
+  files; the B/C reissue fixed a doubled spear and a missing book).
