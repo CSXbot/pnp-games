@@ -14,7 +14,8 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 - **Stage 3 (UI):** done. The Game Director tried it on the iPad, and the three things they flagged
   were fixed the same night: skills hard to find, travel hard to plan, Treasure choice as text.
 - **Stage 4 (art):** under way. The Art Director's review of the screens at play size is in
-  `art/decisions.md`. Its usability items are built; its taste items wait for the Game Director.
+  `art/decisions.md`. Its usability items are built; its taste items wait for the Game Director,
+  one of them as a switchable trial look (`src/ui/look.ts`, Menu > "Try the sheet's look").
 - **Stage 5:** on the shelf with an "In development" ribbon.
 - **Stage 5b:** two playtests played four games and won the three that finished, one with each
   character (`playtest/reports/`). All 13 findings are fixed, and the three wins replay as tests.
