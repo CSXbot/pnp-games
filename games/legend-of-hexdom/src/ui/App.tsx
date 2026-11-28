@@ -26,7 +26,7 @@ import {
   type Command,
   type GameState,
 } from '../engine/game';
-import { hexLabel, poiAt } from '../engine/hex';
+import { hexLabel, key, poiAt } from '../engine/hex';
 import { PORTRAIT, SCORE_ART, TRAVEL_ART, TREASURE_ART } from './art';
 import { Board } from './Board';
 import { FullTables, Here, rowsOf, Strips } from './Here';
@@ -497,16 +497,20 @@ function Turn(props: {
                 Clear the path
               </button>
             )}
-            {giftFaces(s).map((f) => {
-              const g = sheetOf(s).gifts[f - 1];
-              const ends = giftEndsGame(s, f);
-              return (
-                <button key={f} className={`btn${ends ? ' danger' : ''}`} onClick={() => commit({ t: 'gift', face: f })}>
-                  Double {f}s: take {GIFT_NAME[g]}
-                  {ends ? ' - the die left could not travel: game over' : ' (then travel with the third die)'}
-                </button>
-              );
-            })}
+            {props.draft.length === 0 &&
+              giftFaces(s).map((f) => {
+                const g = sheetOf(s).gifts[f - 1];
+                const ends = giftEndsGame(s, f);
+                // The die left to travel: the one not spent on the double (on a triple, another of the same).
+                let spent = 0;
+                const third = s.dice.find((d, i) => !s.used[i] && (d !== f || ++spent > 2));
+                return (
+                  <button key={f} className={`btn${ends ? ' danger' : ''}`} onClick={() => commit({ t: 'gift', face: f })}>
+                    Double {f}s: take {GIFT_NAME[g]}
+                    {ends ? ` - the ${third} left could not travel: game over` : ` (then travel with the ${third})`}
+                  </button>
+                );
+              })}
           </div>
           {!actionError(s, { t: 'crossTraining' }) && (
             <div className="skills-bar">
@@ -724,8 +728,26 @@ function ScoreLine({ s }: { s: GameState }) {
       <span className="score-now">
         now {parts.join(' · ')}
         {s.giftsTaken.includes('cat') ? ' · cat +30' : ''} = <b>{score(s)}</b> <span className="muted">{s.phase === 'won' ? 'final score' : s.phase === 'lost' ? 'not scored: a defeat' : 'if you win'}</span>
+        {s.phase !== 'won' && s.phase !== 'lost' && <CastlesLeft s={s} />}
       </span>
     </div>
+  );
+}
+
+/**
+ * Castles not yet visited. A Boss is fought only in a Castle, and a hex is never entered twice, so
+ * each Castle visited is one fewer place for the Bosses: playtest 2 found this the game's real clock.
+ */
+function CastlesLeft({ s }: { s: GameState }) {
+  const all = mapOf(s).castles.map((p) => key(p.row, p.col));
+  const here = position(s);
+  const left = all.filter((k) => !s.visited.includes(k)).length;
+  const inOne = here !== undefined && all.includes(here);
+  return (
+    <span className="castles-left" title="A Boss is fought only in a Castle, and a hex is never entered twice">
+      {' · '}Castles not yet visited: <b>{left}</b> of {all.length}
+      {inOne ? ', and you are in one' : ''}
+    </span>
   );
 }
 

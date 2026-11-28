@@ -111,7 +111,7 @@ describe('travel (p12, p34-45)', () => {
     let s = roll(at('archer', 1, 1, { foodSpent: 5 }), [3, 1, 1]);
     s = go(s, 0, '2.3 2.4');
     expect(hearts(s)).toBe(2);
-    expect(lastLog(s)).toBe('Travelled with a 3: 2 hexes to Plains (row 2, col 4). short of 2 food, -1 heart, -1 heart.');
+    expect(lastLog(s)).toBe('Travelled with a 3: 2 hexes to Plains (row 2, col 4). Short of 2 food, -1 heart, -1 heart.');
   });
   test('the unstuck crossing only when no die in hand has an ordinary path (Q2)', () => {
     // Map 1 at 2.6, boxed in: 2.5, 1.5, 1.6, 3.5 already visited; only Water 3.6 leads on.

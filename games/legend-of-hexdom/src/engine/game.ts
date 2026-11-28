@@ -500,7 +500,10 @@ function applyEffects(c: Ctx, effects: Effect[], source: string) {
 }
 
 function logAction(c: Ctx, head: string) {
-  const body = c.notes.length ? ` ${c.notes.join(', ').replace(/:,/g, ':')}.` : '';
+  let notes = c.notes.join(', ').replace(/:,/g, ':');
+  // After a sentence ("found the Balloon."), the notes start a new one.
+  if (head.endsWith('.') && notes) notes = notes[0].toUpperCase() + notes.slice(1);
+  const body = c.notes.length ? ` ${notes}.` : '';
   c.s.log.push({ round: c.s.round, text: `${head}${body}` });
   if (c.dead) {
     c.s.phase = 'lost';

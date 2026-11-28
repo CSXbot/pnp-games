@@ -38,7 +38,7 @@ describe('a round through the screen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Use these dice' }));
     expect(log()[0]).toBe('Round 1: rolled 1, 3, 3.');
     // The 3-3 Gift is offered (sidesheet A: the Vital Eggs), with what happens next.
-    expect(screen.getByRole('button', { name: /Double 3s: take the Vital Eggs \(then travel with the third die\)/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Double 3s: take the Vital Eggs \(then travel with the 1\)/ })).toBeTruthy();
     // Travel with the 1 to the Castle at 1.5: tap it on the map.
     fireEvent.click(screen.getByRole('button', { name: 'Die 1: 1' }));
     const target = document.querySelector('.hex.target[data-hex="1.5"]')!;
@@ -47,6 +47,8 @@ describe('a round through the screen', () => {
     const go = screen.getByRole('button', { name: /^Travel to Castle, Plains \(row 1, col 5\) \(-1 food\)$/ });
     fireEvent.click(go);
     expect(log()[0]).toBe('Travelled with a 1: 1 hex to Castle, Plains (row 1, col 5). -1 food.');
+    // Map 1 has four Castles; this one is now visited, and the score line keeps count.
+    expect(document.querySelector('.castles-left')!.textContent).toBe(' · Castles not yet visited: 3 of 4, and you are in one');
     // The preview on a button is what the action does.
     fireEvent.click(screen.getByRole('button', { name: 'Die 2: 3' }));
     // Acting on the printed cell: the chosen die's cells are buttons that say what they do.

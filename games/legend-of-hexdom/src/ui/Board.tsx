@@ -56,7 +56,9 @@ export function Board(props: {
     <svg className="board" viewBox={`0 0 ${CROP.width} ${CROP.height}`} role="img" aria-label={`Map ${map.id}, ${map.name}`}>
       <defs>
         {/* A slight wobble, so the route reads as pen on paper rather than a diagram (Art Director, 2026-11-28). */}
-        <filter id="pen" x="-5%" y="-5%" width="110%" height="110%">
+        {/* userSpaceOnUse: a leg along one row has a zero-height bounding box, and a filter region
+            relative to it would be empty - the line vanished (second playtest, 2026-11-28). */}
+        <filter id="pen" filterUnits="userSpaceOnUse" x="0" y="0" width={CROP.width} height={CROP.height}>
           <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" />
           <feDisplacementMap in="SourceGraphic" scale="7" />
         </filter>

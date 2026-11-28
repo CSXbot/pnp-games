@@ -2,6 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { act, newGame, travelOptions, type Command } from '../src/engine/game';
 import { journalOf, parseJournal, replay } from '../src/ui/playtest';
 import wonGame from './fixtures/2026-11-28-playtest-mage-map2-won.json';
+import archerWon from './fixtures/2026-11-28-playtest-archer-map1-won.json';
+import warriorWon from './fixtures/2026-11-28-playtest-warrior-map3-won.json';
 
 describe('playtest journal', () => {
   test('seed plus commands replays to the same game', () => {
@@ -34,4 +36,18 @@ test("the first playtester's won game replays to the same victory (regression)",
   expect(s.round).toBe(14);
   expect(s.result?.score).toBe(145);
   expect(s.bossesDefeated.sort()).toEqual([5, 6]);
+});
+
+test.each([
+  // playtest/reports/2026-11-28-2.md: both won in round 16 with score 130.
+  ['the Archer on map 1, seed 67739131', archerWon, [3, 4]],
+  ['the Warrior on map 3, seed 1834211458', warriorWon, [1, 2]],
+])("the second playtester's game with %s replays to the same victory (regression)", (_, journal, bosses) => {
+  const p = parseJournal(JSON.stringify(journal));
+  if (!p.ok) throw new Error(p.error);
+  const s = replay(p.journal);
+  expect(s.phase).toBe('won');
+  expect(s.round).toBe(16);
+  expect(s.result?.score).toBe(130);
+  expect([...s.bossesDefeated].sort()).toEqual(bosses);
 });

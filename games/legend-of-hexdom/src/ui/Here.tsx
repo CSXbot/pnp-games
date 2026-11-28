@@ -3,8 +3,9 @@
 // player reads the same icons as on paper. Rows light up for the dice in hand.
 
 import { useLayoutEffect, useRef, useState } from 'react';
-import { COLUMNS, rowOfDie, TREASURE_NAME, type Column } from '../data/types';
-import { enemyAt, lootLeft, position, sheetOf, mapOf, type GameState } from '../engine/game';
+import { COLUMNS, rowOfDie, type Column } from '../data/types';
+import { BOSSES } from '../data/rules';
+import { enemyAt, hasSkill, lootLeft, position, sheetOf, mapOf, type GameState } from '../engine/game';
 import { hexLabel, isLand, poiAt, terrainAt } from '../engine/hex';
 import type { Command } from '../engine/game';
 import { BOSS_ART, GEO, GIFT_ART, TABLE_ART } from './art';
@@ -38,7 +39,7 @@ function takenAt(s: GameState, row: number, col: Column): string | null {
   const left = lootLeft(s, row * 2 + 1, col);
   const gone = enemyAt(s, row * 2 + 1, col).loot.filter((l) => !left.includes(l));
   if (!gone.length) return null;
-  return gone.map((l) => (l.k === 'gem' ? 'gem' : l.k === 'treasure' ? TREASURE_NAME[l.t] : '')).join(', ') + ' taken';
+  return gone.map((l) => (l.k === 'gem' ? 'gem' : l.k === 'treasure' ? l.t : '')).join(', ') + ' taken';
 }
 
 function Cell({ sheet, table, row, col, k, lit, taken, onClick, acts, onAct }: { sheet: string; table: 'explore' | 'adventure'; row: number; col: number; k: number; lit: boolean; taken: string | null; onClick?: () => void; acts?: CellAct[]; onAct?: (c: Command) => void }) {
@@ -59,7 +60,7 @@ function Cell({ sheet, table, row, col, k, lit, taken, onClick, acts, onAct }: {
         backgroundPosition: `${-x * k}px ${-y * k}px`,
       }}
     >
-      {taken && <span className="taken">{taken}</span>}
+      {taken && <span className="taken" title={taken}>{taken}</span>}
       {acts?.length ? (
         <div className={`cell-acts n${acts.length}`}>
           {acts.map((a) => (
@@ -225,6 +226,9 @@ export function Strips({ s, fixedWidth }: { s: GameState; fixedWidth?: number })
     <section className="strips panel" aria-label="Bosses and Gifts" ref={ref}>
       <div className="strip" style={{ width, height: bossH }}>
         <img src={BOSS_ART} alt="Boss table" width={width} height={bossH} />
+        {BOSSES.map((b, i) =>
+          bossLive(s, b) ? <span key={b.name} className="strip-live" style={{ left: slot * i + 3, width: slot - 6 }} title={`${b.name} is live: you meet both requirements and have the Treasure`} /> : null,
+        )}
         {s.bossesDefeated.map((d) => (
           <span key={d} className="strip-cross" style={{ left: slot * (d - 1) + 4, width: slot - 8 }} />
         ))}
@@ -237,6 +241,13 @@ export function Strips({ s, fixedWidth }: { s: GameState; fixedWidth?: number })
       </div>
     </section>
   );
+}
+
+/** A Boss you could fight now without losing a heart to its requirements or its Treasure (the second playtester's "live" Boss). */
+function bossLive(s: GameState, b: (typeof BOSSES)[number]): boolean {
+  if (s.bossesDefeated.includes(b.die) || !s.treasures.includes(b.treasure)) return false;
+  const enchant = hasSkill(s, 'enchant');
+  return b.reqs.every((r) => Math.max(s.attrs[r.a], enchant && r.a === 'str' ? s.attrs.mag : 0) >= r.v);
 }
 
 export const rowsOf = (dice: number[], used: boolean[]) => [...new Set(dice.filter((_, i) => !used[i]).map(rowOfDie))];
