@@ -74,11 +74,18 @@ browser height and the standalone height.
 trust it. The privacy test was verified that way and holds; `check:screens` was not, and spent
 weeks reporting "fits" when `.app{height:100dvh;overflow:hidden}` meant the page could never
 scroll, so "fits" only ever meant "no console errors".
+**Check the screens mid-game, not only on load.** `check:screens` opens each game's first screen;
+the layouts that break are mid-game ones - a Castle with four table columns, a long action list, a
+finished game. Script a game through the real UI at the three sizes from saved positions (Legend of
+Hexdom's `tools/drive.mjs`), and check what clips inside a panel as well as page scroll: a panel with
+`overflow: hidden` hides a row without the page ever scrolling.
 **You:** try it on the real device once it fits. I can measure that nothing scrolls; I can't feel
 whether a tick box is big enough for a finger.
 
 **4. Art, with OpenAI as art director.** Claude owns the integration and brings me the visual
-decisions. Per asset: establish what the source actually holds, pick the method, then close the loop
+decisions. A good first call: the real screens at play size and the original sheet, asking for ranked
+changes each marked USABILITY or TASTE. On Legend of Hexdom that gave concrete, checkable items; build
+the usability ones, bring the taste ones to me side by side. Per asset: establish what the source actually holds, pick the method, then close the loop
 before anything ships. Everything runs through `scripts/art.mjs`, a local asset tool - no API call
 is ever part of the game, which stays one offline file.
 **You:** I make the final call between the original and the best candidate, shown side by side in
