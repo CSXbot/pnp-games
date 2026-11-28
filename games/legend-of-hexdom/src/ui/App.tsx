@@ -27,7 +27,7 @@ import {
   type GameState,
 } from '../engine/game';
 import { hexLabel, poiAt } from '../engine/hex';
-import { PORTRAIT, TREASURE_ART } from './art';
+import { PORTRAIT, SCORE_ART, TRAVEL_ART, TREASURE_ART } from './art';
 import { Board } from './Board';
 import { FullTables, Here, rowsOf, Strips } from './Here';
 import { AttrIcon, Die } from './Icons';
@@ -64,7 +64,7 @@ function preview(s: GameState, cmd: Command): string {
   }
   if (next.treasures.length > s.treasures.length) parts.push(next.treasures.filter((t) => !s.treasures.includes(t)).map((t) => TREASURE_NAME[t]).join(', '));
   if (next.bossesDefeated.length > s.bossesDefeated.length) parts.push('Boss defeated');
-  return parts.join(', ') || 'no change';
+  return parts.join(', ') || (cmd.t === 'travel' ? 'free' : 'no change');
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -231,6 +231,7 @@ export function App() {
               draft={draft}
               onHex={(k) => setDraft((d) => [...d, k])}
             />
+            <ScoreLine s={state} />
           </div>
           <div className="play">
             <Turn
@@ -451,7 +452,7 @@ function Turn(props: {
             <Die n={d} size={46} />
           </button>
         ))}
-        <div className="dice-help">{s.dice.map((d, i) => (s.used[i] ? null : <span key={i}>{d}: {TRAVEL[d].hexes} hex{TRAVEL[d].hexes > 1 ? 'es' : ''}, {TRAVEL[d].food} food{TRAVEL[d].mountain ? ', Mountains' : ''}{TRAVEL[d].water ? ', Water' : ''}</span>))}</div>
+        {!s.travelled && <TravelBox dice={s.dice.filter((_, i) => !s.used[i])} chosen={die !== null ? s.dice[die] : null} />}
       </div>
 
       {pending ? (
@@ -535,17 +536,17 @@ function MainPhase({ s, die, commit, shield, enchant }: { s: GameState; die: num
     for (const which of ['terrain', 'poi'] as const) {
       const col = columnFor(s, which);
       if (!col) continue;
-      opts.push({ label: `Explore the ${col}`, cmd: sh({ t: 'explore', die, column: which }) });
+      opts.push({ label: `Explore · ${col}`, cmd: sh({ t: 'explore', die, column: which }) });
       const e = enemyAt(s, d, col);
       const picks = e.req.type === 'unlinked' ? [0, 1] : [undefined];
       for (const pick of picks) {
         const req = pick === undefined ? e.req.reqs.map((r) => `${ATTR_NAME[r.a]} ${r.v}`).join(' and ') : `${ATTR_NAME[e.req.reqs[pick].a]} ${e.req.reqs[pick].v}`;
-        opts.push({ label: `Adventure in the ${col}: ${e.name}, meet ${req}${enchant ? ', Enchanted' : ''}`, cmd: sh({ t: 'adventure', die, column: which, pick, enchant: enchant || undefined }) });
+        opts.push({ label: `Fight ${e.name}, meet ${req}${enchant ? ', Enchanted' : ''} · ${col}`, cmd: sh({ t: 'adventure', die, column: which, pick, enchant: enchant || undefined }) });
       }
     }
     if (poiAt(mapOf(s), position(s))?.kind === 'castle' && !s.bossesDefeated.includes(d)) {
       const b = BOSSES[d - 1];
-      opts.push({ label: `Fight ${b.name}${enchant ? ', Enchanted' : ''} (needs the ${TREASURE_NAME[b.treasure]})`, cmd: sh({ t: 'boss', die, enchant: enchant || undefined }) });
+      opts.push({ label: `Boss ${b.name}${enchant ? ', Enchanted' : ''} · needs the ${TREASURE_NAME[b.treasure]}`, cmd: sh({ t: 'boss', die, enchant: enchant || undefined }) });
     }
   }
   return (
@@ -563,7 +564,8 @@ function MainPhase({ s, die, commit, shield, enchant }: { s: GameState; die: num
           const err = actionError(s, o.cmd);
           return (
             <button key={i} className="btn action" disabled={!!err} title={err ?? undefined} onClick={() => commit(o.cmd)}>
-              {o.label} <span className="pv">({err ?? preview(s, o.cmd)})</span>
+              <span className="label">{o.label}</span>
+              <span className="pv">{err ?? preview(s, o.cmd)}</span>
             </button>
           );
         })}
@@ -634,6 +636,41 @@ function Pending({ s, commit }: { s: GameState; commit: (c: Command) => void }) 
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+/** The Travel box as the sheet prints it, the rows of the dice in hand outlined (p34). */
+function TravelBox({ dice, chosen }: { dice: number[]; chosen: number | null }) {
+  // The box's rows (1-2, 3-4, 5-6 top to bottom) and columns (odd left, even right), as fractions of the image.
+  const rowY = [0.25, 0.48, 0.71];
+  return (
+    <div className="travel-box">
+      <img src={TRAVEL_ART} alt="The Travel box" />
+      {[...new Set(dice)].map((d) => (
+        <span
+          key={d}
+          className={`travel-mark${chosen === d ? ' on' : ''}`}
+          style={{ left: `${d % 2 ? 1 : 51.5}%`, top: `${rowY[Math.floor((d - 1) / 2)] * 100}%` }}
+          title={`${d}: ${TRAVEL[d].hexes} hex${TRAVEL[d].hexes > 1 ? 'es' : ''}, ${TRAVEL[d].food} food${TRAVEL[d].mountain ? ', may cross Mountains' : ''}${TRAVEL[d].water ? ', may cross Water' : ''}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** The score line printed under the map (p25), with the counts it would multiply now. */
+function ScoreLine({ s }: { s: GameState }) {
+  const atMax = ATTRS.filter((a) => s.attrs[a] >= 12).length;
+  const skills = s.foodPainted >= 40 ? 2 : s.foodPainted >= 20 ? 1 : 0;
+  const parts = [atMax, skills, hearts(s), s.treasures.length, s.relic, s.bossesDefeated.length, Math.max(0, s.visited.length - 1)];
+  return (
+    <div className="score-line" aria-label={`Score if you won now: ${score(s)}`}>
+      <img src={SCORE_ART} alt="Score: 3 per attribute at 12, 3 per skill unlocked, 5 per heart, 5 per Treasure, 4 per Relic gem, 10 per Boss, 1 per hex travelled" />
+      <span className="score-now">
+        now {parts.join(' · ')}
+        {s.giftsTaken.includes('cat') ? ' · cat +30' : ''} = <b>{score(s)}</b> <span className="muted">if you win</span>
+      </span>
     </div>
   );
 }

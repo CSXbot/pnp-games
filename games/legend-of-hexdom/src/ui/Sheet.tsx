@@ -35,6 +35,7 @@ export function Sheet({ s }: { s: GameState }) {
           <ul className="skills">
             {ch.skills.map((k, i) => (
               <li key={k} className={i < unlocked ? 'on' : 'off'} title={SKILL_TEXT[k].text}>
+                {i > 0 && <span className={`unlock-diamond d${i}`} aria-hidden="true" />}
                 <b>{SKILL_TEXT[k].name}</b>
                 {i < unlocked ? (
                   <>

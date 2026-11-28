@@ -43,6 +43,11 @@ for (const n of [1, 2, 3]) {
   await flat(png).extract(MAP_CROP).resize({ height: MAP_H }).jpeg({ quality: 82, mozjpeg: true }).toFile(path.join(OUT, `map-${n}.jpg`));
 }
 art.maps = { crop: MAP_CROP, height: MAP_H, scale: MAP_H / MAP_CROP.height };
+// The score line printed under map 1 (p25's multipliers, as icons).
+{
+  const png = raster(path.join(HF, 'Hexforest-Maps/1.pdf'));
+  await flat(png).extract({ left: 160, top: 2378, width: 1440, height: 64 }).resize({ width: 720 }).png({ compressionLevel: 9 }).toFile(path.join(OUT, 'score-line.png'));
+}
 
 // Sidesheet tables: Explore and Adventure, from the first column's left line to the right frame.
 const COLS = [362, 526, 697, 870, 1039, 1214, 1386, 1555];
@@ -53,14 +58,16 @@ const T_SCALE = 0.62;
 const BOSS_CROP = { left: 232, top: 1900, width: 1340, height: 250 };
 const GIFT_CROP = { left: 232, top: 2168, width: 1340, height: 282 };
 const RELIC_CROP = { left: 1126, top: 176, width: 440, height: 290 };
+const TRAVEL_CROP = { left: 228, top: 176, width: 652, height: 296 };
 const STRIP_SCALE = 0.62;
 for (const id of ['A', 'B', 'C']) {
   const png = raster(path.join(HF, `A5-HexForest-TablesCharacters-English/A5-HexForest-Tables/HexForest-A5-Table-${id}.pdf`));
   await flat(png).extract(T_CROP).resize({ width: Math.round(T_CROP.width * T_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, `tables-${id}.jpg`));
   await flat(png).extract(GIFT_CROP).resize({ width: Math.round(GIFT_CROP.width * STRIP_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, `gifts-${id}.jpg`));
   await flat(png).extract(RELIC_CROP).resize({ width: Math.round(RELIC_CROP.width * STRIP_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, `relic-${id}.jpg`));
-  // The Boss table and the Treasure box are pixel-identical on A, B and C: cut them once.
+  // The Boss table, the Travel box and the Treasure box are pixel-identical on A, B and C: cut them once.
   if (id === 'A') {
+    await flat(png).extract(TRAVEL_CROP).resize({ width: Math.round(TRAVEL_CROP.width * STRIP_SCALE) }).jpeg({ quality: 88, mozjpeg: true }).toFile(path.join(OUT, 'travel.jpg'));
     await flat(png).extract(BOSS_CROP).resize({ width: Math.round(BOSS_CROP.width * STRIP_SCALE) }).jpeg({ quality: 85, mozjpeg: true }).toFile(path.join(OUT, 'bosses.jpg'));
     // The six Treasure icons, from the Treasure box (centres measured on a native crop), so every
     // Treasure the game shows is the sheet's own picture - the same one the Boss table prints.
@@ -80,7 +87,7 @@ art.tables = {
   width: Math.round(T_CROP.width * T_SCALE),
   height: Math.round(T_CROP.height * T_SCALE),
 };
-art.strips = { scale: STRIP_SCALE, boss: BOSS_CROP, gifts: GIFT_CROP, relic: RELIC_CROP };
+art.strips = { scale: STRIP_SCALE, boss: BOSS_CROP, gifts: GIFT_CROP, relic: RELIC_CROP, travel: TRAVEL_CROP };
 
 // Portraits: the top-left of each character card (A5-<name>.png~ is the same art as the PDF).
 for (const [id, file] of [['warrior', 'A5-warrior.png~'], ['archer', 'A5-archer.png~'], ['mage', 'A5-mage.png~']]) {

@@ -22,6 +22,8 @@ import tHammer from '../assets/treasure-hammer.png';
 import tHook from '../assets/treasure-hook.png';
 import tSkull from '../assets/treasure-skull.png';
 import tSpear from '../assets/treasure-spear.png';
+import scoreLine from '../assets/score-line.png';
+import travel from '../assets/travel.jpg';
 
 export const GEO = geometry;
 export const MAP_ART: Record<number, string> = { 1: map1, 2: map2, 3: map3 };
@@ -32,3 +34,5 @@ export const BOSS_ART = bosses;
 export const PORTRAIT: Record<string, string> = { warrior: pWarrior, archer: pArcher, mage: pMage };
 /** The six Treasures as the sheet prints them (cut from its Treasure box). */
 export const TREASURE_ART: Record<string, string> = { spear: tSpear, hook: tHook, crow: tCrow, hammer: tHammer, skull: tSkull, book: tBook };
+export const TRAVEL_ART = travel;
+export const SCORE_ART = scoreLine;

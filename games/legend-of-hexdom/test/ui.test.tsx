@@ -49,8 +49,8 @@ describe('a round through the screen', () => {
     expect(log()[0]).toBe('Travelled with a 1: 1 hex to Castle, Plains (row 1, col 5). -1 food.');
     // The preview on a button is what the action does.
     fireEvent.click(screen.getByRole('button', { name: 'Die 2: 3' }));
-    const explore = screen.getByRole('button', { name: /^Explore the castle/ });
-    expect(within(explore).getByText('(+1 heart, -1 food, +1 Magic)')).toBeTruthy();
+    const explore = screen.getByRole('button', { name: /^Explore · castle/ });
+    expect(within(explore).getByText('+1 heart, -1 food, +1 Magic')).toBeTruthy();
     fireEvent.click(explore);
     expect(log()[0]).toBe('Explored the castle with a 3: -1 food, +1 heart, +1 Magic.');
     // Undo goes back within the round...
@@ -68,7 +68,7 @@ describe('a round through the screen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Roll for the start' }));
     fireEvent.click(screen.getByRole('button', { name: 'Roll the dice' }));
     // Until a die has travelled, there are no main-phase actions to press.
-    expect(screen.queryByRole('button', { name: /^Explore the/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Explore ·/ })).toBeNull();
     expect(screen.getByText(/Choose a die to travel with/)).toBeTruthy();
   });
 });

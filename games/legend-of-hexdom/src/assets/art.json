@@ -56,6 +56,12 @@
       "top": 176,
       "width": 440,
       "height": 290
+    },
+    "travel": {
+      "left": 228,
+      "top": 176,
+      "width": 652,
+      "height": 296
     }
   }
 }

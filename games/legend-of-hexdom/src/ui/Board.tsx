@@ -55,6 +55,11 @@ export function Board(props: {
   return (
     <svg className="board" viewBox={`0 0 ${CROP.width} ${CROP.height}`} role="img" aria-label={`Map ${map.id}, ${map.name}`}>
       <defs>
+        {/* A slight wobble, so the route reads as pen on paper rather than a diagram (Art Director, 2026-11-28). */}
+        <filter id="pen" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" />
+          <feDisplacementMap in="SourceGraphic" scale="7" />
+        </filter>
         <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" className="ink-fill" />
         </marker>
@@ -64,7 +69,7 @@ export function Board(props: {
       </defs>
       <image href={MAP_ART[map.id]} x="0" y="0" width={CROP.width} height={CROP.height} preserveAspectRatio="none" />
       {legLines.map((l, i) => (
-        <polyline key={i} points={l.pts} className={l.penalty ? 'ink-line red' : 'ink-line'} markerEnd={l.penalty ? 'url(#arrow-red)' : 'url(#arrow)'} />
+        <polyline key={i} points={l.pts} className={l.penalty ? 'ink-line red' : 'ink-line'} markerEnd={l.penalty ? 'url(#arrow-red)' : 'url(#arrow)'} filter="url(#pen)" />
       ))}
       {start && <XMark at={hexCentre(map, start)} />}
       {draftPts && <polyline points={draftPts} className="draft-line" />}
@@ -86,9 +91,9 @@ export function Board(props: {
 }
 
 function XMark({ at: [x, y] }: { at: [number, number] }) {
-  const d = 40;
+  const d = 30;
   return (
-    <g className="ink-x">
+    <g className="ink-x" filter="url(#pen)">
       <line x1={x - d} y1={y - d} x2={x + d} y2={y + d} />
       <line x1={x - d} y1={y + d} x2={x + d} y2={y - d} />
     </g>

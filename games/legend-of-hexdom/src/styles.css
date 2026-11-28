@@ -42,7 +42,7 @@ button { font: inherit; color: inherit; }
    420 px: on a full-height iPad (1366x1024) a height-bound map would squeeze the cells and strips. */
 .main { display: grid; grid-template-columns: auto minmax(420px, 1fr) 330px; gap: var(--gap); padding: var(--gap); min-height: 0; }
 .main.empty { display: block; }
-.board-wrap { width: min(calc((100dvh - 74px) * 0.7593), calc(100vw - 330px - 420px - 4 * var(--gap))); align-self: center; }
+.board-wrap { width: min(calc((100dvh - 74px - 44px) * 0.7593), calc(100vw - 330px - 420px - 4 * var(--gap))); align-self: center; display: flex; flex-direction: column; gap: 4px; }
 .board { width: 100%; height: auto; display: block; aspect-ratio: 1684 / 2218; }
 .play { display: flex; flex-direction: column; gap: var(--gap); min-height: 0; min-width: 0; overflow: hidden; }
 .side { display: flex; flex-direction: column; gap: var(--gap); min-height: 0; overflow: hidden; }
@@ -79,7 +79,8 @@ button { font: inherit; color: inherit; }
 .die-face circle { fill: #fff; }
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .actions > .btn.primary, .actions > p, .actions > .btn.danger { grid-column: 1 / -1; }
-.btn.action { padding: 5px 10px; font-size: 13.5px; line-height: 1.25; }
+.btn.action { padding: 4px 8px; font-size: 13px; line-height: 1.2; display: flex; flex-direction: column; justify-content: center; }
+.btn.action .pv { font-size: 12px; }
 .toggle { display: flex; gap: 8px; align-items: center; min-height: 44px; font-size: 14px; }
 .toggle input { width: 22px; height: 22px; }
 .manual { display: flex; flex-direction: column; gap: 4px; }
@@ -111,11 +112,11 @@ button { font: inherit; color: inherit; }
 /* Board marks: the player's pen */
 .hex { fill: transparent; stroke: none; }
 .hex.target { fill: rgba(46, 158, 91, .18); stroke: var(--target); stroke-width: 10; cursor: pointer; }
-.ink-line { fill: none; stroke: var(--pen); stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
+.ink-line { fill: none; stroke: var(--pen); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; opacity: .8; }
 .ink-line.red { stroke: var(--red); }
 .ink-fill { fill: var(--pen); }
 .ink-red-fill { fill: var(--red); }
-.ink-x line { stroke: var(--pen); stroke-width: 14; stroke-linecap: round; }
+.ink-x line { stroke: var(--pen); stroke-width: 11; stroke-linecap: round; opacity: .85; }
 .draft-line { fill: none; stroke: var(--target); stroke-width: 12; stroke-dasharray: 26 18; stroke-linecap: round; }
 .here-ring { fill: none; stroke: var(--lit); stroke-width: 10; }
 
@@ -198,9 +199,9 @@ button { font: inherit; color: inherit; }
 .tables-dialog { max-width: none; width: auto; }
 .tables-head { justify-content: space-between; }
 .tables-head h2 { margin: 0; }
-.tables-body { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.tables-body { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
 .full-table { position: relative; background-repeat: no-repeat; border: 2px solid var(--frame); border-radius: 8px; }
-.tables-body .strips { width: 360px; }
+.tables-body .strips { width: auto; }
 
 /* Under 950 px of height the side column can't hold the sheet, the strips and a useful log: the
    strips are also in the full-tables view, so they live there and the log gets the room. */
@@ -210,3 +211,23 @@ button { font: inherit; color: inherit; }
 
 .journal { display: flex; flex-direction: column; gap: 6px; border: 2px dashed #ffd479; border-radius: 10px; padding: 8px; font-size: 13px; }
 .journal textarea { font-family: ui-monospace, monospace; font-size: 11px; }
+
+/* The Travel box, as printed, with the dice in hand outlined. */
+.travel-box { position: relative; width: 230px; flex: 0 0 auto; margin-left: 4px; }
+.travel-box img { width: 100%; display: block; }
+.travel-mark { position: absolute; width: 47.5%; height: 23%; border: 3px solid var(--lit); border-radius: 6px; pointer-events: auto; }
+.travel-mark.on { background: rgba(242, 201, 76, .25); }
+/* The score line under the map, as on the sheet. */
+.score-line { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 12px; }
+.score-line img { width: 100%; max-width: 560px; display: block; }
+.score-now { color: var(--ink); }
+/* The card's unlock diamonds in front of skills 2 and 3 (light, then dark red). */
+.unlock-diamond { display: inline-block; width: 9px; height: 9px; transform: rotate(45deg); margin: 0 5px 1px 1px; }
+.unlock-diamond.d1 { background: #e06b5e; }
+.unlock-diamond.d2 { background: #9c3a30; }
+.skills .off { color: #55554e; }
+.skills .off .how { color: #55554e; }
+.t-icon { width: 30px; height: 32px; }
+.col-tabs { display: flex; gap: 4px; }
+.col-tabs .btn.on { background: var(--frame); color: #fff; }
+.col-tabs .btn { text-transform: capitalize; }

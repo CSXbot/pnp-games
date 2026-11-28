@@ -69,18 +69,23 @@ export function Here({ s, litRows, at, onTables }: { s: GameState; litRows: numb
   const sheet = sheetOf(s);
   const here = at ?? position(s);
   // Before the start roll there is no position yet.
-  const cols = here ? columnsAt(s, here) : [];
+  const allCols = here ? columnsAt(s, here) : [];
   const [ref, box] = useBox<HTMLDivElement>();
+  const [tab, setTab] = useState(0);
+  // Four columns (a Village or Castle) shrink the cells below reading size on a tablet: then show
+  // one column at a time, in tabs (Art Director's review, 2026-11-28).
+  const LABEL = 30;
+  const rowH = Math.max(...[0, 1, 2].map((r) => T.adventure[r + 1] - T.adventure[r]));
+  const widthOf = (cs: Column[]) => 2 * cs.reduce((t, c) => t + T.cols[COLUMNS.indexOf(c) + 1] - T.cols[COLUMNS.indexOf(c)], 0);
+  const fitK = (cs: Column[]) => Math.min(1, (box.w - LABEL - cs.length * 2 * 6) / widthOf(cs), (box.h - 46 - 3 * 4) / (3 * rowH));
+  const tabbed = allCols.length === 2 && box.w > 0 && fitK(allCols) < 0.72;
+  const cols = tabbed ? [allCols[Math.min(tab, 1)]] : allCols;
   const grid = useRef<HTMLTableElement>(null);
   const [fit, setFit] = useState(1);
   // One grid: a label column, then the Explore cells and the Adventure cells of each column, the
   // three die rows shared. Scale the printed cells to fit the measured box (less the two-line
   // header and the cells' borders), never above their extracted size.
-  const cellW = cols.map((c) => T.cols[COLUMNS.indexOf(c) + 1] - T.cols[COLUMNS.indexOf(c)]);
-  const sumW = 2 * cellW.reduce((a, b) => a + b, 0);
-  const rowH = Math.max(...[0, 1, 2].map((r) => T.adventure[r + 1] - T.adventure[r]));
-  const LABEL = 30;
-  const k = cols.length ? Math.max(0.3, Math.min(1, (box.w - LABEL - cols.length * 2 * 6) / sumW, (box.h - 46 - 3 * 4) / (3 * rowH))) : 1;
+  const k = cols.length ? Math.max(0.3, fitK(cols)) : 1;
   // Then measure what was really drawn (headers, borders) and shrink it into the box if needed.
   useLayoutEffect(() => {
     const t = grid.current;
@@ -95,6 +100,15 @@ export function Here({ s, litRows, at, onTables }: { s: GameState; litRows: numb
           {here ? hexLabel(mapOf(s), here) : 'Not on the map yet'}
           <span className="muted"> · sidesheet {sheet.id}</span>
         </span>
+        {tabbed && (
+          <span className="col-tabs" role="tablist">
+            {allCols.map((c, i) => (
+              <button key={c} role="tab" aria-selected={i === Math.min(tab, 1)} className={`btn small${i === Math.min(tab, 1) ? ' on' : ''}`} onClick={() => setTab(i)}>
+                {c}
+              </button>
+            ))}
+          </span>
+        )}
         <button className="btn small" onClick={onTables}>
           Tables, Bosses, Gifts
         </button>
@@ -144,10 +158,10 @@ export function Here({ s, litRows, at, onTables }: { s: GameState; litRows: numb
 }
 
 /** The Boss and Gift strips, cut from the sidesheet, with defeated Bosses and taken Gifts crossed. */
-export function Strips({ s }: { s: GameState }) {
+export function Strips({ s, fixedWidth }: { s: GameState; fixedWidth?: number }) {
   const sheet = sheetOf(s);
   const [ref, box] = useBox<HTMLDivElement>();
-  const width = Math.max(200, box.w);
+  const width = fixedWidth ?? Math.max(200, box.w);
   const st = GEO.strips;
   const bossH = (st.boss.height / st.boss.width) * width;
   const giftH = (st.gifts.height / st.gifts.width) * width;
@@ -175,9 +189,11 @@ export const rowsOf = (dice: number[], used: boolean[]) => [...new Set(dice.filt
 /** The whole sidesheet, large: Explore and Adventure for every terrain, the Bosses and the Gifts. */
 export function FullTables({ s, onClose }: { s: GameState; onClose: () => void }) {
   const sheet = sheetOf(s);
-  // As large as the screen allows: the extracted tables are 740x777.
+  // The tables as large as the screen's height allows; the Bosses and Gifts below them at full
+  // width, readable, and the dialog scrolls rather than shrinking them (Art Director, 2026-11-28).
   const h = Math.min(window.innerHeight - 140, 777 * 1.25);
   const k = h / T.height;
+  const stripW = Math.min(window.innerWidth - 80, Math.max(T.width * k, 900));
   return (
     <div className="modal" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="dialog tables-dialog" onClick={(e) => e.stopPropagation()}>
@@ -199,7 +215,7 @@ export function FullTables({ s, onClose }: { s: GameState; onClose: () => void }
               ),
             )}
           </div>
-          <Strips s={s} />
+          <Strips s={s} fixedWidth={stripW} />
         </div>
       </div>
     </div>
