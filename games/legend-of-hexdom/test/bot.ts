@@ -22,7 +22,7 @@ import {
   type GameState,
 } from '../src/engine/game';
 import { mapOf } from '../src/engine/game';
-import { poiAt } from '../src/engine/hex';
+import { isLand, neighbours, poiAt, terrainAt } from '../src/engine/hex';
 
 /** How good a position is, for choosing between actions by looking one step ahead. */
 function value(s: GameState): number {
@@ -82,6 +82,27 @@ function destinationValue(s: GameState, hex: string): number {
   return 0;
 }
 
+/**
+ * Room to keep moving from a hex (the rulebook's "pathing", p36-45): the size of the unvisited
+ * region reachable from it, and how many unvisited land neighbours it has. Ending in a corner of
+ * one's own path is how games are lost.
+ */
+function room(s: GameState, from: string, extraVisited: string[]): { region: number; exits: number } {
+  const map = mapOf(s);
+  const blocked = new Set([...s.visited, ...extraVisited]);
+  const seen = new Set<string>([from]);
+  const queue = [from];
+  while (queue.length) {
+    const h = queue.shift()!;
+    for (const n of neighbours(h)) if (!blocked.has(n) && !seen.has(n)) {
+      seen.add(n);
+      queue.push(n);
+    }
+  }
+  const exits = neighbours(from).filter((n) => !blocked.has(n) && isLand(terrainAt(map, n))).length;
+  return { region: seen.size - 1, exits };
+}
+
 /** One round, greedy one step ahead. */
 function playRound(s: GameState, rnd: () => number): GameState {
   s = act(s, { t: 'roll' });
@@ -104,7 +125,10 @@ function playRound(s: GameState, rnd: () => number): GameState {
         const n = tryAct(s, { t: 'travel', die: o.die, path: p.path });
         if (!n) continue;
         const after = n.phase === 'round' ? bestMain(place(n), 1) : place(n);
-        const v = value(after) + destinationValue(n, p.path[p.path.length - 1]) - p.unpermitted * 30;
+        const end = p.path[p.path.length - 1];
+        const r = room(s, end, p.path);
+        const trap = (r.region < 6 ? 400 : r.region < 12 ? 120 : 0) + (r.exits === 0 ? 600 : r.exits === 1 ? 80 : 0);
+        const v = value(after) + destinationValue(n, end) - p.unpermitted * 30 - trap + Math.min(r.region, 30);
         if (!best || v > best.v) best = { st: n, v };
       }
     }
@@ -143,6 +167,9 @@ function bestMain(s: GameState, depth: number): GameState {
   return s;
 }
 
+/** The last game's log, for reading why it ended. */
+export let lastLog: string[] = [];
+
 export interface GameResult {
   won: boolean;
   rounds: number;
@@ -163,5 +190,6 @@ export function playGame(mapId: number, character: CharacterId, seed: number): G
     s = playRound(s, rnd);
   }
   void sheetOf;
+  lastLog = s.log.map((l) => l.text);
   return { won: s.phase === 'won', rounds: s.round, score: s.result?.score ?? null, bosses: s.bossesDefeated.length };
 }
