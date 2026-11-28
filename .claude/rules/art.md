@@ -119,6 +119,11 @@ extractor so a fresh export gives the same result.
 
 ## Close the loop before you show me
 
+**Every visual change goes past the Art Director before it reaches me, the small ones too:** a new
+marker, a re-crop, a colour, a trial look built from its own proposal. On 2026-11-28 three went
+unreviewed overnight, and a comparison reached me before the Art Director had seen it; when it did,
+it rejected half of the trial.
+
 **Review blind.** Render one legal interaction, capture it at both sizes, and ask the model what
 visibly changed *before* telling it what should have. Then check its answer against the engine's
 state. A reviewer told the expected answer will confirm it.
