@@ -37,7 +37,10 @@ HOW TO WORK
 - Keep a play log, one line per turn: the step number, what you intended and why, what happened.
   It is how a bug gets reproduced and how your strategy gets judged.
 - Play the game the way it presents itself: its own controls and its own "How to play" panel. You
-  may read the saved game to check a number. Never change it.
+  may read the saved game to check a number. Never change it, and never change the page itself: no
+  scripts that alter its storage, its functions or its markup, even to test something. (Added
+  2026-11-28: a run wrapped `localStorage.setItem` to prove the playtest's isolation. It did no harm,
+  but a playtester that edits the page is no longer seeing what a player sees.)
 - When something looks wrong, stop and capture it before doing anything else: the step number, a
   screenshot, and the last lines of the game's own log. Then try once to make it happen again, and
   note whether it did. If the game has undo, undoing and repeating the action is the quickest retry.
