@@ -15,7 +15,8 @@ decisions that are theirs to be kept here, short.
    strip marks the Bosses you could beat right now; under the map, how many Castles are still unvisited.
 2. **Taste: redraw the table cells cleaner?** The Art Director's suggestion: keep the publisher's
    pictures, rebuild the requirement boxes, numbers and loot icons crisp from the data (text set by
-   code, never by a model). More legible, a little less "printed". Yes or no.
+   code, never by a model). More legible, a little less "printed". Yes or no. A yes gets you one
+   column rebuilt to look at before the rest is done.
 3. **Taste: A or B?** Picture: `art/compare/2026-11-28-look-A-vs-B.jpg`. To try B on the iPad, tick
    Menu > "Try the sheet's look". It's per device, and your game is untouched.
    - **A**, today: yellow = selected, green = where you can go, blue ink.
