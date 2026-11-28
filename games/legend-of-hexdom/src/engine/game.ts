@@ -54,6 +54,8 @@ export interface LogLine {
 
 export interface GameState {
   version: number;
+  /** The seed the game started from: with the commands, it reproduces the game (playtest journals). Optional: saves made before 2026-11-28 lack it. */
+  seed?: number;
   rng: number;
   /** Increases with every random event, so the UI's undo stack can be cleared there. */
   epoch: number;
@@ -120,9 +122,11 @@ export type Command =
 
 export function newGame(opts: { mapId: number; character: CharacterId; seed?: number; manualDice?: boolean }): GameState {
   const ch = CHARACTERS[opts.character];
+  const seed = opts.seed ?? randomSeed();
   return {
     version: SAVE_VERSION,
-    rng: opts.seed ?? randomSeed(),
+    seed,
+    rng: seed,
     epoch: 0,
     manualDice: !!opts.manualDice,
     mapId: opts.mapId,

@@ -207,3 +207,6 @@ button { font: inherit; color: inherit; }
 @media (max-height: 950px) {
   .side > .strips { display: none; }
 }
+
+.journal { display: flex; flex-direction: column; gap: 6px; border: 2px dashed #ffd479; border-radius: 10px; padding: 8px; font-size: 13px; }
+.journal textarea { font-family: ui-monospace, monospace; font-size: 11px; }

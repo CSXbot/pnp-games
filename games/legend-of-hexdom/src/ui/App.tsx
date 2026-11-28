@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ago, cloudEnabled, deviceLabel, type RemoteSave } from '@pnp/kit/cloudSave';
-import { PLAYTEST } from '@pnp/kit/playtest';
 import { CHARACTERS, type CharacterId } from '../data/characters';
 import { MAPS } from '../data/maps';
 import { BOSSES, TRAVEL } from '../data/rules';
@@ -33,6 +32,7 @@ import { Board } from './Board';
 import { FullTables, Here, rowsOf, Strips } from './Here';
 import { AttrIcon, Die } from './Icons';
 import { cloud, exportName, loadGame, storeGame } from './persist';
+import { journalOf, parseJournal, PLAYTEST, readJournal, replay, writeJournal } from './playtest';
 import { Sheet } from './Sheet';
 
 declare const __BUILD__: string | undefined;
@@ -79,6 +79,8 @@ export function App() {
   const [shield, setShield] = useState(false);
   const [enchant, setEnchant] = useState(false);
   const [tables, setTables] = useState(false);
+  // Playtest mode: every command since the start, so a reported position can be replayed exactly.
+  const [cmds, setCmds] = useState<Command[]>(() => (PLAYTEST ? (readJournal()?.cmds ?? []) : []));
 
   // Save every change; push it to the cloud when hosted.
   useEffect(() => {
@@ -117,6 +119,12 @@ export function App() {
       // Undo never reaches back past a random event (a die roll).
       setHistory((h) => (next.epoch !== state.epoch ? [] : [...h, state]));
       setState(next);
+      if (PLAYTEST)
+        setCmds((c) => {
+          const all = [...c, cmd];
+          writeJournal(journalOf(next, all));
+          return all;
+        });
       setDie(null);
       setDraft([]);
       setShield(false);
@@ -127,7 +135,14 @@ export function App() {
   const undo = useCallback(() => {
     setHistory((h) => {
       if (!h.length) return h;
-      setState(h[h.length - 1]);
+      const prev = h[h.length - 1];
+      setState(prev);
+      if (PLAYTEST)
+        setCmds((c) => {
+          const all = c.slice(0, -1);
+          writeJournal(journalOf(prev, all));
+          return all;
+        });
       setDie(null);
       setDraft([]);
       return h.slice(0, -1);
@@ -142,7 +157,12 @@ export function App() {
   }, [undo, dialog]);
 
   const startNew = (mapId: number, character: CharacterId, manualDice: boolean) => {
-    setState(newGame({ mapId, character, manualDice }));
+    const s = newGame({ mapId, character, manualDice });
+    setState(s);
+    if (PLAYTEST) {
+      setCmds([]);
+      writeJournal(journalOf(s, []));
+    }
     setHistory([]);
     setDialog(null);
     setDie(null);
@@ -178,7 +198,7 @@ export function App() {
           <div className="where">
             Map {state.mapId}, {MAPS[state.mapId].name} · the {CHARACTERS[state.character].name}
             {state.round > 0 && ` · round ${state.round}`}
-            {PLAYTEST && <b className="pt"> · PLAYTEST</b>}
+            {PLAYTEST && <b className="pt"> · PLAYTEST · step {cmds.length} · seed {state.seed ?? '?'}</b>}
           </div>
         )}
         <div className="top-actions">
@@ -254,6 +274,22 @@ export function App() {
       {dialog === 'menu' && state && (
         <MenuDialog
           s={state}
+          journal={PLAYTEST ? JSON.stringify(journalOf(state, cmds)) : null}
+          onJournal={(text) => {
+            const p = parseJournal(text);
+            if (!p.ok) return p.error;
+            try {
+              const s = replay(p.journal);
+              setState(s);
+              setHistory([]);
+              setCmds(p.journal.cmds);
+              writeJournal(p.journal);
+              setDialog(null);
+              return null;
+            } catch (e) {
+              return `The journal does not replay: ${(e as Error).message}`;
+            }
+          }}
           onClose={() => setDialog(null)}
           onNew={() => setDialog('new')}
           onImport={() => setDialog('import')}
@@ -670,9 +706,27 @@ function NewGameDialog({ inProgress, onCancel, onStart }: { inProgress: boolean;
   );
 }
 
-function MenuDialog({ s, onClose, onNew, onImport, onManual }: { s: GameState; onClose: () => void; onNew: () => void; onImport: () => void; onManual: (b: boolean) => void }) {
+function MenuDialog({
+  s,
+  journal,
+  onJournal,
+  onClose,
+  onNew,
+  onImport,
+  onManual,
+}: {
+  s: GameState;
+  journal: string | null;
+  onJournal: (text: string) => string | null;
+  onClose: () => void;
+  onNew: () => void;
+  onImport: () => void;
+  onManual: (b: boolean) => void;
+}) {
   const text = JSON.stringify(s);
   const [copied, setCopied] = useState(false);
+  const [paste, setPaste] = useState('');
+  const [jerr, setJerr] = useState<string | null>(null);
   const download = () => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
@@ -704,6 +758,20 @@ function MenuDialog({ s, onClose, onNew, onImport, onManual }: { s: GameState; o
           <label className="toggle">
             <input type="checkbox" checked={s.manualDice} onChange={(e) => onManual(e.target.checked)} /> Manual dice
           </label>
+          {journal !== null && (
+            <div className="journal">
+              <b>Playtest journal</b>: the start and every step, to replay this exact position.
+              <textarea readOnly value={journal} rows={4} onFocus={(e) => e.target.select()} aria-label="Playtest journal" />
+              <button className="btn" onClick={() => void navigator.clipboard?.writeText(journal)}>
+                Copy journal
+              </button>
+              <textarea value={paste} onChange={(e) => setPaste(e.target.value)} rows={3} placeholder="Paste a journal to replay it" aria-label="Journal to load" />
+              {jerr && <p className="warn">{jerr}</p>}
+              <button className="btn" disabled={!paste.trim()} onClick={() => setJerr(onJournal(paste))}>
+                Load the journal
+              </button>
+            </div>
+          )}
           <button className="btn" onClick={onClose}>
             Close
           </button>
