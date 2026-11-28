@@ -31,9 +31,9 @@ decisions that are theirs to be kept here, short.
    - Ruling A ("both dice mandatory") never got in the way in either playtest.
    - The bot found a real bug the playtests didn't hit, now fixed. With all three attributes at 12, a
      point still waiting to be placed could never be placed, and the game waited forever.
-   - Difficulty, measured over 900 bot games: the Mage is clearly the easiest, then the Archer, then
-     the Warrior (numbers in `playtest/notebook.md`). That's the publisher's design. The bot is
-     weaker than a careful player, so these are floors.
+   - Difficulty, measured over 900 bot games: the bot wins 31% with the Mage, 15% with the Archer
+     and 9% with the Warrior. That's the publisher's design. The bot is weaker than a careful player
+     (the playtesters won all three games they finished), so these are floors.
 
 ## Stage 3: UI
 

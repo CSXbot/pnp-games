@@ -25,6 +25,15 @@ A 75-day game is several hundred clicks, so a few browser games cannot give a wi
    gets - the playtester's few games are not. Each open question becomes a simulation, and the
    answers go back into the notebook under "Measured by the engineers".
 
+Two things Legend of Hexdom taught (2026-11-28):
+
+- **Teach the bot one rule at a time and measure after each.** Then the notebook can say what each
+  rule was worth. A rule that sounds right can cost wins: two fixed target Bosses held the Warrior
+  to 3%, and part of the reason was a playtester's slip (Glubo needs Agility 12, not 8).
+- **The bot is also a fuzzer.** Hundreds of whole games reach positions that a few careful ones
+  never do. On Hexdom it found a point that could never be placed, which leaves the game stuck.
+  When the bot throws, suspect the engine before the bot.
+
 ## Where a game's playtest files live
 
 `games/<slug>/playtest/`:
