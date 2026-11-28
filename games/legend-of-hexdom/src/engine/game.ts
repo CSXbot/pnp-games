@@ -220,7 +220,7 @@ export function score(s: GameState): number {
     SCORE.treasure * s.treasures.length +
     SCORE.relicGem * s.relic +
     SCORE.boss * s.bossesDefeated.length +
-    SCORE.hex * (s.visited.length - 1) +
+    SCORE.hex * Math.max(0, s.visited.length - 1) +
     (hasGift(s, 'cat') ? SCORE.blackCat : 0)
   );
 }
@@ -748,7 +748,9 @@ export function act(state: GameState, cmd: Command): GameState {
       const cv = combatDamage(s, enemy.req.reqs, enemy.req.type, { pick: cmd.pick, enchant: cmd.enchant });
       if (!c.dead && cv.damage > 0) loseHearts(c, cv.damage);
       if (!c.dead) {
-        c.notes.push(cv.damage === 0 ? 'won without a scratch' : 'won');
+        // Only the fight's own damage: Enchant's heart is the skill's cost (whether it spoils a "perfect
+        // combat" matters only to characters not yet in scope - ROADMAP, Later).
+        c.notes.push(cv.damage === 0 ? 'won, the fight cost no hearts' : 'won');
         const cell = `${rowOfDie(die)}.${COLUMNS.indexOf(col)}`;
         const loot = lootLeft(s, die, col);
         if (loot.some((l) => l.k === 'gem')) s.gemsTaken.push(cell);

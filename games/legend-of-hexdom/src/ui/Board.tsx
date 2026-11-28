@@ -3,7 +3,7 @@
 
 import type { MapDef } from '../data/maps';
 import type { Leg } from '../engine/game';
-import { COLS, ROWS, key, parseKey } from '../engine/hex';
+import { COLS, ROWS, hexLabel, key, parseKey } from '../engine/hex';
 import { GEO, MAP_ART } from './art';
 
 const CROP = GEO.maps.crop;
@@ -84,7 +84,9 @@ export function Board(props: {
           className={targets.has(k) ? 'hex target' : 'hex'}
           onClick={() => targets.has(k) && props.onHex(k)}
           data-hex={k}
-        />
+        >
+          <title>{hexLabel(map, k)}</title>
+        </polygon>
       ))}
     </svg>
   );

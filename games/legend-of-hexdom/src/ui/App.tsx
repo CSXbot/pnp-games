@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ago, cloudEnabled, deviceLabel, type RemoteSave } from '@pnp/kit/cloudSave';
-import { CHARACTERS, type CharacterId } from '../data/characters';
+import { CHARACTERS, SKILL_TEXT, type CharacterId } from '../data/characters';
 import { MAPS } from '../data/maps';
 import { BOSSES, TRAVEL } from '../data/rules';
 import { ATTR_NAME, ATTRS, rowOfDie, TREASURES, TREASURE_NAME, type Attr, type Column } from '../data/types';
@@ -56,6 +56,8 @@ function preview(s: GameState, cmd: Command): string {
   if (dh) parts.push(`${dh > 0 ? '+' : ''}${dh} ${Math.abs(dh) === 1 ? 'heart' : 'hearts'}`);
   if (df) parts.push(`${df > 0 ? '+' : ''}${df} food`);
   for (const a of ATTRS) if (next.attrs[a] !== s.attrs[a]) parts.push(`+${next.attrs[a] - s.attrs[a]} ${ATTR_NAME[a]}`);
+  if (next.foodPainted >= 20 && s.foodPainted < 20) parts.push(`unlocks ${SKILL_TEXT[CHARACTERS[s.character].skills[1]].name}`);
+  if (next.foodPainted >= 40 && s.foodPainted < 40) parts.push(`unlocks ${SKILL_TEXT[CHARACTERS[s.character].skills[2]].name}`);
   for (const p of next.pending.slice(s.pending.length)) {
     if (p.kind === 'gem') parts.push('a gem');
     else if (p.kind === 'points') parts.push(`${p.n} attribute point${p.n > 1 ? 's' : ''} to place`);
@@ -79,7 +81,9 @@ export function App() {
   const [shield, setShield] = useState(false);
   const [enchant, setEnchant] = useState(false);
   const [tables, setTables] = useState(false);
-  const [list, setList] = useState(false);
+  // The action list (the playtester's favourite) shows by default when it fits; with four or more
+  // cell actions (a Village or Castle) the printed cells carry them. Either can be switched on.
+  const [listPref, setListPref] = useState<'auto' | 'list' | 'cells'>('auto');
   // Playtest mode: every command since the start, so a reported position can be replayed exactly.
   const [cmds, setCmds] = useState<Command[]>(() => (PLAYTEST ? (readJournal()?.cmds ?? []) : []));
 
@@ -250,8 +254,8 @@ export function App() {
               setShield={setShield}
               enchant={enchant}
               setEnchant={setEnchant}
-              list={list}
-              setList={setList}
+              list={listPref === 'list' || (listPref === 'auto' && die !== null && mainOptions(state, die, shield, enchant).filter((o) => o.table !== 'boss').length <= 3)}
+              setList={(b) => setListPref(b ? 'list' : 'cells')}
               commit={commit}
               onNew={() => setDialog('new')}
             />
@@ -261,7 +265,7 @@ export function App() {
               litRows={die !== null && state.travelled ? rowsOf([state.dice[die]], [false]) : state.phase === 'round' ? rowsOf(state.dice.filter((_, i) => i !== die || !travelling), state.used.filter((_, i) => i !== die || !travelling)) : []}
               onTables={() => setTables(true)}
               actRow={die !== null && state.travelled && !state.used[die] && !state.pending.length ? rowOfDie(state.dice[die]) : null}
-              acts={(!list && die !== null && !state.pending.length ? mainOptions(state, die, shield, enchant) : [])
+              acts={(die !== null && !state.pending.length ? mainOptions(state, die, shield, enchant) : [])
                 .filter((o) => o.table !== 'boss')
                 .map((o) => ({ table: o.table as 'explore' | 'adventure', column: o.column!, short: o.short, label: o.label, cmd: o.cmd, err: actionError(state, o.cmd), preview: preview(state, o.cmd) }))}
               onAct={commit}
@@ -570,7 +574,13 @@ export function mainOptions(s: GameState, die: number | null, shield: boolean, e
   }
   if (poiAt(mapOf(s), position(s))?.kind === 'castle' && !s.bossesDefeated.includes(d)) {
     const b = BOSSES[d - 1];
-    opts.push({ label: `Boss ${b.name}${enchant ? ', Enchanted' : ''} · needs the ${TREASURE_NAME[b.treasure]}`, short: b.name, cmd: sh({ t: 'boss', die, enchant: enchant || undefined }), table: 'boss' });
+    const has = s.treasures.includes(b.treasure);
+    opts.push({
+      label: `Boss ${b.name}${enchant ? ', Enchanted' : ''} · ${has ? `you have the ${TREASURE_NAME[b.treasure]}` : `without the ${TREASURE_NAME[b.treasure]}: +3 hearts`}`,
+      short: b.name,
+      cmd: sh({ t: 'boss', die, enchant: enchant || undefined }),
+      table: 'boss',
+    });
   }
   return opts;
 }
@@ -590,7 +600,7 @@ function MainPhase({ s, die, commit, shield, enchant, list, setList }: { s: Game
           : die === null
             ? 'Choose a die for each of the other two actions: both must be used.'
             : list
-              ? `With the ${s.dice[die]}:`
+              ? `With the ${s.dice[die]} (or tap its lit cell):`
               : `With the ${s.dice[die]}: tap a lit cell below to Explore or fight - each shows what it will do.`}
         {die !== null && (
           <button className="btn small list-toggle" onClick={() => setList(!list)}>
@@ -713,7 +723,7 @@ function ScoreLine({ s }: { s: GameState }) {
       <img src={SCORE_ART} alt="Score: 3 per attribute at 12, 3 per skill unlocked, 5 per heart, 5 per Treasure, 4 per Relic gem, 10 per Boss, 1 per hex travelled" />
       <span className="score-now">
         now {parts.join(' · ')}
-        {s.giftsTaken.includes('cat') ? ' · cat +30' : ''} = <b>{score(s)}</b> <span className="muted">if you win</span>
+        {s.giftsTaken.includes('cat') ? ' · cat +30' : ''} = <b>{score(s)}</b> <span className="muted">{s.phase === 'won' ? 'final score' : s.phase === 'lost' ? 'not scored: a defeat' : 'if you win'}</span>
       </span>
     </div>
   );
@@ -841,7 +851,9 @@ function MenuDialog({
           </label>
           {journal !== null && (
             <div className="journal">
-              <b>Playtest journal</b>: the start and every step, to replay this exact position.
+              <span>
+                <b>Playtest journal:</b> the start and every step, to replay this exact position.
+              </span>
               <textarea readOnly value={journal} rows={4} onFocus={(e) => e.target.select()} aria-label="Playtest journal" />
               <button className="btn" onClick={() => void navigator.clipboard?.writeText(journal)}>
                 Copy journal

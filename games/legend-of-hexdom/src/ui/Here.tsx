@@ -3,7 +3,7 @@
 // player reads the same icons as on paper. Rows light up for the dice in hand.
 
 import { useLayoutEffect, useRef, useState } from 'react';
-import { COLUMNS, rowOfDie, type Column } from '../data/types';
+import { COLUMNS, rowOfDie, TREASURE_NAME, type Column } from '../data/types';
 import { enemyAt, lootLeft, position, sheetOf, mapOf, type GameState } from '../engine/game';
 import { hexLabel, isLand, poiAt, terrainAt } from '../engine/hex';
 import type { Command } from '../engine/game';
@@ -33,10 +33,15 @@ function columnsAt(s: GameState, hex: string): Column[] {
   return out;
 }
 
-/** Whether an Adventure cell's gem or Treasure has been taken (Q5): it is crossed off, the enemy stays. */
-const takenAt = (s: GameState, row: number, col: Column) => lootLeft(s, row * 2 + 1, col).length < enemyAt(s, row * 2 + 1, col).loot.length;
+/** What an Adventure cell has lost (Q5): its gem or Treasure is crossed off, the enemy stays. */
+function takenAt(s: GameState, row: number, col: Column): string | null {
+  const left = lootLeft(s, row * 2 + 1, col);
+  const gone = enemyAt(s, row * 2 + 1, col).loot.filter((l) => !left.includes(l));
+  if (!gone.length) return null;
+  return gone.map((l) => (l.k === 'gem' ? 'gem' : l.k === 'treasure' ? TREASURE_NAME[l.t] : '')).join(', ') + ' taken';
+}
 
-function Cell({ sheet, table, row, col, k, lit, taken, onClick, acts, onAct }: { sheet: string; table: 'explore' | 'adventure'; row: number; col: number; k: number; lit: boolean; taken: boolean; onClick?: () => void; acts?: CellAct[]; onAct?: (c: Command) => void }) {
+function Cell({ sheet, table, row, col, k, lit, taken, onClick, acts, onAct }: { sheet: string; table: 'explore' | 'adventure'; row: number; col: number; k: number; lit: boolean; taken: string | null; onClick?: () => void; acts?: CellAct[]; onAct?: (c: Command) => void }) {
   const ys = T[table];
   const x = T.cols[col];
   const y = ys[row];
@@ -54,7 +59,7 @@ function Cell({ sheet, table, row, col, k, lit, taken, onClick, acts, onAct }: {
         backgroundPosition: `${-x * k}px ${-y * k}px`,
       }}
     >
-      {taken && <span className="taken" title="Gem or Treasure already taken">taken</span>}
+      {taken && <span className="taken">{taken}</span>}
       {acts?.length ? (
         <div className={`cell-acts n${acts.length}`}>
           {acts.map((a) => (
@@ -187,7 +192,7 @@ export function Here({
                               col={COLUMNS.indexOf(col)}
                               k={k}
                               lit={!at && litRows.includes(row)}
-                              taken={table === 'adventure' && takenAt(s, row, col)}
+                              taken={table === 'adventure' ? takenAt(s, row, col) : null}
                               onClick={onTables}
                               acts={!at && row === actRow ? acts.filter((x) => x.table === table && x.column === col) : undefined}
                               onAct={onAct}
@@ -256,13 +261,14 @@ export function FullTables({ s, onClose }: { s: GameState; onClose: () => void }
         <div className="tables-body">
           <div className="full-table" style={{ width: T.width * k, height: T.height * k, backgroundImage: `url(${TABLE_ART[sheet.id]})`, backgroundSize: `${T.width * k}px ${T.height * k}px` }}>
             {COLUMNS.flatMap((col, c) =>
-              [0, 1, 2].map((row) =>
-                takenAt(s, row, col) ? (
-                  <span key={`${c}.${row}`} className="taken" style={{ left: T.cols[c + 1] * k - 52, top: T.adventure[row + 1] * k - 24 }}>
-                    taken
+              [0, 1, 2].map((row) => {
+                const t = takenAt(s, row, col);
+                return t ? (
+                  <span key={`${c}.${row}`} className="taken full" style={{ left: T.cols[c] * k + 4, top: T.adventure[row + 1] * k - 22, maxWidth: (T.cols[c + 1] - T.cols[c]) * k - 8 }}>
+                    {t}
                   </span>
-                ) : null,
-              ),
+                ) : null;
+              }),
             )}
           </div>
           <Strips s={s} fixedWidth={stripW} />

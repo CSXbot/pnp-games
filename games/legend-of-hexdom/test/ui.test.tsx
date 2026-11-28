@@ -54,7 +54,7 @@ describe('a round through the screen', () => {
     expect(within(explore).getByText('+1 heart, -1 food, +1 Magic')).toBeTruthy();
     // The same choices are available as a list.
     fireEvent.click(screen.getByRole('button', { name: 'Show as a list' }));
-    expect(screen.getByRole('button', { name: /^Explore · castle/ })).toBeTruthy();
+    expect(within(document.querySelector('.actions') as HTMLElement).getByRole('button', { name: /^Explore · castle/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Use the cells' }));
     fireEvent.click(screen.getByRole('button', { name: 'Explore · castle: +1 heart, -1 food, +1 Magic' }));
     expect(log()[0]).toBe('Explored the castle with a 3: -1 food, +1 heart, +1 Magic.');

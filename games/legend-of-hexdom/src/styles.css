@@ -163,7 +163,7 @@ button { font: inherit; color: inherit; }
 
 /* Log */
 .log { flex: 1 1 auto; min-height: 80px; display: flex; flex-direction: column; overflow: hidden; }
-.log ol { margin: 0; padding-left: 18px; overflow: auto; font-size: 12.5px; flex: 1; }
+.log ol { margin: 0; padding-left: 30px; overflow: auto; font-size: 12.5px; flex: 1; }
 .log li { margin-bottom: 2px; }
 
 /* Dialogs */
@@ -245,3 +245,5 @@ button { font: inherit; color: inherit; }
 .cell-act:disabled { opacity: .55; cursor: default; }
 .list-toggle { margin-left: 8px; vertical-align: middle; }
 @media (pointer: coarse) { .cell-act { min-height: 40px; } }
+.taken.full { right: auto; bottom: auto; font-size: 11px; padding: 1px 6px; }
+.taken { white-space: nowrap; max-width: 95%; overflow: hidden; text-overflow: ellipsis; }
