@@ -4,7 +4,7 @@
 // written as plain rules of thumb so it can be compared and replaced.
 
 import type { CharacterId } from '../src/data/characters';
-import { ATTRS, type Attr } from '../src/data/types';
+import { ATTRS, type Attr, type TreasureId } from '../src/data/types';
 import {
   act,
   actionError,
@@ -18,26 +18,44 @@ import {
   position,
   sheetOf,
   travelOptions,
+  allPaths,
   type Command,
   type GameState,
 } from '../src/engine/game';
 import { mapOf } from '../src/engine/game';
 import { isLand, neighbours, poiAt, terrainAt } from '../src/engine/hex';
 
+/**
+ * The playtester's strategy (playtest/notebook.md, 2026-11-28), as weights: commit to two target
+ * Bosses; every attribute point into the lead attribute until 12, then the second until 8; value the
+ * Treasures those Bosses need; keep a margin of hearts. The Mage reaches both her targets (Gast and
+ * Stuker) with Magic alone, through Enchant.
+ */
+const TARGETS: Record<CharacterId, { lead: Attr; second: Attr | null; treasures: TreasureId[] }> = {
+  warrior: { lead: 'str', second: 'mag', treasures: ['skull', 'hook'] }, // Gast (S12+M8), Liggy (S12+A8)
+  archer: { lead: 'agi', second: 'mag', treasures: ['book', 'spear'] }, // Brok (A12+M8), Glubo (A12+S8)
+  mage: { lead: 'mag', second: 'agi', treasures: ['skull', 'hammer'] }, // Gast, Stuker via Enchant; King (M12+A8) next
+};
+
 /** How good a position is, for choosing between actions by looking one step ahead. */
 function value(s: GameState): number {
   if (s.phase === 'lost') return -1e6;
   if (s.phase === 'won') return 1e6;
+  const t = TARGETS[s.character];
   const a = s.attrs;
-  // Bosses need 12 in one attribute and 8 in another: value attributes towards those, hearts as
-  // life, food as fuel and experience, Treasures and Bosses directly.
-  const attrScore = ATTRS.reduce((t, k) => t + Math.min(a[k], 12) * 6 + (a[k] >= 8 ? 10 : 0) + (a[k] >= 12 ? 25 : 0), 0);
+  const attrScore = ATTRS.reduce((sum, k) => {
+    if (k === t.lead) return sum + Math.min(a[k], 12) * 14 + (a[k] >= 12 ? 40 : 0);
+    if (k === t.second) return sum + Math.min(a[k], 8) * 9 + (a[k] >= 8 ? 20 : 0);
+    return sum + Math.min(a[k], 12) * 2;
+  }, 0);
+  const h = hearts(s);
   return (
     attrScore +
-    hearts(s) * 14 +
+    h * 14 -
+    (h <= 2 ? 60 : 0) +
     Math.min(food(s), 8) * 4 +
     s.foodPainted * 1.5 +
-    s.treasures.length * 18 +
+    s.treasures.reduce((sum, tr) => sum + (t.treasures.includes(tr) ? 30 : 8), 0) +
     s.bossesDefeated.length * 400 +
     s.relic * 6 +
     s.giftsTaken.length * 8
@@ -103,6 +121,16 @@ function room(s: GameState, from: string, extraVisited: string[]): { region: num
   return { region: seen.size - 1, exits };
 }
 
+/**
+ * The chance of being stuck next round after ending here: the faces with no path at all (ordinary
+ * or unstuck), cubed, since all three dice must fail. How a careful player reads the map.
+ */
+function stuckRisk(after: GameState): number {
+  let fails = 0;
+  for (let face = 1; face <= 6; face++) if (allPaths(after, face).length === 0) fails++;
+  return (fails / 6) ** 3;
+}
+
 /** One round, greedy one step ahead. */
 function playRound(s: GameState, rnd: () => number): GameState {
   s = act(s, { t: 'roll' });
@@ -128,7 +156,7 @@ function playRound(s: GameState, rnd: () => number): GameState {
         const end = p.path[p.path.length - 1];
         const r = room(s, end, p.path);
         const trap = (r.region < 6 ? 400 : r.region < 12 ? 120 : 0) + (r.exits === 0 ? 600 : r.exits === 1 ? 80 : 0);
-        const v = value(after) + destinationValue(n, end) - p.unpermitted * 30 - trap + Math.min(r.region, 30);
+        const v = value(after) + destinationValue(n, end) - p.unpermitted * 30 - trap + Math.min(r.region, 30) - stuckRisk(n) * 3000;
         if (!best || v > best.v) best = { st: n, v };
       }
     }
@@ -171,6 +199,8 @@ function bestMain(s: GameState, depth: number): GameState {
 export let lastLog: string[] = [];
 
 export interface GameResult {
+  /** Why it ended: won, out of hearts, stuck, or still going after the round cap. */
+  end: 'won' | 'hearts' | 'stuck' | 'cap';
   won: boolean;
   rounds: number;
   score: number | null;
@@ -191,5 +221,6 @@ export function playGame(mapId: number, character: CharacterId, seed: number): G
   }
   void sheetOf;
   lastLog = s.log.map((l) => l.text);
-  return { won: s.phase === 'won', rounds: s.round, score: s.result?.score ?? null, bosses: s.bossesDefeated.length };
+  const end = s.phase === 'won' ? 'won' : s.phase === 'lost' ? (s.result?.reason.startsWith('Stuck') ? 'stuck' : 'hearts') : 'cap';
+  return { end, won: s.phase === 'won', rounds: s.round, score: s.result?.score ?? null, bosses: s.bossesDefeated.length };
 }

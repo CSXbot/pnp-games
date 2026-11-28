@@ -139,7 +139,22 @@ map 3, food at 0 by round 2. I can't say yet whether that is the character, the 
 
 *Win rates from `test/bot.ts` over thousands of games, and the answers to the open questions above.*
 
-Nothing measured yet.
+- **2026-11-28, 300 games (100 per character, maps 1-3 in turn, seeds 1000-1099).** The bot plays the
+  strategy above as weights: two target Bosses per character, every attribute point into the lead
+  attribute to 12 then the second to 8, the target Bosses' Treasures valued, a margin of hearts, a
+  one-step look-ahead per action, and pathing that avoids pockets and weighs the chance that all three
+  dice fail next round. **Mage 19/100 won, Archer 3/100, Warrior 3/100.** Games last about 14 rounds.
+  Losses: Mage 72 stuck, 9 out of hearts; Archer 93 stuck, 4; Warrior 87 stuck, 10.
+- **What "stuck" means here.** A map has about 42 hexes a Travel can end on, and a game uses about 2.3
+  a round, so the map runs out around round 14-18: "stuck" is mostly the game's clock, not careless
+  pathing. A win means two Bosses before the land is used up. The playtester's win came in round 14
+  with 29 hexes travelled, the same clock.
+- **How far to trust it.** The bot is greedy one action at a time; it does not plan the Boss round
+  (rule 13), the Treasure Crate trick (rule 14) or the Warrior's 2-heart Adrenaline play (open
+  question 8), so it understates what a careful player wins. It agrees with the playtester that the
+  Mage is the strongest of the three by a distance. Measure again when those are taught to it.
+- **Open questions answered:** none yet. `BOT_GAMES=100 npx vitest run test/bot.test.ts` reproduces
+  the numbers above.
 
 ## Results
 
