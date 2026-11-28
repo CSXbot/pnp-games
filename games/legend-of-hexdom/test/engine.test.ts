@@ -7,6 +7,7 @@ import {
   actionError,
   allPaths,
   food,
+  giftEndsGame,
   giftFaces,
   hearts,
   newGame,
@@ -379,4 +380,59 @@ test('Greed: a gem from an Adventure also gives an attribute point', () => {
   expect(s.gemsTaken).toEqual(['0.1']);
   // The Stag's gem is crossed off; fought again it is still there and gives nothing (Q5).
   expect(lastLog(s)).toBe('Adventure with a 1: Brown Stag (Magic 4, chosen). -1 heart, -1 heart, won, a gem, 1 attribute point to place (Greed).');
+});
+
+describe("the consultant's review, 2026-11-28", () => {
+  test('Magic Blood at Magic 12: the point is ignored, the heart still goes, Overcoming answers (Q14)', () => {
+    let s = roll(at('warrior', 1, 1, { foodPainted: 40, attrs: { str: 2, agi: 0, mag: 12 } }), [3, 1, 2]);
+    s = go(s, 0, '2.3 2.4');
+    const f = food(s);
+    s = act(s, { t: 'magicBlood' });
+    expect(hearts(s)).toBe(3);
+    expect(food(s)).toBe(f + 1);
+    expect(lastLog(s)).toBe('Magic Blood: -1 heart, Overcoming: +1 food, Magic is at 12, 1 ignored.');
+  });
+  test('Magic Blood after a Gift-then-Travel round, before the next roll', () => {
+    let s = roll(at('warrior', 1, 1, { foodPainted: 40 }), [5, 5, 1]);
+    s = act(s, { t: 'gift', face: 5 });
+    s = go(s, 2, '1.1');
+    expect(s.phase).toBe('roll');
+    s = act(s, { t: 'magicBlood' });
+    expect(s.attrs.mag).toBe(1);
+    s = act(s, { t: 'roll', dice: [1, 2, 3] });
+    expect(actionError(s, { t: 'magicBlood' })).toBe('Only right after travelling, before anything else.');
+  });
+  test('a refused Gift says why', () => {
+    const s = roll(at('archer', 1, 1, { foodPainted: 20 }), [3, 3, 1]);
+    expect(actionError(act(s, { t: 'crossTraining' }), { t: 'gift', face: 3 })).toBe('After Cross Training the Travel comes next.');
+    let t = go(roll(at('warrior', 1, 1), [1, 3, 3]), 0, '1.1');
+    t = act(t, { t: 'explore', die: 1, column: 'terrain' });
+    expect(actionError(t, { t: 'gift', face: 3 })).toBe('Both dice of the double must be unspent.');
+    const u = roll(at('warrior', 1, 1, { giftsTaken: ['eggs'] }), [3, 3, 1]);
+    expect(actionError(u, { t: 'gift', face: 3 })).toBe('The Vital Eggs is already taken.');
+  });
+  test('a Gift taken before travelling can end the game; the screen is told first', () => {
+    // Map 1 at 2.6, boxed so only a 6 gets out (p44). Taking 6-6 (the Balloon on A) leaves a 2 with nowhere to go.
+    const s = roll(at('warrior', 1, 2, { visited: ['2.5', '1.5', '1.6', '3.5', '2.6'], heartsPainted: 6 }), [6, 6, 2]);
+    expect(s.phase).toBe('round');
+    expect(giftEndsGame(s, 6)).toBe(true);
+    expect(act(s, { t: 'gift', face: 6 }).phase).toBe('lost');
+  });
+  test("Q2's Gift-first case: the pair could move normally, the last die gets the unstuck crossing", () => {
+    // Map 1, Village 1 at 2.2 with its land neighbours visited; 2.3 is a Mountain with Plains 2.4 beyond.
+    let s = roll(at('warrior', 1, 1, { visited: ['1.1', '1.2', '3.1', '3.2', '2.2'] }), [3, 3, 2]);
+    expect(travelOptions(s).map((o) => [o.die, o.unstuck])).toEqual([[0, false], [1, false]]);
+    s = act(s, { t: 'gift', face: 3 }); // A 3-3: Vital Eggs
+    for (const a of ['str', 'str', 'str'] as const) s = act(s, { t: 'point', attr: a });
+    const o = travelOptions(s);
+    expect(o.map((x) => [x.die, x.unstuck])).toEqual([[2, true]]);
+    expect(o[0].paths.map((p) => p.path.join(' '))).toContain('2.3 2.4');
+  });
+  test('a Travel that kills does not claim to arrive', () => {
+    let s = roll(at('warrior', 1, 1, { foodSpent: 5, heartsLost: 2 }), [3, 1, 1]);
+    s = go(s, 0, '2.3 2.4');
+    expect(s.phase).toBe('lost');
+    // On 2 hearts when the Travel starts, so Adrenaline fires first (ruling B); the hunger then kills.
+    expect(s.log.at(-2)!.text).toBe('Set out with a 3 towards Plains (row 2, col 4), and fell on the way. Adrenaline: +1 Strength, short of 2 food, -1 heart, -1 heart.');
+  });
 });

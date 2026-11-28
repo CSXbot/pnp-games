@@ -299,17 +299,27 @@ export function canStillTravel(s: GameState): boolean {
 // ---------------------------------------------------------------------------------------------
 // Gifts (p66-73)
 
-/** Faces showing on at least two unused dice whose Gift is still on the table. */
+/** Why the double of this face can't find its Gift now, or null if it can (p20, p66). */
+export function giftError(s: GameState, face: number): string | null {
+  if (s.phase !== 'round') return 'Roll first.';
+  if (s.giftThisRound) return 'One Gift a round: the double is already spent.';
+  if (s.mustTravelNext) return 'After Cross Training the Travel comes next.';
+  // The double's two dice must both be unspent, and nothing but the Travel done (p66).
+  if (s.travelled && s.used.filter(Boolean).length !== 1) return 'Both dice of the double must be unspent.';
+  if (s.dice.filter((d, i) => d === face && !s.used[i]).length < 2) return 'No double of that face among the dice in hand.';
+  const name = GIFT_NAME[sheetOf(s).gifts[face - 1]];
+  if (s.giftsTaken.includes(sheetOf(s).gifts[face - 1])) return `${name[0].toUpperCase()}${name.slice(1)} is already taken.`;
+  return null;
+}
+
+/** Faces whose double can find its Gift now. */
 export function giftFaces(s: GameState): number[] {
-  if (s.giftThisRound || s.mustTravelNext) return [];
-  // The double's dice are spent on the Gift; so no main-phase die may have been used (p66).
-  if (s.travelled && s.used.filter(Boolean).length !== 1) return [];
-  const faces: number[] = [];
-  for (let f = 1; f <= 6; f++) {
-    const free = s.dice.filter((d, i) => d === f && !s.used[i]).length;
-    if (free >= 2 && !s.giftsTaken.includes(sheetOf(s).gifts[f - 1])) faces.push(f);
-  }
-  return faces;
+  return [1, 2, 3, 4, 5, 6].filter((f) => !giftError(s, f));
+}
+
+/** Taking this Gift before travelling would leave a die that cannot travel: the game ends (p66, p40). */
+export function giftEndsGame(s: GameState, face: number): boolean {
+  return !s.travelled && !giftError(s, face) && travelOptions(takeGiftForCheck(s, face)).length === 0;
 }
 
 function takeGiftForCheck(s: GameState, face: number): GameState {
@@ -543,8 +553,7 @@ export function actionError(s: GameState, cmd: Command): string | null {
       if (cmd.dice && (cmd.dice.length !== 3 || cmd.dice.some((d) => !Number.isInteger(d) || d < 1 || d > 6))) return 'Three dice, 1 to 6.';
       return null;
     case 'gift':
-      if (s.phase !== 'round') return 'Roll first.';
-      return giftFaces(s).includes(cmd.face) ? null : 'No double with an untaken Gift for that face.';
+      return giftError(s, cmd.face);
     case 'crossTraining':
       if (s.phase !== 'round') return 'Roll first.';
       if (!hasSkill(s, 'crossTraining')) return 'Cross Training is not unlocked.';
@@ -562,7 +571,6 @@ export function actionError(s: GameState, cmd: Command): string | null {
     case 'magicBlood':
       if (!hasSkill(s, 'magicBlood')) return 'Magic Blood is not unlocked.';
       if (!s.magicBloodOpen) return 'Only right after travelling, before anything else.';
-      if (s.attrs.mag >= ATTR_MAX) return 'Magic is at 12.';
       return null;
     case 'explore':
     case 'adventure':
@@ -702,7 +710,7 @@ export function act(state: GameState, cmd: Command): GameState {
         s.magicBloodOpen = hasSkill(s, 'magicBlood');
       }
       const where = hexLabel(mapOf(s), tp.path[tp.path.length - 1]);
-      logAction(c, `Travelled with a ${die}: ${plural(tp.path.length, 'hex', 'hexes')} to ${where}.`);
+      logAction(c, c.dead ? `Set out with a ${die} towards ${where}, and fell on the way.` : `Travelled with a ${die}: ${plural(tp.path.length, 'hex', 'hexes')} to ${where}.`);
       return endRoundIfDone(s);
     }
 

@@ -81,6 +81,16 @@ publisher's video, "you lose HP in combat exploring or by starving" (V7); p95; p
 Researcher was medium, not high, on the unstuck penalty*, because p41 and the Bard (p79) call it a
 "penalty" rather than damage.
 
+### From the consultant's engine review, 2026-11-28 (the tech lead and the consultant)
+
+- **Magic Blood is allowed at Magic 12.** The point is ignored (p22: "any attribute point gained is
+  ignored" - ignored, not forbidden) and the heart is still lost, which has uses of its own:
+  Overcoming's food, and getting down to 2 hearts for Adrenaline, a use p107 names ("to purposely
+  remain below 2 Heart Points"). Cross Training at Strength 12 works the same way.
+- **A skill's own cost must be paid in food you have.** Cross Training needs 2 food, Mana Shield
+  one. Hearts stand in for food only where the player "has to consume food, but can't" (p24) - a
+  Travel or an Explore cost - not for a cost the player chooses to take on.
+
 ### Readings taken as settled from the start
 
 Listed in `SPEC.md` on 2026-11-27 and not challenged by the group or the research: starting food 5
