@@ -49,9 +49,14 @@ describe('a round through the screen', () => {
     expect(log()[0]).toBe('Travelled with a 1: 1 hex to Castle, Plains (row 1, col 5). -1 food.');
     // The preview on a button is what the action does.
     fireEvent.click(screen.getByRole('button', { name: 'Die 2: 3' }));
-    const explore = screen.getByRole('button', { name: /^Explore · castle/ });
+    // Acting on the printed cell: the chosen die's cells are buttons that say what they do.
+    const explore = screen.getByRole('button', { name: 'Explore · castle: +1 heart, -1 food, +1 Magic' });
     expect(within(explore).getByText('+1 heart, -1 food, +1 Magic')).toBeTruthy();
-    fireEvent.click(explore);
+    // The same choices are available as a list.
+    fireEvent.click(screen.getByRole('button', { name: 'Show as a list' }));
+    expect(screen.getByRole('button', { name: /^Explore · castle/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Use the cells' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Explore · castle: +1 heart, -1 food, +1 Magic' }));
     expect(log()[0]).toBe('Explored the castle with a 3: -1 food, +1 heart, +1 Magic.');
     // Undo goes back within the round...
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
@@ -68,7 +73,7 @@ describe('a round through the screen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Roll for the start' }));
     fireEvent.click(screen.getByRole('button', { name: 'Roll the dice' }));
     // Until a die has travelled, there are no main-phase actions to press.
-    expect(screen.queryByRole('button', { name: /^Explore ·/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Explore · / })).toBeNull();
     expect(screen.getByText(/Choose a die to travel with/)).toBeTruthy();
   });
 });

@@ -3,7 +3,7 @@ import { ago, cloudEnabled, deviceLabel, type RemoteSave } from '@pnp/kit/cloudS
 import { CHARACTERS, type CharacterId } from '../data/characters';
 import { MAPS } from '../data/maps';
 import { BOSSES, TRAVEL } from '../data/rules';
-import { ATTR_NAME, ATTRS, TREASURES, TREASURE_NAME, type Attr } from '../data/types';
+import { ATTR_NAME, ATTRS, rowOfDie, TREASURES, TREASURE_NAME, type Attr, type Column } from '../data/types';
 import {
   act,
   actionError,
@@ -79,6 +79,7 @@ export function App() {
   const [shield, setShield] = useState(false);
   const [enchant, setEnchant] = useState(false);
   const [tables, setTables] = useState(false);
+  const [list, setList] = useState(false);
   // Playtest mode: every command since the start, so a reported position can be replayed exactly.
   const [cmds, setCmds] = useState<Command[]>(() => (PLAYTEST ? (readJournal()?.cmds ?? []) : []));
 
@@ -249,6 +250,8 @@ export function App() {
               setShield={setShield}
               enchant={enchant}
               setEnchant={setEnchant}
+              list={list}
+              setList={setList}
               commit={commit}
               onNew={() => setDialog('new')}
             />
@@ -257,6 +260,11 @@ export function App() {
               at={draft.length ? draft[draft.length - 1] : undefined}
               litRows={die !== null && state.travelled ? rowsOf([state.dice[die]], [false]) : state.phase === 'round' ? rowsOf(state.dice.filter((_, i) => i !== die || !travelling), state.used.filter((_, i) => i !== die || !travelling)) : []}
               onTables={() => setTables(true)}
+              actRow={die !== null && state.travelled && !state.used[die] && !state.pending.length ? rowOfDie(state.dice[die]) : null}
+              acts={(!list && die !== null && !state.pending.length ? mainOptions(state, die, shield, enchant) : [])
+                .filter((o) => o.table !== 'boss')
+                .map((o) => ({ table: o.table as 'explore' | 'adventure', column: o.column!, short: o.short, label: o.label, cmd: o.cmd, err: actionError(state, o.cmd), preview: preview(state, o.cmd) }))}
+              onAct={commit}
             />
           </div>
           <div className="side">
@@ -359,6 +367,8 @@ function Turn(props: {
   setShield: (b: boolean) => void;
   enchant: boolean;
   setEnchant: (b: boolean) => void;
+  list: boolean;
+  setList: (b: boolean) => void;
   commit: (c: Command) => void;
   onNew: () => void;
 }) {
@@ -504,7 +514,7 @@ function Turn(props: {
           )}
         </>
       ) : (
-        <MainPhase s={s} die={die} commit={commit} shield={props.shield} enchant={props.enchant} />
+        <MainPhase s={s} die={die} commit={commit} shield={props.shield} enchant={props.enchant} list={props.list} setList={props.setList} />
       )}
 
       {!pending && (mageShield || (hasSkill(s, 'enchant') && s.travelled)) && (
@@ -526,33 +536,67 @@ function Turn(props: {
   );
 }
 
-function MainPhase({ s, die, commit, shield, enchant }: { s: GameState; die: number | null; commit: (c: Command) => void; shield: boolean; enchant: boolean }) {
-  const won = s.bossesDefeated.length >= 2;
-  const magicBlood = !actionError(s, { t: 'magicBlood' });
-  const opts: { label: string; cmd: Command }[] = [];
-  if (die !== null && !s.used[die]) {
-    const d = s.dice[die];
-    const sh = (c: Command): Command => (shield ? ({ ...c, shield: true } as Command) : c);
-    for (const which of ['terrain', 'poi'] as const) {
-      const col = columnFor(s, which);
-      if (!col) continue;
-      opts.push({ label: `Explore · ${col}`, cmd: sh({ t: 'explore', die, column: which }) });
-      const e = enemyAt(s, d, col);
-      const picks = e.req.type === 'unlinked' ? [0, 1] : [undefined];
-      for (const pick of picks) {
-        const req = pick === undefined ? e.req.reqs.map((r) => `${ATTR_NAME[r.a]} ${r.v}`).join(' and ') : `${ATTR_NAME[e.req.reqs[pick].a]} ${e.req.reqs[pick].v}`;
-        opts.push({ label: `Fight ${e.name}, meet ${req}${enchant ? ', Enchanted' : ''} · ${col}`, cmd: sh({ t: 'adventure', die, column: which, pick, enchant: enchant || undefined }) });
-      }
-    }
-    if (poiAt(mapOf(s), position(s))?.kind === 'castle' && !s.bossesDefeated.includes(d)) {
-      const b = BOSSES[d - 1];
-      opts.push({ label: `Boss ${b.name}${enchant ? ', Enchanted' : ''} · needs the ${TREASURE_NAME[b.treasure]}`, cmd: sh({ t: 'boss', die, enchant: enchant || undefined }) });
+/** One thing the chosen die can do here; `table`/`column` place it on a printed cell. */
+export interface MainOption {
+  label: string;
+  /** What the cell overlay shows: the requirement chosen, for an enemy with two. */
+  short: string;
+  cmd: Command;
+  table: 'explore' | 'adventure' | 'boss';
+  column?: Column;
+}
+
+export function mainOptions(s: GameState, die: number | null, shield: boolean, enchant: boolean): MainOption[] {
+  const opts: MainOption[] = [];
+  if (die === null || s.used[die] || !s.travelled || s.giftThisRound) return opts;
+  const d = s.dice[die];
+  const sh = (c: Command): Command => (shield ? ({ ...c, shield: true } as Command) : c);
+  for (const which of ['terrain', 'poi'] as const) {
+    const col = columnFor(s, which);
+    if (!col) continue;
+    opts.push({ label: `Explore · ${col}`, short: 'Explore', cmd: sh({ t: 'explore', die, column: which }), table: 'explore', column: col });
+    const e = enemyAt(s, d, col);
+    const picks = e.req.type === 'unlinked' ? [0, 1] : [undefined];
+    for (const pick of picks) {
+      const req = pick === undefined ? e.req.reqs.map((r) => `${ATTR_NAME[r.a]} ${r.v}`).join(' and ') : `${ATTR_NAME[e.req.reqs[pick].a]} ${e.req.reqs[pick].v}`;
+      opts.push({
+        label: `Fight ${e.name}, meet ${req}${enchant ? ', Enchanted' : ''} · ${col}`,
+        short: pick === undefined ? 'Fight' : `${ATTR_NAME[e.req.reqs[pick].a]} ${e.req.reqs[pick].v}`,
+        cmd: sh({ t: 'adventure', die, column: which, pick, enchant: enchant || undefined }),
+        table: 'adventure',
+        column: col,
+      });
     }
   }
+  if (poiAt(mapOf(s), position(s))?.kind === 'castle' && !s.bossesDefeated.includes(d)) {
+    const b = BOSSES[d - 1];
+    opts.push({ label: `Boss ${b.name}${enchant ? ', Enchanted' : ''} · needs the ${TREASURE_NAME[b.treasure]}`, short: b.name, cmd: sh({ t: 'boss', die, enchant: enchant || undefined }), table: 'boss' });
+  }
+  return opts;
+}
+
+function MainPhase({ s, die, commit, shield, enchant, list, setList }: { s: GameState; die: number | null; commit: (c: Command) => void; shield: boolean; enchant: boolean; list: boolean; setList: (b: boolean) => void }) {
+  const won = s.bossesDefeated.length >= 2;
+  const magicBlood = !actionError(s, { t: 'magicBlood' });
+  const all = mainOptions(s, die, shield, enchant);
+  // The Explore and Adventure choices are made on the printed cells themselves (tap a lit cell);
+  // the list stays available. A Boss has no cell in the panel, so it is always a button here.
+  const opts = list ? all : all.filter((o) => o.table === 'boss');
   return (
     <>
       <div className="prompt">
-        {won ? 'Two Bosses down: use the die left, or finish.' : die === null ? 'Choose a die for each of the other two actions: both must be used.' : `With the ${s.dice[die]}:`}
+        {won
+          ? 'Two Bosses down: use the die left, or finish.'
+          : die === null
+            ? 'Choose a die for each of the other two actions: both must be used.'
+            : list
+              ? `With the ${s.dice[die]}:`
+              : `With the ${s.dice[die]}: tap a lit cell below to Explore or fight - each shows what it will do.`}
+        {die !== null && (
+          <button className="btn small list-toggle" onClick={() => setList(!list)}>
+            {list ? 'Use the cells' : 'Show as a list'}
+          </button>
+        )}
       </div>
       <div className="actions">
         {magicBlood && (

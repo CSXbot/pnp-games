@@ -58,7 +58,10 @@ for (const [w, h] of [[1440, 900], [1366, 865], [1366, 1024]]) {
   await page.getByRole('button', { name: /^Travel to/ }).click();
   await page.locator('.dice-row .die-btn:not(.used)').first().click();
   await check('2-main');
-  await page.locator('.actions .btn.action:not([disabled])').first().click();
+  // Act on a printed cell (the default), or on the list if a die has no cell action.
+  const cellAct = page.locator('.cell-act:not([disabled])');
+  if (await cellAct.count()) await cellAct.first().click();
+  else await page.locator('.actions .btn.action:not([disabled])').first().click();
   for (let k = 0; k < 4; k++) {
     const p = page.locator('.pending .btn:not([disabled])');
     if (await p.count()) await p.first().click();

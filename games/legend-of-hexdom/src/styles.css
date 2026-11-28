@@ -231,3 +231,17 @@ button { font: inherit; color: inherit; }
 .col-tabs { display: flex; gap: 4px; }
 .col-tabs .btn.on { background: var(--frame); color: #fff; }
 .col-tabs .btn { text-transform: capitalize; }
+
+/* Acting on the printed cells: the chosen die's cells become buttons, each saying what it will do. */
+.cell.act { cursor: default; border-color: var(--target); box-shadow: 0 0 0 2px var(--target) inset; }
+.cell-acts { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 2px; padding: 2px; }
+.cell-acts.n1 { top: 0; justify-content: flex-end; }
+.cell-act {
+  min-height: 34px; border: 2px solid var(--target); border-radius: 6px; background: rgba(255, 255, 255, .9);
+  font-size: 11px; line-height: 1.15; padding: 2px 4px; cursor: pointer; touch-action: manipulation; text-align: center;
+}
+.cell-acts.n1 .cell-act { flex: 1; background: linear-gradient(to bottom, rgba(255,255,255,0) 45%, rgba(255,255,255,.92) 70%); display: flex; flex-direction: column; justify-content: flex-end; }
+.cell-act b { display: block; font-size: 10.5px; }
+.cell-act:disabled { opacity: .55; cursor: default; }
+.list-toggle { margin-left: 8px; vertical-align: middle; }
+@media (pointer: coarse) { .cell-act { min-height: 40px; } }

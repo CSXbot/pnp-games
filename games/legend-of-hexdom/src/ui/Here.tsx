@@ -6,7 +6,19 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { COLUMNS, rowOfDie, type Column } from '../data/types';
 import { enemyAt, lootLeft, position, sheetOf, mapOf, type GameState } from '../engine/game';
 import { hexLabel, isLand, poiAt, terrainAt } from '../engine/hex';
+import type { Command } from '../engine/game';
 import { BOSS_ART, GEO, GIFT_ART, TABLE_ART } from './art';
+
+/** An action a printed cell offers the chosen die, with what it would do (from the engine). */
+export interface CellAct {
+  table: 'explore' | 'adventure';
+  column: Column;
+  short: string;
+  label: string;
+  cmd: Command;
+  err: string | null;
+  preview: string;
+}
 
 const T = GEO.tables;
 
@@ -24,7 +36,7 @@ function columnsAt(s: GameState, hex: string): Column[] {
 /** Whether an Adventure cell's gem or Treasure has been taken (Q5): it is crossed off, the enemy stays. */
 const takenAt = (s: GameState, row: number, col: Column) => lootLeft(s, row * 2 + 1, col).length < enemyAt(s, row * 2 + 1, col).loot.length;
 
-function Cell({ sheet, table, row, col, k, lit, taken, onClick }: { sheet: string; table: 'explore' | 'adventure'; row: number; col: number; k: number; lit: boolean; taken: boolean; onClick?: () => void }) {
+function Cell({ sheet, table, row, col, k, lit, taken, onClick, acts, onAct }: { sheet: string; table: 'explore' | 'adventure'; row: number; col: number; k: number; lit: boolean; taken: boolean; onClick?: () => void; acts?: CellAct[]; onAct?: (c: Command) => void }) {
   const ys = T[table];
   const x = T.cols[col];
   const y = ys[row];
@@ -32,8 +44,8 @@ function Cell({ sheet, table, row, col, k, lit, taken, onClick }: { sheet: strin
   const h = ys[row + 1] - y;
   return (
     <div
-      onClick={onClick}
-      className={`cell ${table}${lit ? ' lit' : ''}`}
+      onClick={acts?.length ? undefined : onClick}
+      className={`cell ${table}${lit ? ' lit' : ''}${acts?.length ? ' act' : ''}`}
       style={{
         width: w * k,
         height: h * k,
@@ -43,6 +55,16 @@ function Cell({ sheet, table, row, col, k, lit, taken, onClick }: { sheet: strin
       }}
     >
       {taken && <span className="taken" title="Gem or Treasure already taken">taken</span>}
+      {acts?.length ? (
+        <div className={`cell-acts n${acts.length}`}>
+          {acts.map((a) => (
+            <button key={a.label} className="cell-act" disabled={!!a.err} title={a.err ?? a.label} aria-label={`${a.label}: ${a.err ?? a.preview}`} onClick={() => onAct?.(a.cmd)}>
+              {acts.length > 1 && <b>{a.short}</b>}
+              <span>{a.err ?? a.preview}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -65,7 +87,24 @@ function useBox<T extends HTMLElement>(): [React.RefObject<T | null>, { w: numbe
  * `at`: a hex other than the player's, shown while a path is being drawn - "what would I find
  * there" is what planning a Travel needs.
  */
-export function Here({ s, litRows, at, onTables }: { s: GameState; litRows: number[]; at?: string; onTables: () => void }) {
+export function Here({
+  s,
+  litRows,
+  at,
+  onTables,
+  actRow = null,
+  acts = [],
+  onAct,
+}: {
+  s: GameState;
+  litRows: number[];
+  at?: string;
+  onTables: () => void;
+  /** The chosen die's row, whose cells can be tapped to act. */
+  actRow?: number | null;
+  acts?: CellAct[];
+  onAct?: (c: Command) => void;
+}) {
   const sheet = sheetOf(s);
   const here = at ?? position(s);
   // Before the start roll there is no position yet.
@@ -141,7 +180,18 @@ export function Here({ s, litRows, at, onTables }: { s: GameState; litRows: numb
                         void die;
                         return (
                           <td key={table + col}>
-                            <Cell sheet={sheet.id} table={table} row={row} col={COLUMNS.indexOf(col)} k={k} lit={!at && litRows.includes(row)} taken={table === 'adventure' && takenAt(s, row, col)} onClick={onTables} />
+                            <Cell
+                              sheet={sheet.id}
+                              table={table}
+                              row={row}
+                              col={COLUMNS.indexOf(col)}
+                              k={k}
+                              lit={!at && litRows.includes(row)}
+                              taken={table === 'adventure' && takenAt(s, row, col)}
+                              onClick={onTables}
+                              acts={!at && row === actRow ? acts.filter((x) => x.table === table && x.column === col) : undefined}
+                              onAct={onAct}
+                            />
                           </td>
                         );
                       }),
