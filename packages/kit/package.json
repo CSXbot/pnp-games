@@ -1,0 +1,10 @@
+{
+  "name": "@pnp/kit",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Shelf features every game needs: save keys, cloud sync, playtest mode. Source only; each game's Vite build bundles it.",
+  "exports": {
+    "./*": "./src/*.ts"
+  }
+}

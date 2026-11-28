@@ -5,7 +5,10 @@
  * `pnp:<slug>:state`. `App.tsx` and the tests both import it from here, so the name is
  * written down once.
  */
-export const SAVE_KEY = 'pnp:recycled:state';
+import { saveKeys } from '@pnp/kit/save';
+
+const KEYS = saveKeys('recycled');
+export const SAVE_KEY = KEYS.SAVE_KEY;
 
 /**
  * The key the game used before it moved into `pnp-games`. It is read when `SAVE_KEY` holds
@@ -19,14 +22,14 @@ export const LEGACY_SAVE_KEY = 'recycled.save.v1';
  * otherwise destroy a game in progress: the fresh game replacing it is written to `SAVE_KEY`
  * immediately. Only the first failure is kept, so a later good save can't be shadowed by it.
  */
-export const BROKEN_KEY = 'pnp:recycled:state.broken';
+export const BROKEN_KEY = KEYS.BROKEN_KEY;
 
 /**
  * Where a playtest's game lives. A playtester plays the live site, and on the Game Director's own
  * browser that would otherwise overwrite `SAVE_KEY` and offer the playtest to their iPad through
  * cloud sync. `?playtest=1` moves the game here and turns sync off.
  */
-export const PLAYTEST_SAVE_KEY = 'pnp:recycled:playtest:state';
+export const PLAYTEST_SAVE_KEY = KEYS.PLAYTEST_SAVE_KEY;
 
 /** The key this page saves to. */
-export const saveKey = (playtest: boolean) => (playtest ? PLAYTEST_SAVE_KEY : SAVE_KEY);
+export const saveKey = KEYS.saveKey;

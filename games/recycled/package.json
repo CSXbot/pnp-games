@@ -19,7 +19,8 @@
     "@fontsource/barlow-condensed": "^5.3.0",
     "@fontsource/russo-one": "^5.3.0",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "@pnp/kit": "*"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.2",

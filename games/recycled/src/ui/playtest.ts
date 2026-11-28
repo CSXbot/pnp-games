@@ -15,17 +15,11 @@
  * The journal is deliberately playtest-only: normal play has nothing to do with it, and the save
  * is already the whole state.
  */
+import { journalKey, PLAYTEST, readStored, writeStored } from '@pnp/kit/playtest';
 import { act, newGame, type Command, type GameState } from '../engine/game';
 
-export const PLAYTEST = (() => {
-  try {
-    return new URLSearchParams(location.search).has('playtest');
-  } catch {
-    return false; // no location (tests, jsdom without a URL)
-  }
-})();
-
-export const JOURNAL_KEY = 'pnp:recycled:playtest:journal';
+export { PLAYTEST };
+export const JOURNAL_KEY = journalKey('recycled');
 
 export interface Journal {
   v: 1;
@@ -67,20 +61,12 @@ export function parseJournal(text: string): { ok: true; journal: Journal } | { o
 export const recordStep = (j: Journal, cmd: Command): Journal => ({ ...j, cmds: [...j.cmds, cmd] });
 
 export function readJournal(): Journal | null {
-  try {
-    const raw = localStorage.getItem(JOURNAL_KEY);
-    if (!raw) return null;
-    const parsed = parseJournal(raw);
-    return parsed.ok ? parsed.journal : null;
-  } catch {
-    return null;
-  }
+  const raw = readStored(JOURNAL_KEY);
+  if (!raw) return null;
+  const parsed = parseJournal(JSON.stringify(raw));
+  return parsed.ok ? parsed.journal : null;
 }
 
 export function writeJournal(j: Journal): void {
-  try {
-    localStorage.setItem(JOURNAL_KEY, JSON.stringify(j));
-  } catch {
-    /* storage unavailable: play without a journal */
-  }
+  writeStored(JOURNAL_KEY, j);
 }
