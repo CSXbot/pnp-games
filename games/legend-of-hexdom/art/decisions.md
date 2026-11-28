@@ -2,6 +2,31 @@
 
 Dated, newest first. What was asked, what came back, what was accepted or rejected and why.
 
+## 2026-11-28 - review of the first screens at play size (stage 4)
+
+**Asked** `gpt-5.6-sol`, with the notebook, four screenshots at 1366x865 and 1440x900 and the
+original A4 sheet: legibility at play size, departures from the sheet's visual language, at most ten
+ranked changes each marked USABILITY or TASTE, and what not to change.
+
+**Accepted and built the same night (usability):** four table columns go into tabs when they would
+be too small; the full-tables view shows Bosses and Gifts full width and scrolls instead of
+shrinking them; the Travel box is shown as printed (the rolled dice outlined) instead of prose;
+the score line is back under the map; the red unlock diamonds are back on skills 2 and 3, locked
+skills have readable contrast, Treasures are larger; the committed route is thinner with a pen-like
+wobble, the preview stays dashed.
+
+**Rejected:** "enlarge the touch targets of hearts, diamonds and rings" - they are not touch
+targets; the tracks only display state.
+
+**For the Game Director (taste):** a cleaner redraw of the table cells (the publisher's pictures
+kept, requirement boxes, numbers and loot icons rebuilt crisp from the data - text set by code,
+never by a model); frames closer to the sheet's (dark header bars, vertical tabs, terrain badges,
+squarer boxes); the state colours (yellow selection, green preview, blue ink - or charcoal ink, muted
+previews, red and purple kept for the sheet's meanings).
+
+**Kept, on its advice:** the large map, the readable action previews, the dice, the full-tables
+view, the publisher's art for every picture, the layout's departure from the A4 arrangement.
+
 ## 2026-11-27 - "What does the player physically do?" again, done properly (stage 1)
 
 **Asked** the same six questions, blind (without `art-direction.md`, so it could not simply agree),
