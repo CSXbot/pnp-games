@@ -20,3 +20,10 @@ node scripts/art.mjs generate --out shelf/icons/source.png --quality low --promp
 Model used: `gpt-image-2.6-flare` (2026-11-26). Two rejected alternatives were a plain hexagon +
 recycling arrows (crisp but anonymous) and a honeycomb with a shuttle (the shuttle turned to mush
 at 60 px).
+
+## The shelf
+
+A wooden games shelf, after the old GOG.com library the Game Director likes (2026-11-28): boxes on
+planks, the empty planks filling the screen, and an "In development" ribbon on a game still being
+built. Covers are cut from each game's own art by `shelf/tools/make_covers.mjs` (provisional; the Art
+Director can improve them); the titles are page text. A new game adds an `<li>` and a cover.

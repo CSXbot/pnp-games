@@ -10,8 +10,9 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 
 ## Status
 
-**Stage 3 (UI) built 2026-11-28, waiting on the Game Director's try on the iPad.** Playable at
-`/games/legend-of-hexdom/` (not on the shelf yet). `pnp.tabletReady` is on and `check:screens` passes at
+**Stage 3 (UI) built 2026-11-28, waiting on the Game Director's try on the iPad.** On the shelf
+with an "In development" ribbon (the Game Director asked to start it from the shelf, 2026-11-28),
+ahead of stage 5. `pnp.tabletReady` is on and `check:screens` passes at
 1440x900, 1366x865 and 1366x1024; a scripted game (start, roll, travel, act) runs without errors and
 without page scroll at all three. Stage 2 done 2026-11-28, stage 1 2026-11-27.
 

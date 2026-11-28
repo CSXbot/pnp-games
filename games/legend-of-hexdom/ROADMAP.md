@@ -6,9 +6,8 @@ Director.
 
 ## Stage 3: UI
 
-- **(you)** Play a few rounds on the iPad at `/games/legend-of-hexdom/`: whether a tap on a hex or a
-  die is easy, and whether the printed cells are readable at the size they get. A game opened from the
-  shelf's URL directly; the game is not on the shelf until stage 5.
+- **(you)** Play a few rounds on the iPad, from the shelf: whether a tap on a hex or a die is easy,
+  and whether the printed cells are readable at the size they get.
 - The printed cells shrink to about half size when the hex is a Village or Castle (four columns):
   readable on a laptop, to be judged on the iPad. If too small: tap a cell to enlarge, or show one
   table at a time.
