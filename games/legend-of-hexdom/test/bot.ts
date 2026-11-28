@@ -1,7 +1,7 @@
 // A strategy that plays whole games through the engine, so difficulty can be measured over thousands
 // of games rather than guessed from a few (the playtest skill: "the engine counts"). The playtester's
-// notebook supplies the strategy; until it has one, this is the tech lead's first sensible guess,
-// written as plain rules of thumb so it can be compared and replaced.
+// notebook supplies the strategy: this plays its second version (playtest/notebook.md, 2026-11-28),
+// as weights and a little look-ahead, and what each part was worth is recorded there.
 
 import type { CharacterId } from '../src/data/characters';
 import { BOSSES } from '../src/data/rules';

@@ -134,22 +134,36 @@ Dice decide the end. Both of my games came down to one roll in one remaining Cas
 
 *Win rates from `test/bot.ts` over thousands of games, and the answers to the open questions above.*
 
-- **2026-11-28, 300 games (100 per character, maps 1-3 in turn, seeds 1000-1099).** The bot plays the
-  strategy above as weights: two target Bosses per character, every attribute point into the lead
-  attribute to 12 then the second to 8, the target Bosses' Treasures valued, a margin of hearts, a
-  one-step look-ahead per action, and pathing that avoids pockets and weighs the chance that all three
-  dice fail next round. **Mage 19/100 won, Archer 3/100, Warrior 3/100.** Games last about 14 rounds.
-  Losses: Mage 72 stuck, 9 out of hearts; Archer 93 stuck, 4; Warrior 87 stuck, 10.
-- **What "stuck" means here.** A map has about 42 hexes a Travel can end on, and a game uses about 2.3
-  a round, so the map runs out around round 14-18: "stuck" is mostly the game's clock, not careless
-  pathing. A win means two Bosses before the land is used up. The playtester's win came in round 14
-  with 29 hexes travelled, the same clock.
-- **How far to trust it.** The bot is greedy one action at a time; it does not plan the Boss round
-  (rule 13), the Treasure Crate trick (rule 14) or the Warrior's 2-heart Adrenaline play (open
-  question 8), so it understates what a careful player wins. It agrees with the playtester that the
-  Mage is the strongest of the three by a distance. Measure again when those are taught to it.
-- **Open questions answered:** none yet. `BOT_GAMES=100 npx vitest run test/bot.test.ts` reproduces
-  the numbers above.
+- **2026-11-28, second measurement: 900 games (300 per character, maps 1-3 in turn, seeds
+  1000-1299), playing this notebook's second version. Mage 93/300 won (31%), Archer 46/300 (15%),
+  Warrior 27/300 (9%).** Games last about 15 rounds. Losses: Mage 186 stuck, 21 out of hearts; Archer
+  226 and 28; Warrior 237 and 36. `BOT_GAMES=300 npx vitest run test/bot.test.ts
+  --disableConsoleIntercept` reproduces it (about 6 minutes on an idle machine).
+- **What the bot learned from the second playtest, and what each step was worth** (100 games per
+  character each, so a few points either way is noise). Wins went from 19/3/3 (Mage/Archer/Warrior)
+  as follows:
+  - **Castles as the clock (rules 1 and 13)**, with the target Bosses' value: 26/8/4. Stuck games
+    with every Castle already visited fell from about 30 per 100 to about 8.
+  - **A free Castle kept reachable from where a Travel ends**, and a main phase that looks two
+    actions ahead (it now sees the Archer's Focus pair): 31/9/5.
+  - **No fixed target Bosses**: it aims at the two that need the fewest points, recomputed every
+    move (rule 2's live faces, generalised): 26/18/8.
+  - **A wider heart margin**: 36/20/7.
+- **Open question 1 (Castle discipline), answered: yes, it matters.** It took stuck-with-no-Castle
+  losses from about a third of all losses to under a tenth, and it accounts for part of the gain.
+  Most losses are still "stuck": the land runs out before two Bosses are live.
+- **A correction to rule 6:** Glubo needs **Agility 12** and Strength 8, so Agility 8 does not make
+  him live. A Warrior with Strength 12 and Agility 8 has Liggy only, and needs Magic 8 (Gast) or
+  more Agility for a second Boss. This is why fixed targets hurt the Warrior most.
+- **A bug the bot found:** with all three attributes at 12, a point still waiting to be placed (one
+  gained with a gem whose Relic box then filled everything) could never be placed. Fixed in the
+  engine: waiting points are ignored once all three are at 12.
+- **How far to trust it:** the bot plays greedily, at most two actions ahead. It does not plan the
+  Boss round's approach beyond heading for the nearest free Castle, the Warrior's Adrenaline (open
+  question 8), the gem-trade exception (rule 8) or the Balloon (rule 10). So these are floors: three
+  careful games by the playtesters were all won. Measure again when one of those is taught to it.
+- **First measurement, 2026-11-28:** the first notebook's strategy, 300 games: Mage 19/100, Archer
+  3/100, Warrior 3/100.
 
 ## Results
 

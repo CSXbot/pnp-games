@@ -1,6 +1,7 @@
 // The bot plays whole games: proof that the engine never leaves a player without a legal move, and a
 // measure of difficulty for the playtester's strategy (test/bot.ts). The suite plays a few games;
-// BOT_GAMES=100 npx vitest run test/bot.test.ts measures (about 25 s per 100 games per character).
+// BOT_GAMES=100 npx vitest run test/bot.test.ts --disableConsoleIntercept measures (about 35 s per 100 games
+// per character on an idle machine; without the flag the numbers are not shown).
 // The numbers are printed, not asserted: they describe the bot as much as the game.
 import { expect, test } from 'vitest';
 import type { CharacterId } from '../src/data/characters';
