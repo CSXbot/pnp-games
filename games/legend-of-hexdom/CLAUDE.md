@@ -10,12 +10,17 @@ campaigns of one game, not three games, so a campaign will be data here, not a s
 
 ## Status
 
-**Where it stands (2026-11-28, overnight).** Stage 3 (UI) done and tried on the iPad by the Game
-Director; their feedback (skills hard to find, travel hard to plan, Treasure choice as text) fixed the
-same night. Stage 4 (art) under way: the Art Director's review of the screens at play size is in
-`art/decisions.md`; its usability items are built, its taste items wait for the Game Director. Stage 5:
-on the shelf with an "In development" ribbon. Stage 5b: the first playtest is running. Open decisions
-for the Game Director: `ROADMAP.md`, "Waiting on you".
+**Where it stands (2026-11-28, overnight).**
+- **Stage 3 (UI):** done. The Game Director tried it on the iPad, and the three things they flagged
+  were fixed the same night: skills hard to find, travel hard to plan, Treasure choice as text.
+- **Stage 4 (art):** under way. The Art Director's review of the screens at play size is in
+  `art/decisions.md`. Its usability items are built; its taste items wait for the Game Director.
+- **Stage 5:** on the shelf with an "In development" ribbon.
+- **Stage 5b:** two playtests played four games and won the three that finished, one with each
+  character (`playtest/reports/`). All 13 findings are fixed, and the three wins replay as tests.
+  The bot plays the second playtest's strategy; its numbers are in `playtest/notebook.md`.
+- **Open decisions for the Game Director,** the release call among them: `ROADMAP.md`, "Waiting on
+  you".
 
 **The UI:** the board is the A5 map with the player's pen marks drawn over it in SVG (path, arrows,
 the start X, a red leg for an unstuck crossing); the middle column is the turn (dice, the next step,
@@ -24,7 +29,9 @@ Adventure cells of the current hex, scaled to the space left. After travelling, 
 are the buttons: each says what it will do, an enemy with two requirements offers one button per
 requirement, and "Show as a list" gives the same choices as a list. While a path is drawn the cells
 show its end, and green dots on the map show where the die can end; the right column is the character sheet
-with paper marks, the Boss and Gift strips, and the log, newest first. The art is a provisional cut
+with paper marks, the Boss strip (Bosses beatable now are marked live) and the Gift strip, and the
+log, newest first. Under the map, the score if you won now and the Castles not yet visited, which is
+the game's real clock (playtest 2). The art is a provisional cut
 (`tools/extract_art.mjs`); stage 4 settles sizes and encoding with the Art Director.
 
 **Checking screens:** `tools/drive.mjs <outDir> [state.json...]` plays the built game in Chrome at
@@ -32,10 +39,8 @@ the three sizes, mid-game and from saved positions, and fails on a console error
 scrolls, or printed cells overflowing their panel (proved able to fail by breaking the layout).
 
 **Shelf features:** saves (`@pnp/kit/save`), cloud sync (`@pnp/kit/cloudSave`), playtest mode's
-save key and no sync (`?playtest=1`), undo cleared at each roll, manual dice, export and import,
-How to play, the shelf link, the build marker. Not yet: the playtest journal and step counter
-(stage 5b). Stage 0 (intake) done the same day. No code and no
-`package.json` yet, so this folder is not an npm workspace and the build ignores it.
+save key and no sync (`?playtest=1`), the playtest journal and step counter, undo cleared at each
+roll, manual dice, export and import, How to play, the shelf link, the build marker.
 
 ## Rulings and scope
 

@@ -11,40 +11,48 @@ decisions that are theirs to be kept here, short.
 1. **Play a round on the iPad and say if it's better.** New since your try: after travelling, you tap
    the lit cell itself (each says what it does); skills say how they work and sit under "Skills";
    while drawing a path the cells show where you'd land and green dots show where the die can end;
-   "Tables, Bosses, Gifts" opens the whole sidesheet; Treasures are the sheet's own pictures.
+   "Tables, Bosses, Gifts" opens the whole sidesheet; Treasures are the sheet's own pictures; the Boss
+   strip marks the Bosses you could beat right now; under the map, how many Castles are still unvisited.
 2. **Taste: redraw the table cells cleaner?** The Art Director's suggestion: keep the publisher's
    pictures, rebuild the requirement boxes, numbers and loot icons crisp from the data (text set by
    code, never by a model). More legible, a little less "printed". Yes or no.
 3. **Taste: frames and colours closer to the sheet?** Dark header bars and squarer boxes like the
    printed panels; and either keep the current colours (yellow = selected, green = where you can go,
    blue = your ink) or go charcoal ink with muted previews. Keep, or which.
-4. **When it's a release** - your call (stage 5c). The first playtest's nine findings are fixed; a
-   second playtest (the Archer and the Warrior) runs overnight.
-5. **FYI, no decision needed:** the first playtester never wanted to leave a die unused, so your
-   ruling A ("both dice mandatory") looks moot in practice. And the Mage is much the strongest of the
-   three: 19% wins for the bot against 3% for the Archer and the Warrior - the publisher's design, not
-   ours to change, but you may want to know before choosing who to play.
+4. **Release: your call (stage 5c). I recommend yes.** Two playtests played four games and won all
+   three that finished, one with each character. Their 13 findings are fixed. None was a rule error.
+   What isn't done: the two taste questions above, and the Art Director's polish.
+5. **FYI, no decision needed:**
+   - Ruling A ("both dice mandatory") never got in the way in either playtest.
+   - The bot found a real bug the playtests didn't hit, now fixed. With all three attributes at 12, a
+     point still waiting to be placed could never be placed, and the game waited forever.
+   - Difficulty, measured over 900 bot games: the Mage is clearly the easiest, then the Archer, then
+     the Warrior (numbers in `playtest/notebook.md`). That's the publisher's design. The bot is
+     weaker than a careful player, so these are floors.
 
 ## Stage 3: UI
 
-- The Game Director's first try (2026-11-28): hexes easy to tap; cells readable but could be better
-  (to the Art Director at stage 4); skills hard to find, travel hard to plan without the whole
-  tables, Treasure choice as text - all three addressed the same night.
+- Waiting on the Game Director's second try on the iPad (list item 1).
 
 ## Stage 4: art
 
 - With the Art Director: the pen marks (path, slashes, crosses) in the sheet's ink, the type, the
   frames; the sizes and encoding of the extracted art at the sizes the layout gives them.
-- The Mage portrait's crop catches a sliver of the card's red diamond.
 
 ## Stage 5b: playtest
 
-- First playtest done 2026-11-28 (`playtest/reports/2026-11-28-1.md`): the Mage won on map 2 in round
-  14 (score 145); nine findings, all fixed the same night. On ruling A it never wanted to leave a die
-  unused. A second run (the Archer on map 1, then the Warrior on map 3) is under way.
-- Measured with the playtester's strategy (`playtest/notebook.md`): Mage 19%, Archer 3%, Warrior 3%
-  over 300 bot games; the bot understates a careful player (it doesn't plan the Boss round). Teach it
-  rules 13-14 and the Warrior's Adrenaline play, then measure again.
+- Two playtests on 2026-11-28 (`playtest/reports/2026-11-28-1.md`, `-2.md`). They played four games
+  and won the three that finished: the Mage on map 2 in round 14, score 145; the Archer on map 1 and
+  the Warrior on map 3, both in round 16, score 130. All 13 findings are fixed, and the three wins
+  replay as regression tests.
+- The bot plays the second notebook's strategy (`playtest/notebook.md`, "Measured by the engineers").
+  Still open there:
+  - the notebook's open questions, as simulations;
+  - the Warrior's Adrenaline play;
+  - the approach to the Boss Castle, which the bot does only roughly.
+- Friction the playtesters raised, not yet changed:
+  - six separate taps for six Cross Trainings;
+  - hex names appear only in tooltips on the map.
 
 ## Later
 

@@ -90,9 +90,14 @@ art.tables = {
 art.strips = { scale: STRIP_SCALE, boss: BOSS_CROP, gifts: GIFT_CROP, relic: RELIC_CROP, travel: TRAVEL_CROP };
 
 // Portraits: the top-left of each character card (A5-<name>.png~ is the same art as the PDF).
+// Measured 2026-11-28 (ink columns between the card's border, x <= 20, and the skill text): the
+// portrait and its starting-attribute icons span x 69-187 (Warrior), 70-185 (Archer), 50-175 (Mage),
+// y 30-237; the text starts at x 216, 212, 197. One shared box cut the Mage's staff and caught her
+// "E" and red diamond, so each card gets a 140-px box centred on its own art.
+const PORTRAIT_CENTRE = { warrior: 128, archer: 128, mage: 112 };
 for (const [id, file] of [['warrior', 'A5-warrior.png~'], ['archer', 'A5-archer.png~'], ['mage', 'A5-mage.png~']]) {
   const src = path.join(HF, 'A5-HexForest-TablesCharacters-English/A5-Classes', file);
-  await sharp(src).extract({ left: 60, top: 20, width: 150, height: 230 }).resize({ height: 160 }).png({ compressionLevel: 9 }).toFile(path.join(OUT, `portrait-${id}.png`));
+  await sharp(src).extract({ left: PORTRAIT_CENTRE[id] - 70, top: 20, width: 140, height: 230 }).resize({ height: 160 }).png({ compressionLevel: 9 }).toFile(path.join(OUT, `portrait-${id}.png`));
 }
 
 writeFileSync(path.join(OUT, 'art.json'), JSON.stringify(art, null, 2) + '\n');

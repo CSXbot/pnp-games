@@ -119,7 +119,9 @@ of that kind are lost.
 **Paying.** A food cost slashes painted food; any food that can't be paid is a lost heart each
 (p14, p35). A heart cost or damage crosses hearts. **Gaining** food paints the next diamond;
 gaining a heart paints the next heart; an attribute point fills the next ring (choice of attribute
-for `+`), and is ignored past 12 (p22).
+for `+`), and is ignored past 12 (p22). Points waiting to be placed are ignored the moment all
+three attributes are at 12, however they got there (a Relic box can fill all three while a point
+waits behind its gem), so a point never waits for a ring that cannot exist.
 
 **Gems** (p19): when gained, immediately either put it in the Relic box (if there is room) or trade
 it for the sidesheet's reward. The moment the Relic box is full, gain its reward.
